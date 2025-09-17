@@ -1,0 +1,148 @@
+/* =======================================================================
+   ESTILOS RESPONSIVOS
+   ======================================================================= */
+
+/* --- TABLETS E ECRÃS MENORES (até 1024px) --- */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 220px;
+    }
+
+    .header-content-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .search-add {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+
+/* --- TELEMÓVEIS (até 768px) --- */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 260px;
+        --header-height: 60px;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 4000;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 3900;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+    .mobile-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .header-fixed {
+        width: 100%;
+        left: 0;
+        padding: 0 15px;
+        justify-content: space-between;
+    }
+    
+    /* CORREÇÃO PRINCIPAL: Força o conteúdo a ocupar todo o ecrã */
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding: var(--header-height) 15px 15px 15px; /* Adiciona padding para o conteúdo não colar nas bordas */
+    }
+
+    .content-area {
+        padding: 0; /* Remove o padding extra da área de conteúdo */
+    }
+
+    .mobile-menu-button {
+        display: block; /* Mostra o botão em mobile */
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .header-fixed h1 {
+        display: none;
+    }
+    
+    .user-details .user-role {
+        display: none;
+    }
+
+    /* CORREÇÃO: Faz os filtros deslizarem horizontalmente */
+    .filter-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .filter-tabs::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+    
+    .search-add {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .search-box, .search-box input {
+        width: 100%;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 700px;
+    }
+
+    th, td {
+        white-space: nowrap;
+        padding: 15px;
+    }
+    
+    .popup {
+        width: 90%;
+        min-width: 0;
+        padding: 20px;
+    }
+
+    /* REMOVIDO: A regra de .input-row não é mais necessária para o formulário de adicionar */
+    /*
+    .input-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    */
+}

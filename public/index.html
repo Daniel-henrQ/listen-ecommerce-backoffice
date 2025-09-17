@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Estoque</title>
+    <link rel="stylesheet" href="/style/variables-reset.css">
+    <link rel="stylesheet" href="/style/main-layout.css">
+    <link rel="stylesheet" href="/style/components.css">
+    <link rel="stylesheet" href="/style/responsive.css">
+    
+    <style>
+        .product-cover {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mobile-overlay"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header"><img src="/images/listen.svg" alt="Logo Listen" /></div>
+        <ul class="sidebar-menu">
+            <li id="menu-produtos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>Produtos</li>
+            <li id="menu-clientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>Clientes</li>
+            <li id="menu-vendas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>Vendas</li>
+            <li id="menu-fornecedores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17 11 19 13 23 9"></polyline>
+                </svg>Fornecedores</li>
+            <li id="menu-compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>Compras</li>
+            <li id="menu-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>Administrador</li>
+        </ul>
+    </aside>
+
+   <header class="header-fixed">
+        <div class="header-content-wrapper">
+            <button class="mobile-menu-button">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <h1>Controle de Estoque</h1>
+        </div>
+        <div class="header-actions">
+            <svg id="send-email-icon" class="header-icon" viewBox="0 0 24 24">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <div class="notification-icon" id="notification-bell">
+                <svg class="header-icon" viewBox="0 0 24 24">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+            </div>
+            <div class="dropdown-notification-menu" id="notification-panel">
+                <div class="notification-header">
+                    <h3>Notificações</h3>
+                </div>
+                <ul class="notification-list" id="notification-list-items">
+                </ul>
+            </div>
+            <div class="user-profile" id="user-profile-menu">
+                <div class="user-details"><span class="user-name">Carregando...</span><span
+                        class="user-role"></span></div>
+                <div class="dropdown-user-menu" id="user-dropdown"><a href="#" id="logout-button">Sair</a></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section id="view-produtos" class="content-area" style="display:none;">
+            <div class="view-header">
+                <h2>Produtos</h2>
+                <div id="actions-selecao" style="display: none;"><button id="btn-excluir-selecionados"
+                        class="delete-button">Excluir Selecionados</button></div>
+            </div>
+            <div class="action-bar">
+                <div class="filter-tabs">
+                    <a href="#" class="filter-tab active" data-categoria="all">Todos</a>
+                    <span class="tab-divider"></span>
+                    <a href="#" class="filter-tab" data-categoria="Pop">Pop</a>
+                    <a href="#" class="filter-tab" data-categoria="Rock">Rock</a>
+                    <a href="#" class="filter-tab" data-categoria="Jazz & Blues">Jazz & Blues</a>
+                    <a href="#" class="filter-tab" data-categoria="Bossa Nova">Bossa Nova</a>
+                </div>
+                <div class="search-add">
+                    <div class="search-box"><svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z">
+                            </path>
+                        </svg><input type="text" id="campo-pesquisa" placeholder="Search..."></div>
+                    <button id="btn-abrir-form-adicionar" class="add-button">+ ADD Novo Produto</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-checkbox"></th>
+                            <th>Produto</th>
+                            <th>Artista</th>
+                            <th>Categoria</th>
+                            <th>Quantidade</th>
+                            <th>Preço</th>
+                            <th>Data</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-admin" class="content-area" style="display:none;">
+            <div class="view-header">
+                <h2>Gerenciamento de Usuários</h2>
+            </div>
+            <div class="action-bar">
+                <div class="search-add" style="width: 100%; justify-content: space-between;">
+                    <div class="search-box"><svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z">
+                            </path>
+                        </svg><input type="text" id="user-search-box" placeholder="Buscar usuário..."></div>
+                    <button id="btn-show-add-user-popup" class="add-button">+ ADD Novo Usuário</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th>Função</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="popup-overlay" id="popup-enviar-email">
+            <div class="popup">
+                <h3>Enviar E-mail</h3>
+                <form id="form-send-email" class="vertical-form">
+                    <div class="input-group">
+                        <label>Para</label>
+                        <input type="email" name="para" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Assunto</label>
+                        <input type="text" name="assunto" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Mensagem</label>
+                        <textarea name="texto" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="add-button">Enviar E-mail</button>
+                    <p id="send-email-message" class="form-message"></p>
+                </form>
+            </div>
+        </div>
+
+        <div class="popup-overlay" id="popup-edit-product">
+            <div class="popup">
+                <h3>Editar Produto</h3>
+                <form id="form-edit-product" class="vertical-form">
+                    <input type="hidden" id="edit-product-id" name="id">
+                    <div class="input-group">
+                        <label>Nome do Produto</label>
+                        <input type="text" id="edit-product-name" name="nome" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Artista</label>
+                        <input type="text" id="edit-product-artist" name="artista" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Categoria</label>
+                        <input type="text" id="edit-product-category" name="categoria" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Quantidade</label>
+                        <input type="number" id="edit-product-quantity" name="quantidade" required min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Preço</label>
+                        <input type="number" id="edit-product-price" name="preco" required min="0" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Capa do Álbum (Opcional)</label>
+                        <input type="file" id="edit-product-image" name="imagem" accept="image/*">
+                    </div>
+                    <button type="submit" class="add-button">Salvar Alterações</button>
+                    <p id="edit-product-message" class="form-message"></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div class="popup-overlay" id="popup-adicionar-produto">
+        <div class="popup">
+            <h3>Adicionar Novo Produto</h3>
+            <form id="form-adicionar-produto" class="vertical-form">
+                <div class="input-group"><label>Nome do Produto</label><input type="text" name="nome" required></div>
+                <div class="input-group"><label>Artista</label><input type="text" name="artista" required></div>
+                <div class="input-group"><label>Categoria</label><input type="text" name="categoria" required></div>
+                <div class="input-group"><label>Quantidade</label><input type="number" name="quantidade" required min="0"></div>
+                <div class="input-group"><label>Preço</label><input type="number" name="preco" required min="0" step="0.01"></div>
+                <div class="input-group">
+                    <label>Capa do Álbum (Opcional)</label>
+                    <input type="file" name="imagem" accept="image/*">
+                </div>
+                <button type="submit" class="add-button">Salvar Produto</button>
+                <p id="add-product-message" class="form-message"></p>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="popup-overlay" id="popup-add-user">
+        <div class="popup">
+            <h3>Adicionar Novo Usuário</h3>
+            <form id="form-add-user" class="vertical-form">
+                <div class="input-group"><label>Nome Completo</label><input type="text" name="name" required></div>
+                <div class="input-group"><label>Email</label><input type="email" name="email" required></div>
+                <div class="input-group"><label>CPF</label><input type="text" name="cpf" required></div>
+                <div class="input-group"><label>Senha</label><input type="password" name="password" required></div>
+                <div class="input-group"><label>Confirmar Senha</label><input type="password" name="confirmpassword"
+                        required></div>
+                <div class="input-group"><label>Função</label><select name="role" required>
+                        <option value="vendas">Vendas</option>
+                        <option value="adm">Admin</option>
+                    </select></div>
+                <button type="submit" class="add-button">Criar Usuário</button>
+                <p id="add-user-message" class="form-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="popup-visualizar-imagem">
+        <div class="image-popup-content">
+            <span class="close-image-popup">&times;</span>
+            <img src="" alt="Imagem do Produto Ampliada" id="imagem-ampliada">
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script/script.js"></script>
+    <script src="/script/crud-produtos.js"></script>
+    <script src="/script/crud-usuarios.js"></script>
+    <script src="/script/enviar-email.js"></script>
+    <script src="/script/notificacao.js"></script>
+</body>
+
+</html>

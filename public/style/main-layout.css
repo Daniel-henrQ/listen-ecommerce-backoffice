@@ -1,0 +1,119 @@
+/* =======================================================================
+   ESTRUTURA PRINCIPAL (LAYOUT ATUALIZADO)
+   ======================================================================= */
+
+/* HEADER */
+.header-fixed {
+    height: var(--header-height);
+    width: calc(100% - var(--sidebar-width));
+    background-color: var(--theme-bg-main);
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    z-index: 1000;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--theme-bg-sidebar);
+    color: var(--theme-text-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1100;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding-top: var(--header-height);
+    width: calc(100% - var(--sidebar-width));
+}
+
+.content-area {
+    padding: 30px;
+}
+/* --- ESTILOS DE NOTIFICAÇÃO --- */
+.notification-icon {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: var(--theme-danger);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.dropdown-notification-menu {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 80px;
+    width: 350px;
+    max-height: 400px;
+    background-color: var(--theme-bg-surface);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1100;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.dropdown-notification-menu.show {
+    display: flex;
+}
+
+.notification-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.notification-list li {
+    padding: 15px;
+    border-bottom: 1px solid var(--theme-border);
+    font-size: 14px;
+}
+
+.notification-list li:last-child {
+    border-bottom: none;
+}
+.notification-list li.unread {
+    background-color: #f0f8ff; /* AliceBlue para não lidas */
+}
+
+.notification-list .empty-state {
+    text-align: center;
+    color: var(--theme-text-medium);
+    padding: 30px;
+}

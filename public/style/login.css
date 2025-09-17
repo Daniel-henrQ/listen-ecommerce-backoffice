@@ -1,0 +1,90 @@
+/* =======================================================================
+   ESTILOS DA PÁGINA DE LOGIN E REGISTRO (WIREFRAME)
+   ======================================================================= */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #3C3C3D;
+}
+
+.form-container {
+    max-width: 500px;
+    width: 100%;
+    padding: 20px;
+}
+
+.form-box {
+    background-color: var(--theme-bg-main);
+    padding: 50px;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--theme-text-dark);
+}
+
+.form-box h2 {
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 28px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid var(--theme-border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.input-group svg {
+    color: var(--theme-text-medium);
+}
+
+.input-group span {
+    margin: 0 10px;
+    color: var(--theme-border);
+}
+
+.input-group input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 18px 5px;
+    background: transparent;
+    font-size: 14px;
+}
+
+.input-group input::placeholder {
+    color: var(--theme-text-medium);
+}
+
+button[type="submit"] {
+    width: auto;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+button[type="submit"]:hover {
+    background-color: #555;
+}
+
+.toggle-link {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.toggle-link a {
+    color: var(--theme-accent-blue);
+    font-weight: bold;
+}

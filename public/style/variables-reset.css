@@ -1,0 +1,52 @@
+/* =======================================================================
+   IMPORTAÇÃO DE FONTE, VARIÁVEIS GLOBAIS E RESET (TEMA FINAL)
+   ======================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+:root {
+    /* Cores do Tema (baseado no wireframe) */
+    --theme-bg-sidebar: #2D2D2E;
+    --theme-bg-main: #F5F5F7;
+    --theme-bg-surface: #FFFFFF;
+
+    --theme-accent-blue: #007AFF;
+    --theme-text-light: #FFFFFF;
+    --theme-text-dark: #333333;
+    --theme-text-medium: #8E8E93;
+    --theme-border: #EAEAEA;
+    --theme-sidebar-active: #4A4A4A;
+    --theme-danger: #e74c3c;
+
+    /* Layout */
+    --sidebar-width: 250px;
+    --header-height: 70px;
+}
+
+/* --- Reset Básico --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* CORREÇÃO DA FONTE */
+    font-family: 'Lato', sans-serif;
+    background-color: var(--theme-bg-main);
+    color: var(--theme-text-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+button, input, select {
+    font-family: inherit;
+}
