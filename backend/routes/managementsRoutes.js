@@ -17,7 +17,7 @@ router.get(
         });
     }
 );
-
+//
 // Rota para o painel de TI, acessível apenas por 'ti' e 'gerencia'
 router.get(
     "/infraestrutura",

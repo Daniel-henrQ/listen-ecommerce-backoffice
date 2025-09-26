@@ -13,4 +13,4 @@ router.get('/', checkToken, produtoController.listarProdutos);
 router.put('/:id', checkToken, upload.single('imagem'), produtoController.atualizarProduto);
 router.delete('/:id', checkToken, produtoController.deletarProduto);
 
-module.exports = router;
+module.exports = router;//

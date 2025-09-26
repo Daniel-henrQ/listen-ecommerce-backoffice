@@ -8,4 +8,4 @@ router.post("/register", registerUser);
 // Rota: POST /api/auth/login
 router.post("/login", loginUser);
 
-module.exports = router;
+module.exports = router;//

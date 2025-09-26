@@ -28,6 +28,6 @@ const checkToken = (req, res, next) => {
   } catch (error) {
     res.status(400).json({ msg: "Token inválido!" });
   }
-};
+};//
 
 module.exports = checkToken;

@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-
+//
 // Função para enviar e-mail manualmente
 const enviarEmail = async (req, res) => {
   const { para, assunto, texto, html } = req.body;

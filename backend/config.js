@@ -22,5 +22,5 @@ async function conectarBanco() {
     console.error('Erro na conexão com o banco:', error.message);
   }
 }
-
+//
 module.exports = conectarBanco;

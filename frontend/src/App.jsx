@@ -4,7 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import ProductsView from './pages/ProductsView';
 import AdminView from './pages/AdminView';
-
+//
 // Componente para proteger rotas
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('authToken');

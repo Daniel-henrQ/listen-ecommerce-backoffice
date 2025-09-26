@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../hooks/useSocket'; // Importa nosso hook de notificações
-
+//
 function Header({ user, title }) {
     const navigate = useNavigate();
     const { notifications, unreadCount, markAsRead } = useSocket();

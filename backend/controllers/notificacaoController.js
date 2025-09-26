@@ -1,5 +1,5 @@
 const Notificacao = require('../models/notificacaoModel');
-
+//
 // Listar todas as notificações, das mais recentes para as mais antigas
 exports.listarNotificacoes = async (req, res) => {
     try {

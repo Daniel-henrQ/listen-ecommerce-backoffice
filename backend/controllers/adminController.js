@@ -1,6 +1,6 @@
 const User = require("../models/usuarioModel");
 const bcrypt = require("bcrypt");
-
+///////teste////////
 // Função para um admin criar um novo usuário
 const createUser = async (req, res) => {
     const { name, email, password, confirmpassword, cpf, role } = req.body;

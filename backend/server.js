@@ -22,9 +22,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
-
+//
 module.exports.io = io;
-
+//
 // Importação das rotas
 const produtoRoutes = require('./routes/produtoRoutes');
 const authRoutes = require('./routes/authRoutes');

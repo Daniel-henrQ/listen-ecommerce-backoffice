@@ -14,4 +14,4 @@ router.get("/public/:id", getPublicUser);
 // Rota privada que agora usa o middleware checkToken correto
 router.get("/private/:id", checkToken, getPrivateUser);
 
-module.exports = router;
+module.exports = router;//

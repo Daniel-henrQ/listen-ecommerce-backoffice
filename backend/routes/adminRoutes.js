@@ -18,4 +18,4 @@ router.post("/users", checkToken, adminOnly, createUser);
 router.put("/users/:id", checkToken, adminOnly, updateUser);
 router.delete("/users/:id", checkToken, adminOnly, deleteUser);
 
-module.exports = router;
+module.exports = router;//

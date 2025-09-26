@@ -9,7 +9,7 @@ const socket = {
 const init = (ioInstance) => {
   socket.io = ioInstance;
 };
-
+//
 const notificacaoService = {
   async criarNotificacao(mensagem, tipo) {
     try {

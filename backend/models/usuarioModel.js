@@ -28,7 +28,7 @@ const User = mongoose.model("User", {
     type: String,
     required: true,
     enum: ['adm','vendas'], // Garante que apenas estes valores são aceites
-    default: 'vendas' // Define um papel padrão para novos usuários
+    default: 'vendas' // Define um papel padrão para novos usuários//
   },
   createdAt: {
     type: Date,

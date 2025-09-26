@@ -1,5 +1,5 @@
 import React from 'react';
-
+//
 function Modal({ isVisible, onClose, children, title }) {
   if (!isVisible) {
     return null;

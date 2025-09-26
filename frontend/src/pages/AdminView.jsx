@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import ActionMenu from '../components/ActionMenu';
-
+//
 function AdminView() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);

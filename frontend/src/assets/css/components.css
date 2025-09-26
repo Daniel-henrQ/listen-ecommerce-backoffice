@@ -1,7 +1,7 @@
 /* =======================================================================
    COMPONENTES REUTILIZÁVEIS (ESTILO ORIGINAL)
    ======================================================================= */
-
+/*/
 /* --- HEADER --- */
 .header-fixed h1 { font-size: 20px; font-weight: 700; color: var(--theme-text-dark); }
 .header-actions { display: flex; align-items: center; gap: 20px; }

@@ -16,7 +16,7 @@ if (!fs.existsSync(uploadDir)) {
     console.error(`Erro ao criar o diretório de uploads:`, error);
   }
 }
-
+//
 // Define onde os arquivos serão armazenados
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

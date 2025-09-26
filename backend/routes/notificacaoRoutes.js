@@ -7,4 +7,4 @@ const checkToken = require('../middleware/checkToken');
 router.get('/notificacoes', checkToken, notificacaoController.listarNotificacoes);
 router.post('/notificacoes/ler', checkToken, notificacaoController.marcarComoLidas);
 
-module.exports = router;
+module.exports = router;//
