@@ -34,6 +34,6 @@ const produtoSchema = new mongoose.Schema({
   timestamps: true // cria campos createdAt e updatedAt automaticamente
 });
 
-const Produto = mongoose.model('Produto', produtoSchema);
+const Produto = mongoose.model('produto', produtoSchema);
 
 module.exports = Produto;

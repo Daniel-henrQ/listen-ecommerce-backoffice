@@ -8,14 +8,11 @@ const {
     deleteUser 
 } = require("../controllers/adminController");
 
-// Importações corrigidas dos middlewares
 const checkToken = require("../middleware/checkToken");
 const checkRole = require("../middleware/checkRole");
 
-// Permissão para todas as rotas: apenas 'adm'
 const adminOnly = checkRole(['adm']);
 
-// Ordem de execução: 1º checkToken, 2º adminOnly (que é o checkRole)
 router.get("/users", checkToken, adminOnly, getAllUsers);
 router.post("/users", checkToken, adminOnly, createUser);
 router.put("/users/:id", checkToken, adminOnly, updateUser);

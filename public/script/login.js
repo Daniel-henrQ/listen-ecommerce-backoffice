@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const backendUrl = 'http://localhost:3000';
-
     const loginForm = document.getElementById('login-form-submit');
     const loginMessage = document.getElementById('login-message');
 
@@ -12,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loginMessage.textContent = '';
 
         try {
-            const response = await fetch(`${backendUrl}/auth/login`, {
+            // ROTA ATUALIZADA para /api/auth/login
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('authToken', data.token);
 
             setTimeout(() => {
-                window.location.href = `${backendUrl}/app`;
+                // Redirecionamento simplificado para um caminho relativo
+                window.location.href = '/app';
             }, 1500);
 
         } catch (error) {

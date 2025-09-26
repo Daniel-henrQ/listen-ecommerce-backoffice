@@ -25,31 +25,51 @@ const io = new Server(server, {
 
 module.exports.io = io;
 
+// Importação das rotas
 const produtoRoutes = require('./routes/produtoRoutes');
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const managementRoutes = require('./routes/managementsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const emailRoutes = require('./routes/emailRoutes');
 const notificacaoRoutes = require('./routes/notificacaoRoutes');
+// --- Removido rotas não utilizadas para limpar ---
+// const userRoutes = require('./routes/userRoutes');
+// const managementRoutes = require('./routes/managementsRoutes');
+// const emailRoutes = require('./routes/emailRoutes');
 
+
+// Middlewares essenciais
 app.use(cors());
 app.use(express.json());
 
+// Servir a pasta de uploads estaticamente
 const publicPath = path.join(__dirname, '..', 'public');
-app.use(express.static(publicPath));
 app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
 
 conectarBanco();
 
-app.use('/api', produtoRoutes);
-app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
-app.use('/management', managementRoutes);
-app.use('/admin', adminRoutes);
-app.use('/api', emailRoutes);
-app.use('/api', notificacaoRoutes);
 
+// --- CORREÇÃO PRINCIPAL: Configuração Padronizada das Rotas da API ---
+app.use('/api/produtos', produtoRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/notificacoes', notificacaoRoutes);
+// ----------------------------------------------------------------
+
+
+// --- Configuração para Servir o Frontend React em Produção ---
+const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendBuildPath));
+
+// Rota "catch-all": Para qualquer outro pedido, serve o index.html do React
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
+});
+
+
+// Conexão WebSocket
 io.on('connection', (socket) => {
   console.log('Um utilizador conectou-se via WebSocket:', socket.id);
   socket.on('disconnect', () => {
@@ -57,48 +77,26 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(publicPath, 'login.html'));
-});
-
-app.get('/app', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
-});
-
-// Este middleware irá capturar
+// Middleware de tratamento de erros
 app.use((err, req, res, next) => {
-  console.error("ERRO CAPTURADO:", err.message); // Loga o erro no console do servidor
-
+  console.error("ERRO CAPTURADO:", err.message); 
  
   if (err instanceof multer.MulterError) {
     return res.status(400).json({ msg: err.message });
   }
 
-  // Verifica se é o nosso erro customizado do filtro de arquivos
   if (err.message === 'Tipo de arquivo inválido.') {
     return res.status(422).json({ msg: err.message });
   }
 
-  // Para qualquer outro erro inesperado
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
-});
-
-
-app.use((req, res) => {
-  if (!req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
-      res.status(404).send(`<h1>Erro 404: Página não encontrada</h1><p>A rota ${req.path} não foi encontrada no servidor.</p>`);
-  } else {
-      res.status(404).json({ error: 'Rota de API não encontrada' });
-  }
 });
 
 server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
 });
 
-// =================================================================
-// SOLUÇÃO PARA O ERRO EADDRINUSE
-// =================================================================
+// Código para encerramento gracioso (sem alterações)
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {

@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const API_ADMIN_URL = "/admin/users";
+    // ROTA ATUALIZADA para o novo padrão da API
+    const API_ADMIN_URL = "/api/admin/users";
     const token = localStorage.getItem('authToken');
     if (!token) return;
 

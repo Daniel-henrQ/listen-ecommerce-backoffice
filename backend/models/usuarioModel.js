@@ -22,12 +22,12 @@ const User = mongoose.model("User", {
   password: {
     type: String,
     required: true,
-    select: true,
+    select: false, // Alterado para 'false' para não retornar a senha em consultas
   },
   role: {
     type: String,
     required: true,
-    enum: ['adm','vendas'], // Garante que apenas estes valores são aceitos
+    enum: ['adm','vendas'], // Garante que apenas estes valores são aceites
     default: 'vendas' // Define um papel padrão para novos usuários
   },
   createdAt: {

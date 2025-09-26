@@ -2,7 +2,7 @@ const User = require("../models/usuarioModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Lógica de Registro de Usuário
+// A função registerUser permanece igual
 const registerUser = async (req, res) => {
   const { name, email, password, confirmpassword, cpf, role } = req.body;
 
@@ -20,7 +20,6 @@ const registerUser = async (req, res) => {
     return res.status(422).json({ msg: "Este e-mail já está em uso!" });
   }
   
-  // A verificação de CPF só deve acontecer se ele for enviado
   if (cpf) {
     const cpfExists = await User.findOne({ cpf: cpf });
     if (cpfExists) {
@@ -47,12 +46,11 @@ const registerUser = async (req, res) => {
     res.status(201).json({ msg: "Usuário criado com sucesso!" });
   } catch (error) {
     console.error("Erro ao salvar usuário:", error);
-    // Retorna a mensagem de erro do Mongoose para facilitar o debug
     res.status(500).json({ msg: "Aconteceu um erro no servidor.", error: error.message });
   }
 };
 
-// Lógica de Login de Usuário
+// Lógica de Login de Usuário (COM A CORREÇÃO)
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -60,7 +58,9 @@ const loginUser = async (req, res) => {
     return res.status(422).json({ msg: "Email e senha são obrigatórios!" });
   }
 
-  const user = await User.findOne({ email: email });
+  // CORREÇÃO: Adicionado .select('+password') para garantir que a senha seja retornada
+  const user = await User.findOne({ email: email }).select('+password');
+  
   if (!user) {
     return res.status(404).json({ msg: "Usuário não encontrado!" });
   }

@@ -1,27 +1,58 @@
-# Ignorar dependências
+# =================================================================
+# ARQUIVOS GERADOS PELO SISTEMA OPERACIONAL
+# =================================================================
+.DS_Store
+Thumbs.db
+
+# =================================================================
+# DEPENDÊNCIAS
+# Ignora as pastas de módulos do Node.js tanto na raiz,
+# quanto no backend/ e frontend/
+# =================================================================
 node_modules/
+frontend/node_modules/
 
-# Ignorar variáveis de ambiente
-.env
-
-# Ignorar logs
+# =================================================================
+# LOGS
+# =================================================================
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Ignorar build temporários e caches
+# =================================================================
+# VARIÁVEIS DE AMBIENTE E SEGREDOS
+# Nunca envie ficheiros .env para o repositório
+# =================================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =================================================================
+# ARQUIVOS DE BUILD E CACHE
+# =================================================================
+# Pasta de build do frontend (Vite)
+frontend/dist
+
+# Cache do Vite
+frontend/.vite
+
+# Pastas de build genéricas
 dist/
 build/
 .cache/
 .tmp/
 
-# Ignorar arquivos de sistema
-.DS_Store
-Thumbs.db
-
-# Ignorar arquivos de IDE/Editor
+# =================================================================
+# ARQUIVOS DE IDE E EDITORES DE CÓDIGO
+# =================================================================
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 *.swp

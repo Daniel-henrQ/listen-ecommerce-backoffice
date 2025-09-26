@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Função que busca o histórico de notificações via API (usada ao carregar a página)
     async function carregarHistoricoNotificacoes() {
         try {
-            const res = await fetch(API_NOTIFICACAO_URL, { headers: authHeaders });
+            const res = await fetch(API_NOTIFICACAO_URL, { headers: { 'Authorization': `Bearer ${token}` } });
             if (!res.ok) return;
 
             const { notificacoes, naoLidas } = await res.json();
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         atualizarContador(totalAtual + 1);
     });
     
-    // Função para marcar notificações como lidas (continua igual)
+    // Função para marcar notificações como lidas
     async function marcarComoLidas() {
         try {
             await fetch(`${API_NOTIFICACAO_URL}/ler`, { method: 'POST', headers: authHeaders });
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener('click', (e) => {
-        if (!notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
+        if (notificationPanel && !notificationPanel.contains(e.target) && notificationBell && !notificationBell.contains(e.target)) {
             notificationPanel.classList.remove("show");
         }
     });

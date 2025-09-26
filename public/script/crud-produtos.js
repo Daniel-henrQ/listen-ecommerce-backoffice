@@ -1,11 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     const API_PRODUTOS_URL = "/api/produtos";
     const token = localStorage.getItem('authToken');
-    
+
     if (!token) {
         console.error("Token de autenticação não encontrado. A aplicação não funcionará.");
-        // Redireciona para a página de login se não houver token
-        window.location.href = '/'; 
+        window.location.href = '/';
         return;
     }
 
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnExcluirSelecionados = document.getElementById("btn-excluir-selecionados");
     const campoPesquisa = document.getElementById("campo-pesquisa");
     const filterTabsContainer = document.querySelector(".filter-tabs");
-    
+
     // Popup de Adicionar
     const btnAbrirFormAdicionar = document.getElementById("btn-abrir-form-adicionar");
     const popupAdicionar = document.getElementById("popup-adicionar-produto");
@@ -31,14 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const popupEdit = document.getElementById("popup-edit-product");
     const formEdit = document.getElementById("form-edit-product");
     const editProductId = document.getElementById("edit-product-id");
-    
+
     // Referências para o popup de visualização de imagem
     const popupVisualizarImagem = document.getElementById("popup-visualizar-imagem");
     const imagemAmpliada = document.getElementById("imagem-ampliada");
     const btnFecharPopupImagem = document.querySelector(".close-image-popup");
 
     let activeActionMenu = null;
-    let activeButton = null; // ADICIONADO: Variável para guardar o botão ativo
+    let activeButton = null;
 
     // --- Funções de Lógica Principal ---
 
@@ -59,24 +58,25 @@ document.addEventListener("DOMContentLoaded", () => {
             renderTabela(produtos);
         } catch (error) {
             console.error(error);
-            productTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Erro ao carregar produtos. Verifique a consola.</td></tr>`;
+            productTableBody.innerHTML = `<tr><td colspan="9" style="text-align:center;">Erro ao carregar produtos. Verifique a consola.</td></tr>`;
         }
     }
 
     function renderTabela(produtos) {
         productTableBody.innerHTML = "";
         if (!produtos || produtos.length === 0) {
-            productTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Nenhum produto encontrado.</td></tr>`;
+            productTableBody.innerHTML = `<tr><td colspan="9" style="text-align: center;">Nenhum produto encontrado.</td></tr>`;
             return;
         }
         produtos.forEach(produto => {
             const tr = document.createElement("tr");
             tr.dataset.produtoId = produto._id;
-            const imagemSrc = produto.imagem ? `/uploads/${produto.imagem}` : 'https://via.placeholder.com/40x40?text=Capa';
+            const imagemSrc = `/uploads/${produto.imagem}`;
             tr.innerHTML = `
                 <td><input type="checkbox" class="produto-checkbox" data-id="${produto._id}"></td>
                 <td><img src="${imagemSrc}" alt="Capa do Álbum" class="product-cover"> <span>${produto.nome}</span></td>
                 <td>${produto.artista}</td>
+                <td>${produto.fornecedor}</td>
                 <td>${produto.categoria}</td>
                 <td>${produto.quantidade}</td>
                 <td>R$ ${produto.preco ? produto.preco.toFixed(2) : '0.00'}</td>
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             productTableBody.appendChild(tr);
         });
     }
-    
+
     // --- Funções de Formulário ---
 
     if (formAdicionar) {
@@ -95,7 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
             addProductMessage.textContent = '';
             try {
                 const res = await fetch(API_PRODUTOS_URL, { method: 'POST', headers: authHeaders, body: formData });
-                if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Erro no servidor ao adicionar.'); }
+                const data = await res.json();
+                if (!res.ok) { throw new Error(data.msg || 'Erro no servidor ao adicionar.'); }
                 popupAdicionar.style.display = 'none';
                 await carregarProdutos();
             } catch (error) {
@@ -104,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
+
     if (formEdit) {
         formEdit.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -112,7 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const formData = new FormData(formEdit);
             try {
                 const res = await fetch(`${API_PRODUTOS_URL}/${id}`, { method: 'PUT', headers: authHeaders, body: formData });
-                if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Erro no servidor ao atualizar.'); }
+                const data = await res.json();
+                if (!res.ok) { throw new Error(data.msg || 'Erro no servidor ao atualizar.'); }
                 popupEdit.style.display = 'none';
                 await carregarProdutos();
             } catch (error) {
@@ -123,28 +125,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Funções de UI (Popups e Menus) ---
 
-    // CORRIGIDO: Função para mostrar o menu e esconder o botão
     function toggleActionMenu(button) {
         const id = button.dataset.id;
-        closeActiveActionMenu(); // Fecha qualquer menu que já esteja aberto
+        closeActiveActionMenu();
         const menu = document.createElement('ul');
         menu.className = 'action-menu';
         menu.innerHTML = `<li class="edit-btn" data-id="${id}">Editar</li><li class="delete-btn delete" data-id="${id}">Excluir</li>`;
         button.parentElement.appendChild(menu);
-        button.style.display = 'none'; // Esconde o botão "..."
+        button.style.display = 'none';
         setTimeout(() => menu.classList.add('show'), 10);
         activeActionMenu = menu;
-        activeButton = button; // Guarda a referência do botão que foi escondido
+        activeButton = button;
     }
 
-    // CORRIGIDO: Função para fechar o menu e restaurar o botão
     function closeActiveActionMenu() {
         if (activeActionMenu) {
             activeActionMenu.remove();
             activeActionMenu = null;
         }
         if (activeButton) {
-            activeButton.style.display = ''; // Restaura a visibilidade do botão "..."
+            activeButton.style.display = '';
             activeButton = null;
         }
     }
@@ -159,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             editProductId.value = produto._id;
             document.getElementById('edit-product-name').value = produto.nome;
             document.getElementById('edit-product-artist').value = produto.artista;
+            document.getElementById('edit-product-fornecedor').value = produto.fornecedor;
             document.getElementById('edit-product-category').value = produto.categoria;
             document.getElementById('edit-product-quantity').value = produto.quantidade;
             document.getElementById('edit-product-price').value = produto.preco;
@@ -171,17 +172,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Event Listeners (Ouvintes de Eventos) ---
 
-    // Ouve o evento personalizado do script.js para saber quando a vista de "produtos" está ativa
     document.addEventListener('viewChanged', (e) => {
         if (e.detail.viewId === 'produtos') {
             carregarProdutos();
         }
     });
 
-    // Ações na tabela de produtos
     productTableBody.addEventListener('click', async (e) => {
         const target = e.target;
-        
+
         if (target.classList.contains('product-cover')) {
             imagemAmpliada.src = target.src;
             popupVisualizarImagem.style.display = 'flex';
@@ -204,7 +203,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Apagar múltiplos produtos selecionados
     if (btnExcluirSelecionados) {
         btnExcluirSelecionados.addEventListener('click', async () => {
             const selectedIds = Array.from(document.querySelectorAll('.produto-checkbox:checked')).map(cb => cb.dataset.id);
@@ -219,8 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Filtros e Pesquisa
     if (campoPesquisa) campoPesquisa.addEventListener("input", (e) => carregarProdutos({ nome: e.target.value.trim() }));
+
     if (filterTabsContainer) {
         filterTabsContainer.addEventListener("click", (e) => {
             e.preventDefault();
@@ -233,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Checkbox "Selecionar Todos"
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', (e) => {
             document.querySelectorAll('.produto-checkbox').forEach(cb => cb.checked = e.target.checked);
@@ -241,7 +238,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Abrir e fechar popups
     if (btnAbrirFormAdicionar) {
         btnAbrirFormAdicionar.addEventListener("click", () => {
             formAdicionar.reset();
@@ -249,10 +245,10 @@ document.addEventListener("DOMContentLoaded", () => {
             popupAdicionar.style.display = "flex";
         });
     }
+
     if (popupAdicionar) popupAdicionar.addEventListener("click", (e) => { if (e.target === popupAdicionar) popupAdicionar.style.display = "none"; });
     if (popupEdit) popupEdit.addEventListener("click", (e) => { if (e.target === popupEdit) popupEdit.style.display = "none"; });
 
-    // Event listeners para fechar o popup da imagem
     if (popupVisualizarImagem) {
         popupVisualizarImagem.addEventListener("click", (e) => {
             if (e.target === popupVisualizarImagem) {
@@ -266,8 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
-    // Fechar menu de ações ao clicar fora
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.actions')) {
             closeActiveActionMenu();

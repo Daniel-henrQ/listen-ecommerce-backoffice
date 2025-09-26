@@ -1,10 +1,10 @@
 /* =======================================================================
-   IMPORTAÇÃO DE FONTE, VARIÁVEIS GLOBAIS E RESET (TEMA FINAL)
+   IMPORTAÇÃO DE FONTE, VARIÁVEIS GLOBAIS E RESET (TEMA ORIGINAL)
    ======================================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 :root {
-    /* Cores do Tema (baseado no wireframe) */
+    /* Cores do Tema (do seu projeto original) */
     --theme-bg-sidebar: #2D2D2E;
     --theme-bg-main: #F5F5F7;
     --theme-bg-surface: #FFFFFF;
@@ -30,7 +30,6 @@
 }
 
 body {
-    /* CORREÇÃO DA FONTE */
     font-family: 'Lato', sans-serif;
     background-color: var(--theme-bg-main);
     color: var(--theme-text-dark);
@@ -38,15 +37,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-ul {
-    list-style: none;
-}
-
-button, input, select {
-    font-family: inherit;
-}
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+button, input, select { font-family: inherit; }

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/style/main-layout.css">
     <link rel="stylesheet" href="/style/components.css">
     <link rel="stylesheet" href="/style/responsive.css">
-    
+
     <style>
         .product-cover {
             width: 40px;
@@ -75,10 +75,6 @@
             <h1>Controle de Estoque</h1>
         </div>
         <div class="header-actions">
-            <svg id="send-email-icon" class="header-icon" viewBox="0 0 24 24">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
             <div class="notification-icon" id="notification-bell">
                 <svg class="header-icon" viewBox="0 0 24 24">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -133,6 +129,7 @@
                             <th><input type="checkbox" id="select-all-checkbox"></th>
                             <th>Produto</th>
                             <th>Artista</th>
+                            <th>Fornecedor</th>
                             <th>Categoria</th>
                             <th>Quantidade</th>
                             <th>Preço</th>
@@ -175,28 +172,6 @@
             </div>
         </section>
 
-        <div class="popup-overlay" id="popup-enviar-email">
-            <div class="popup">
-                <h3>Enviar E-mail</h3>
-                <form id="form-send-email" class="vertical-form">
-                    <div class="input-group">
-                        <label>Para</label>
-                        <input type="email" name="para" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Assunto</label>
-                        <input type="text" name="assunto" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Mensagem</label>
-                        <textarea name="texto" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="add-button">Enviar E-mail</button>
-                    <p id="send-email-message" class="form-message"></p>
-                </form>
-            </div>
-        </div>
-
         <div class="popup-overlay" id="popup-edit-product">
             <div class="popup">
                 <h3>Editar Produto</h3>
@@ -209,6 +184,10 @@
                     <div class="input-group">
                         <label>Artista</label>
                         <input type="text" id="edit-product-artist" name="artista" required>
+                    </div>
+                     <div class="input-group">
+                        <label>Fornecedor</label>
+                        <input type="text" id="edit-product-fornecedor" name="fornecedor" required>
                     </div>
                     <div class="input-group">
                         <label>Categoria</label>
@@ -239,12 +218,13 @@
             <form id="form-adicionar-produto" class="vertical-form">
                 <div class="input-group"><label>Nome do Produto</label><input type="text" name="nome" required></div>
                 <div class="input-group"><label>Artista</label><input type="text" name="artista" required></div>
+                <div class="input-group"><label>Fornecedor</label><input type="text" name="fornecedor" required></div>
                 <div class="input-group"><label>Categoria</label><input type="text" name="categoria" required></div>
                 <div class="input-group"><label>Quantidade</label><input type="number" name="quantidade" required min="0"></div>
                 <div class="input-group"><label>Preço</label><input type="number" name="preco" required min="0" step="0.01"></div>
                 <div class="input-group">
-                    <label>Capa do Álbum (Opcional)</label>
-                    <input type="file" name="imagem" accept="image/*">
+                    <label>Capa do Álbum (Obrigatório)</label>
+                    <input type="file" name="imagem" accept="image/*" required>
                 </div>
                 <button type="submit" class="add-button">Salvar Produto</button>
                 <p id="add-product-message" class="form-message"></p>
@@ -284,7 +264,6 @@
     <script src="/script/script.js"></script>
     <script src="/script/crud-produtos.js"></script>
     <script src="/script/crud-usuarios.js"></script>
-    <script src="/script/enviar-email.js"></script>
     <script src="/script/notificacao.js"></script>
 </body>
 

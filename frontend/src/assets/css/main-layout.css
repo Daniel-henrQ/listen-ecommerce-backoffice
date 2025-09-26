@@ -1,0 +1,44 @@
+/* =======================================================================
+   ESTRUTURA PRINCIPAL (LAYOUT ORIGINAL)
+   ======================================================================= */
+
+.app-wrapper {
+    display: flex;
+}
+
+/* HEADER */
+.header-fixed {
+    height: var(--header-height);
+    background-color: var(--theme-bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--theme-bg-sidebar);
+    color: var(--theme-text-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1100;
+}
+
+/* MAIN CONTENT */
+.main-content-wrapper {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+}
+
+.content-area {
+    padding: 30px;
+}
