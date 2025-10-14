@@ -5,8 +5,8 @@ const path = require('path');
 
 exports.criarProduto = async (req, res, next) => {
   try {
-    const { nome, artista, categoria, preco, quantidade } = req.body;
-    const produtoData = { nome, artista, categoria, preco, quantidade };
+    const { nome, artista, categoria, preco, quantidade, fornecedor } = req.body;
+    const produtoData = { nome, artista, categoria, preco, quantidade, fornecedor };
     if (req.file) {
       produtoData.imagem = req.file.filename;
     }
@@ -66,9 +66,7 @@ exports.deletarProduto = async (req, res, next) => {
     if (produto.imagem) {
       const imagePath = path.join(__dirname, '..', '..', 'public', 'uploads', produto.imagem);
       if (fs.existsSync(imagePath)) {
-        fs.unlink(imagePath, (err) => {
-          if (err) console.error("Erro ao apagar imagem:", err);
-        });
+        await fs.promises.unlink(imagePath).catch(err => console.error("Erro ao apagar imagem:", err));
       }
     }
     res.json({ message: 'Produto deletado com sucesso' });
@@ -85,16 +83,16 @@ exports.deletarVariosProdutos = async (req, res, next) => {
         }
         const produtos = await Produto.find({ _id: { $in: ids } });
         await Produto.deleteMany({ _id: { $in: ids } });
-        produtos.forEach(produto => {
+        for (const produto of produtos) {
             if (produto.imagem) {
                 const imagePath = path.join(__dirname, '..', '..', 'public', 'uploads', produto.imagem);
                 if (fs.existsSync(imagePath)) {
-                    fs.unlink(imagePath, err => { if (err) console.error("Erro ao apagar imagem:", err) });
+                   await fs.promises.unlink(imagePath).catch(err => console.error("Erro ao apagar imagem:", err));
                 }
             }
-        });
+        }
         res.json({ message: 'Produtos deletados com sucesso.' });
     } catch (error) {
         next(error);
     }
-};//
+};

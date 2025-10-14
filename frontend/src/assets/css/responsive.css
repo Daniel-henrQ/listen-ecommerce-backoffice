@@ -70,14 +70,14 @@
     }
     
     /* CORREÇÃO PRINCIPAL: Força o conteúdo a ocupar todo o ecrã */
-    .main-content {
+    .main-content-wrapper {
         width: 100%;
         margin-left: 0;
-        padding: var(--header-height) 15px 15px 15px; /* Adiciona padding para o conteúdo não colar nas bordas */
+        padding-top: var(--header-height);
     }
 
     .content-area {
-        padding: 0; /* Remove o padding extra da área de conteúdo */
+        padding: 15px; /* Adiciona padding para o conteúdo não colar nas bordas */
     }
 
     .mobile-menu-button {
@@ -136,13 +136,4 @@
         min-width: 0;
         padding: 20px;
     }
-
-    /* REMOVIDO: A regra de .input-row não é mais necessária para o formulário de adicionar */
-    /*
-    .input-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    */
 }

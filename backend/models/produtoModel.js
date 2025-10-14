@@ -16,6 +16,11 @@ const produtoSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  fornecedor: {
+    type: String,
+    required: true,
+    trim: true
+  },
   preco: {
     type: Number,
     required: true,
