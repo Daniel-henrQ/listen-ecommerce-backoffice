@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../hooks/useSocket'; // Importa nosso hook de notificações
-//
+
 function Header({ user, title }) {
     const navigate = useNavigate();
     const { notifications, unreadCount, markAsRead } = useSocket();
@@ -35,7 +35,8 @@ function Header({ user, title }) {
                 <div className={`dropdown-notification-menu ${notificationPanelVisible ? 'show' : ''}`}>
                     <div className="notification-header"><h3>Notificações</h3></div>
                     <ul className="notification-list">
-                        {notifications.length > 0 ? (
+                        {/* CORREÇÃO: Adicionada verificação para garantir que 'notifications' é um array */}
+                        {notifications && notifications.length > 0 ? (
                             notifications.map(notif => (
                                 <li key={notif._id} className={!notif.lida ? 'unread' : ''}>{notif.mensagem}</li>
                             ))

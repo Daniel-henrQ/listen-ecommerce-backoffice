@@ -14,12 +14,14 @@ const dbName = process.env.DB_NAME;
 const uri = `mongodb+srv://${dbUser}:${dbPassword}@${dbCluster}/${dbName}?retryWrites=true&w=majority`;
 
 // Função assíncrona para conectar ao MongoDB
+// backend/config.js
 async function conectarBanco() {
   try {
     await mongoose.connect(uri);
-    console.log('Conectou ao banco de dados!');
+    console.log('Conectou ao banco de dados com sucesso!');
   } catch (error) {
-    console.error('Erro na conexão com o banco:', error.message);
+    console.error('ERRO CRÍTICO na conexão com o banco:', error.message);
+    process.exit(1); // <-- Adicione esta linha para terminar o processo
   }
 }
 //
