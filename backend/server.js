@@ -8,10 +8,8 @@ const { Server } = require("socket.io");
 const mongoose = require('mongoose');
 const multer = require('multer');
 
-// Conexão com banco
+// Conexão com o banco e serviços
 const conectarBanco = require('./config');
-
-// --- PONTO DE CORREÇÃO 1: Importar o 'init' do serviço de notificação ---
 const { init: initNotificacaoService } = require('./controllers/notificacaoService');
 
 dotenv.config();
@@ -26,7 +24,6 @@ const io = new Server(server, {
   }
 });
 
-// --- PONTO DE CORREÇÃO 2: Associar o servidor Socket.IO ao serviço ---
 initNotificacaoService(io);
 
 // Importação das rotas
@@ -34,29 +31,32 @@ const produtoRoutes = require('./routes/produtoRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const notificacaoRoutes = require('./routes/notificacaoRoutes');
+const fornecedorRoutes = require('./routes/fornecedorRoutes');
+
 
 // Middlewares essenciais
 app.use(cors());
 app.use(express.json());
 
-// --- PONTO DE CORREÇÃO 3: Servir a pasta de uploads estaticamente ---
-const publicPath = path.join(__dirname, '..', 'public');
-// A linha abaixo garante que pedidos para /uploads/... sejam servidos da pasta public/uploads
-app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
+// --- CONFIGURAÇÃO CORRIGIDA E SIMPLIFICADA ---
 
-conectarBanco();
-
-// Configuração Padronizada das Rotas da API
+// 1. Rotas da API: Todas as chamadas para /api serão tratadas primeiro.
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notificacoes', notificacaoRoutes);
+app.use('/api/fornecedores', fornecedorRoutes); 
 
-// Configuração para Servir o Frontend React em Produção
+// 2. Servir a pasta de uploads estaticamente.
+const publicPath = path.join(__dirname, '..', 'public');
+app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
+
+// 3. Servir a aplicação React (frontend/dist) como a principal.
 const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
 app.use(express.static(frontendBuildPath));
 
-// Rota "catch-all": Para qualquer outro pedido, serve o index.html do React
+// 4. Rota "catch-all": Qualquer outra requisição que não seja uma API ou um arquivo estático
+//    deve servir o 'index.html' da aplicação React. Isto é essencial para o React Router funcionar.
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
     if (err) {
@@ -64,6 +64,9 @@ app.get('*', (req, res) => {
     }
   });
 });
+
+// Conectar ao banco de dados
+conectarBanco();
 
 // Conexão WebSocket
 io.on('connection', (socket) => {
@@ -76,15 +79,12 @@ io.on('connection', (socket) => {
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
   console.error("ERRO CAPTURADO:", err.message);
-
   if (err instanceof multer.MulterError) {
     return res.status(400).json({ msg: err.message });
   }
-
   if (err.message === 'Tipo de arquivo inválido.') {
     return res.status(422).json({ msg: err.message });
   }
-
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
 });
 
@@ -92,7 +92,7 @@ server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
 });
 
-// Código para encerramento gracioso (sem alterações)
+// Código para encerramento gracioso
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {

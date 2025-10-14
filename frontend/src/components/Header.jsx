@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSocket } from '../hooks/useSocket'; // Importa nosso hook de notificações
+import { useSocket } from '../hooks/useSocket';
 
-function Header({ user, title }) {
+// Recebe a função onMenuClick como propriedade
+function Header({ user, title, onMenuClick }) { 
     const navigate = useNavigate();
     const { notifications, unreadCount, markAsRead } = useSocket();
     const [userDropdownVisible, setUserDropdownVisible] = useState(false);
@@ -23,7 +24,18 @@ function Header({ user, title }) {
     
     return (
         <header className="header-fixed">
-            <h1>{title}</h1>
+            <div className="header-content-wrapper">
+                {/* Botão do menu mobile que chama a função do layout */}
+                <button className="mobile-menu-button" onClick={onMenuClick}>
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1>{title}</h1>
+            </div>
+            
             <div className="header-actions">
                 <div className="notification-icon" onClick={toggleNotificationPanel}>
                     <svg className="header-icon" viewBox="0 0 24 24">
@@ -35,7 +47,6 @@ function Header({ user, title }) {
                 <div className={`dropdown-notification-menu ${notificationPanelVisible ? 'show' : ''}`}>
                     <div className="notification-header"><h3>Notificações</h3></div>
                     <ul className="notification-list">
-                        {/* CORREÇÃO: Adicionada verificação para garantir que 'notifications' é um array */}
                         {notifications && notifications.length > 0 ? (
                             notifications.map(notif => (
                                 <li key={notif._id} className={!notif.lida ? 'unread' : ''}>{notif.mensagem}</li>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/images/listen.svg';
-//
+import logo from '../assets/images/listen-white.svg'; // 1. Logo importada como um módulo
+
 const menuItems = [
     { id: 'produtos', label: 'Produtos', icon: <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> },
     { id: 'clientes', label: 'Clientes', icon: <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> },
@@ -16,12 +16,15 @@ const menuPermissions = {
     'vendas': ['produtos', 'clientes', 'vendas', 'fornecedor', 'compras']
 };
 
-function Sidebar({ userRole }) {
+// 2. Recebe a propriedade 'isOpen' para a responsividade
+function Sidebar({ userRole, isOpen }) {
     const userPermissions = menuPermissions[userRole] || [];
 
+    // 3. Adiciona a classe 'open' dinamicamente
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header"><img src="/images/listen.svg" alt="Logo Listen" /></div>
+        <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+            {/* 4. Usa a variável 'logo' importada */}
+             <div className="sidebar-header"><img src={logo} alt="Logo Listen" /></div>
             <nav className="sidebar-menu">
                 {menuItems.filter(item => userPermissions.includes(item.id)).map(item => (
                     <NavLink to={`/app/${item.id}`} key={item.id} className={({ isActive }) => isActive ? "active" : ""}>

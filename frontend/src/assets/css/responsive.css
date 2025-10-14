@@ -1,7 +1,7 @@
 /* =======================================================================
    ESTILOS RESPONSIVOS
    ======================================================================= */
-/*/*/
+
 /* --- TABLETS E ECRÃS MENORES (até 1024px) --- */
 @media (max-width: 1024px) {
     :root {
@@ -73,27 +73,23 @@
     .main-content-wrapper {
         width: 100%;
         margin-left: 0;
-        padding-top: var(--header-height);
     }
 
     .content-area {
-        padding: 15px; /* Adiciona padding para o conteúdo não colar nas bordas */
+        padding: 15px;
     }
 
+    /* CORREÇÃO: Mostra o botão de menu apenas em mobile */
     .mobile-menu-button {
-        display: block; /* Mostra o botão em mobile */
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 0;
+        display: block; 
     }
 
     .header-fixed h1 {
-        display: none;
+        display: none; /* Opcional: esconde o título principal no header mobile */
     }
     
     .user-details .user-role {
-        display: none;
+        display: none; /* Opcional: esconde a função do utilizador para economizar espaço */
     }
 
     /* CORREÇÃO: Faz os filtros deslizarem horizontalmente */
@@ -117,17 +113,18 @@
         width: 100%;
     }
 
+    /* CORREÇÃO: Melhora a visualização das tabelas em telas pequenas */
     .table-container {
-        overflow-x: auto;
+        overflow-x: auto; /* Adiciona uma barra de rolagem horizontal */
         -webkit-overflow-scrolling: touch;
     }
 
     table {
-        min-width: 700px;
+        min-width: 700px; /* Garante que a tabela tenha uma largura mínima para não espremer o conteúdo */
     }
 
     th, td {
-        white-space: nowrap;
+        white-space: nowrap; /* Impede que o texto quebre em várias linhas */
         padding: 15px;
     }
     
@@ -136,4 +133,17 @@
         min-width: 0;
         padding: 20px;
     }
+}
+@media (max-width: 768px) {
+   .popup.popup-fornecedor {
+      min-width: 0;
+      width: 90%;
+      /* Mantém a regra de responsividade que já criamos */
+   }
+
+   .form-grid {
+      grid-template-columns: 1fr;
+      /* Uma coluna em telas mobile */
+      gap: 0;
+   }
 }
