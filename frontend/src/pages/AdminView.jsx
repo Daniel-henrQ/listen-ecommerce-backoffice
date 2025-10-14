@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
-import ActionMenu from '../components/ActionMenu';
-//
+
 function AdminView() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalVisible, setAddModalVisible] = useState(false);
+    const [activeActionMenu, setActiveActionMenu] = useState(null);
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
@@ -61,7 +61,7 @@ function AdminView() {
                 <div className="search-box">
                     <input type="text" placeholder="Buscar por nome ou email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
-                <button onClick={() => setAddModalVisible(true)} className="btn btn-primary">+ Novo Utilizador</button>
+                <button onClick={() => setAddModalVisible(true)} className="add-button">+ ADD Novo Utilizador</button>
             </div>
             <div className="table-container">
                 <table>
@@ -82,7 +82,10 @@ function AdminView() {
                                 <td>{user.cpf}</td>
                                 <td>{user.role}</td>
                                 <td className="actions">
-                                    <ActionMenu onDelete={() => handleDeleteUser(user._id)} />
+                                    <button className="action-button" onClick={() => setActiveActionMenu(activeActionMenu === user._id ? null : user._id)}>...</button>
+                                    <ul className={`action-menu ${activeActionMenu === user._id ? 'show' : ''}`}>
+                                        <li className="delete" onClick={() => {handleDeleteUser(user._id); setActiveActionMenu(null);}}>Excluir</li>
+                                    </ul>
                                 </td>
                             </tr>
                         ))}
