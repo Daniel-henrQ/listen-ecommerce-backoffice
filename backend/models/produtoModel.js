@@ -17,9 +17,9 @@ const produtoSchema = new mongoose.Schema({
     trim: true
   },
   fornecedor: {
-    type: String,
-    required: true,
-    trim: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Fornecedor', // Referência ao modelo Fornecedor
+    required: true
   },
   preco: {
     type: Number,
@@ -32,11 +32,15 @@ const produtoSchema = new mongoose.Schema({
     min: 0
   },
   imagem: {
-    type: String, // URL opcional
+    type: String,
     default: ''
-  }
+  },
+  subgeneros: [{ // Novo campo para subgêneros
+    type: String,
+    trim: true
+  }]
 }, {
-  timestamps: true // cria campos createdAt e updatedAt automaticamente
+  timestamps: true
 });
 
 const Produto = mongoose.model('produto', produtoSchema);

@@ -1,12 +1,23 @@
-const Produto = require('../models/produtoModel'); // <-- CORRIGIDO
+const Produto = require('../models/produtoModel');
 const { notificacaoService } = require('./notificacaoService');
 const fs = require('fs');
 const path = require('path');
+
+// Função auxiliar para processar subgêneros
+const processarSubgeneros = (subgeneros) => {
+  if (typeof subgeneros === 'string' && subgeneros.trim() !== '') {
+    return subgeneros.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+};
 
 exports.criarProduto = async (req, res, next) => {
   try {
     const { nome, artista, categoria, preco, quantidade, fornecedor } = req.body;
     const produtoData = { nome, artista, categoria, preco, quantidade, fornecedor };
+    
+    produtoData.subgeneros = processarSubgeneros(req.body.subgeneros);
+
     if (req.file) {
       produtoData.imagem = req.file.filename;
     }
@@ -28,7 +39,8 @@ exports.listarProdutos = async (req, res, next) => {
     if (categoria) {
       filtro.categoria = categoria;
     }
-    const produtos = await Produto.find(filtro);
+    // Popula os dados do fornecedor ao listar
+    const produtos = await Produto.find(filtro).populate('fornecedor', 'nomeFantasia');
     res.json(produtos);
   } catch (error) {
     next(error);
@@ -38,10 +50,15 @@ exports.listarProdutos = async (req, res, next) => {
 exports.atualizarProduto = async (req, res, next) => {
   try {
     const updateData = req.body;
+    
+    if (req.body.subgeneros) {
+      updateData.subgeneros = processarSubgeneros(req.body.subgeneros);
+    }
+
     if (req.file) {
       updateData.imagem = req.file.filename;
     }
-    const produtoAtualizado = await Produto.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const produtoAtualizado = await Produto.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate('fornecedor', 'nomeFantasia');
     if (!produtoAtualizado) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
@@ -57,6 +74,7 @@ exports.atualizarProduto = async (req, res, next) => {
   }
 };
 
+// As funções deletarProduto e deletarVariosProdutos permanecem as mesmas
 exports.deletarProduto = async (req, res, next) => {
   try {
     const produto = await Produto.findByIdAndDelete(req.params.id);

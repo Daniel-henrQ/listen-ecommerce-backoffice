@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
-//
+
 function ProductsView() {
     const [products, setProducts] = useState([]);
+    const [fornecedores, setFornecedores] = useState([]); // Estado para armazenar fornecedores
     const [loading, setLoading] = useState(true);
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -25,7 +26,19 @@ function ProductsView() {
         finally { setLoading(false); }
     }, [categoryFilter, searchTerm]);
 
-    useEffect(() => { fetchProducts(); }, [fetchProducts]);
+    // Busca fornecedores ao montar o componente
+    useEffect(() => {
+        const fetchFornecedores = async () => {
+            try {
+                const response = await api.get('/fornecedores');
+                setFornecedores(response.data);
+            } catch (err) {
+                console.error("Erro ao buscar fornecedores", err);
+            }
+        };
+        fetchFornecedores();
+        fetchProducts();
+    }, [fetchProducts]);
 
     const handleAddProduct = async (e) => {
         e.preventDefault();
@@ -98,7 +111,8 @@ function ProductsView() {
             </div>
             <div className="action-bar">
                 <div className="filter-tabs">
-                     {['all', 'Pop', 'Rock', 'Jazz & Blues', 'Bossa Nova'].map(cat => (
+                     {/* Categoria 'Pop' removida */}
+                     {['all', 'Rock', 'Jazz & Blues', 'Bossa Nova'].map(cat => (
                          <a href="#" key={cat} 
                             className={`filter-tab ${categoryFilter === cat ? 'active' : ''}`}
                             onClick={(e) => { e.preventDefault(); setCategoryFilter(cat); }}>
@@ -120,7 +134,9 @@ function ProductsView() {
                             <th><input type="checkbox" onChange={handleSelectAll} /></th>
                             <th>Produto</th>
                             <th>Artista</th>
+                            <th>Fornecedor</th>
                             <th>Categoria</th>
+                            <th>Subgêneros</th>
                             <th>Quantidade</th>
                             <th>Preço</th>
                             <th>Data</th>
@@ -136,7 +152,9 @@ function ProductsView() {
                                     <span>{product.nome}</span>
                                 </td>
                                 <td>{product.artista}</td>
+                                <td>{product.fornecedor?.nomeFantasia}</td>
                                 <td>{product.categoria}</td>
+                                <td>{product.subgeneros?.join(', ')}</td>
                                 <td>{product.quantidade}</td>
                                 <td>R$ {product.preco.toFixed(2)}</td>
                                 <td>{new Date(product.createdAt).toLocaleDateString('pt-BR')}</td>
@@ -153,31 +171,60 @@ function ProductsView() {
                 </table>
             </div>
 
-            <Modal isVisible={isAddModalVisible} onClose={() => setAddModalVisible(false)}>
-                <h3>Adicionar Novo Produto</h3>
-                <form onSubmit={handleAddProduct} className="vertical-form">
-                    <div className="input-group"><label>Nome do Produto</label><input type="text" name="nome" required /></div>
-                    <div className="input-group"><label>Artista</label><input type="text" name="artista" required /></div>
-                    <div className="input-group"><label>Categoria</label><input type="text" name="categoria" required /></div>
-                    <div className="input-group"><label>Quantidade</label><input type="number" name="quantidade" required min="0" /></div>
-                    <div className="input-group"><label>Preço</label><input type="number" name="preco" required min="0" step="0.01" /></div>
-                    <div className="input-group"><label>Capa do Álbum</label><input type="file" name="imagem" accept="image/*" required /></div>
-                    <div className="popup-actions"><button type="submit" className="add-button">Salvar Produto</button></div>
-                </form>
+            <Modal isVisible={isAddModalVisible} onClose={() => setAddModalVisible(false)} title="Adicionar Novo Produto">
+                <div className="popup-produto">
+                    <form onSubmit={handleAddProduct} className="vertical-form">
+                        <div className="form-grid">
+                            <div>
+                                <div className="input-group"><label>Nome do Produto</label><input type="text" name="nome" required /></div>
+                                <div className="input-group"><label>Artista</label><input type="text" name="artista" required /></div>
+                                <div className="input-group">
+                                    <label>Fornecedor</label>
+                                    <select name="fornecedor" required>
+                                        <option value="">Selecione um fornecedor</option>
+                                        {fornecedores.map(f => <option key={f._id} value={f._id}>{f.nomeFantasia}</option>)}
+                                    </select>
+                                </div>
+                                <div className="input-group"><label>Categoria</label><input type="text" name="categoria" required /></div>
+                            </div>
+                            <div>
+                                <div className="input-group"><label>Subgêneros (separados por vírgula)</label><input type="text" name="subgeneros" placeholder="Pop Rock, Metal, Emo" /></div>
+                                <div className="input-group"><label>Quantidade</label><input type="number" name="quantidade" required min="0" /></div>
+                                <div className="input-group"><label>Preço</label><input type="number" name="preco" required min="0" step="0.01" /></div>
+                                <div className="input-group"><label>Capa do Álbum</label><input type="file" name="imagem" accept="image/*" required /></div>
+                            </div>
+                        </div>
+                        <div className="popup-actions"><button type="submit" className="add-button">Salvar Produto</button></div>
+                    </form>
+                </div>
             </Modal>
 
             {editingProduct && (
-                <Modal isVisible={isEditModalVisible} onClose={() => setEditModalVisible(false)}>
-                    <h3>Editar Produto</h3>
-                    <form onSubmit={handleEditProduct} className="vertical-form">
-                        <div className="input-group"><label>Nome</label><input type="text" name="nome" defaultValue={editingProduct.nome} required /></div>
-                        <div className="input-group"><label>Artista</label><input type="text" name="artista" defaultValue={editingProduct.artista} required /></div>
-                        <div className="input-group"><label>Categoria</label><input type="text" name="categoria" defaultValue={editingProduct.categoria} required /></div>
-                        <div className="input-group"><label>Quantidade</label><input type="number" name="quantidade" defaultValue={editingProduct.quantidade} required min="0" /></div>
-                        <div className="input-group"><label>Preço</label><input type="number" name="preco" defaultValue={editingProduct.preco} required min="0" step="0.01" /></div>
-                        <div className="input-group"><label>Nova Capa (Opcional)</label><input type="file" name="imagem" accept="image/*" /></div>
-                        <div className="popup-actions"><button type="submit" className="add-button">Salvar Alterações</button></div>
-                    </form>
+                <Modal isVisible={isEditModalVisible} onClose={() => setEditModalVisible(false)} title="Editar Produto">
+                    <div className="popup-produto">
+                        <form onSubmit={handleEditProduct} className="vertical-form">
+                            <div className="form-grid">
+                                <div>
+                                    <div className="input-group"><label>Nome</label><input type="text" name="nome" defaultValue={editingProduct.nome} required /></div>
+                                    <div className="input-group"><label>Artista</label><input type="text" name="artista" defaultValue={editingProduct.artista} required /></div>
+                                    <div className="input-group">
+                                        <label>Fornecedor</label>
+                                        <select name="fornecedor" required defaultValue={editingProduct.fornecedor?._id}>
+                                            {fornecedores.map(f => <option key={f._id} value={f._id}>{f.nomeFantasia}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="input-group"><label>Categoria</label><input type="text" name="categoria" defaultValue={editingProduct.categoria} required /></div>
+                                </div>
+                                <div>
+                                    <div className="input-group"><label>Subgêneros (separados por vírgula)</label><input type="text" name="subgeneros" defaultValue={editingProduct.subgeneros?.join(', ')} /></div>
+                                    <div className="input-group"><label>Quantidade</label><input type="number" name="quantidade" defaultValue={editingProduct.quantidade} required min="0" /></div>
+                                    <div className="input-group"><label>Preço</label><input type="number" name="preco" defaultValue={editingProduct.preco} required min="0" step="0.01" /></div>
+                                    <div className="input-group"><label>Nova Capa (Opcional)</label><input type="file" name="imagem" accept="image/*" /></div>
+                                </div>
+                            </div>
+                            <div className="popup-actions"><button type="submit" className="add-button">Salvar Alterações</button></div>
+                        </form>
+                    </div>
                 </Modal>
             )}
         </div>

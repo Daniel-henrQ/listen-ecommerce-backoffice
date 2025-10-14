@@ -480,4 +480,16 @@ td.actions {
    /* Adiciona um espaço de 20px entre as colunas */
 }
 
-/* Em telas pequenas, volta a ser uma coluna só */
+/* --- Estilos Específicos para Popup de Produtos --- */
+.popup.popup-produto {
+   min-width: 700px;
+   max-height: 85vh;
+   display: flex;
+   flex-direction: column;
+}
+
+.popup-produto .vertical-form {
+   overflow-y: auto;
+   padding-right: 15px; /* Espaço para a barra de scroll */
+}
+
