@@ -8,6 +8,10 @@ const upload = require('../middleware/multer');
 router.delete('/varios', checkToken, produtoController.deletarVariosProdutos);
 
 router.post('/', checkToken, upload.single('imagem'), produtoController.criarProduto);
+
+// Esta linha garante que a nova função seja chamada corretamente
+router.post('/aprovar-compra', checkToken, produtoController.aprovarCompraEAtualizarEstoque);
+
 router.get('/', checkToken, produtoController.listarProdutos);
 router.put('/:id', checkToken, upload.single('imagem'), produtoController.atualizarProduto);
 router.delete('/:id', checkToken, produtoController.deletarProduto);

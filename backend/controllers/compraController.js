@@ -125,3 +125,23 @@ exports.gerarNotaFiscalPDF = async (req, res) => {
         res.status(500).send("Erro ao gerar a nota fiscal.");
     }
 };
+
+// Atualizar o status de uma compra
+exports.atualizarStatusCompra = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const compra = await Compra.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!compra) {
+            return res.status(404).json({ msg: "Compra não encontrada." });
+        }
+
+        res.json(compra);
+    } catch (error) {
+        res.status(500).json({ msg: "Ocorreu um erro no servidor.", error: error.message });
+    }
+};

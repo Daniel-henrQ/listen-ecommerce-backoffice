@@ -1,4 +1,5 @@
 const Produto = require('../models/produtoModel');
+const Compra = require('../models/compraModel'); // Importar o modelo de Compra
 const { notificacaoService } = require('./notificacaoService');
 const fs = require('fs');
 const path = require('path');
@@ -39,7 +40,6 @@ exports.listarProdutos = async (req, res, next) => {
     if (categoria) {
       filtro.categoria = categoria;
     }
-    // Popula os dados do fornecedor ao listar
     const produtos = await Produto.find(filtro).populate('fornecedor', 'nomeFantasia');
     res.json(produtos);
   } catch (error) {
@@ -74,7 +74,41 @@ exports.atualizarProduto = async (req, res, next) => {
   }
 };
 
-// As funções deletarProduto e deletarVariosProdutos permanecem as mesmas
+// NOVA FUNÇÃO ADICIONADA
+exports.aprovarCompraEAtualizarEstoque = async (req, res, next) => {
+    try {
+        const { compraId } = req.body;
+        if (!compraId) {
+            return res.status(400).json({ msg: "O ID da compra é obrigatório." });
+        }
+
+        const compra = await Compra.findById(compraId).populate('produto');
+        if (!compra) {
+            return res.status(404).json({ msg: "Compra não encontrada." });
+        }
+
+        if (compra.status !== 'Entregue') {
+             return res.status(400).json({ msg: "Apenas compras com status 'Entregue' podem ser finalizadas para atualização de estoque." });
+        }
+
+        const produto = await Produto.findById(compra.produto._id);
+        if (!produto) {
+             return res.status(404).json({ msg: "Produto associado à compra não encontrado." });
+        }
+
+        produto.quantidade += compra.quantidade;
+        await produto.save();
+        
+        compra.status = 'Finalizada';
+        await compra.save();
+
+        res.json({ msg: `Estoque do produto "${produto.nome}" atualizado com sucesso!`, produto });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.deletarProduto = async (req, res, next) => {
   try {
     const produto = await Produto.findByIdAndDelete(req.params.id);

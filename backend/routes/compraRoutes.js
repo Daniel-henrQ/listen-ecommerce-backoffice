@@ -9,5 +9,6 @@ router.use(checkToken);
 router.post('/', compraController.criarCompra);
 router.get('/', compraController.listarCompras);
 router.get('/:id/nota', compraController.gerarNotaFiscalPDF); // Rota para o PDF
+router.patch('/:id/status', compraController.atualizarStatusCompra); // Nova rota para atualizar o status
 
 module.exports = router;

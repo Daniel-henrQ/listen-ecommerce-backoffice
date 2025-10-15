@@ -2,6 +2,28 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
 
+// Componente de abas
+const StatusTabs = ({ activeTab, setActiveTab }) => {
+    const statuses = ['Processando', 'A caminho', 'Entregue', 'Finalizada'];
+    return (
+        <div className="filter-tabs">
+            {statuses.map(status => (
+                <a
+                    key={status}
+                    href="#"
+                    className={`filter-tab ${activeTab === status ? 'active' : ''}`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab(status);
+                    }}
+                >
+                    {status}
+                </a>
+            ))}
+        </div>
+    );
+};
+
 
 function ComprasView() {
     const [compras, setCompras] = useState([]);
@@ -9,6 +31,7 @@ function ComprasView() {
     const [fornecedores, setFornecedores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalVisible, setAddModalVisible] = useState(false);
+    const [activeTab, setActiveTab] = useState('Processando'); // Estado para a aba ativa
 
     const fetchCompras = useCallback(async () => {
         setLoading(true);
@@ -24,6 +47,7 @@ function ComprasView() {
 
     useEffect(() => {
         async function fetchData() {
+            setLoading(true);
             try {
                 const [comprasRes, produtosRes, fornecedoresRes] = await Promise.all([
                     api.get('/compras'),
@@ -40,7 +64,7 @@ function ComprasView() {
             }
         }
         fetchData();
-    }, []);
+    }, [fetchCompras]);
 
     const handleAddCompra = async (e) => {
         e.preventDefault();
@@ -48,16 +72,50 @@ function ComprasView() {
         try {
             await api.post('/compras', formData);
             setAddModalVisible(false);
-            fetchCompras(); // Recarrega a lista de compras
+            fetchCompras();
         } catch (err) {
             alert(err.response?.data?.msg || `Erro ao registrar compra.`);
         }
     };
 
     const handleGerarNota = (compraId) => {
-        // Abre o PDF em uma nova aba
         window.open(`/api/compras/${compraId}/nota`, '_blank');
     };
+
+    const handleUpdateStatus = async (compraId, newStatus) => {
+        try {
+            await api.patch(`/compras/${compraId}/status`, { status: newStatus });
+            fetchCompras();
+        } catch (error) {
+            alert(error.response?.data?.msg || "Erro ao atualizar status da compra.");
+        }
+    };
+    
+    const handleApproveAndStock = async (compraId) => {
+        if (window.confirm("Tem certeza que deseja finalizar esta compra e adicionar os produtos ao estoque? Esta ação não pode ser desfeita.")) {
+            try {
+                await api.post('/produtos/aprovar-compra', { compraId });
+                fetchCompras(); // Atualiza a lista de compras
+            } catch (error) {
+                alert(error.response?.data?.msg || "Erro ao aprovar a compra e atualizar o estoque.");
+            }
+        }
+    };
+
+    const renderActionButtons = (compra) => {
+        switch (compra.status) {
+            case 'Processando':
+                return <button className="btn btn-primary" onClick={() => handleUpdateStatus(compra._id, 'A caminho')}>Marcar como "A Caminho"</button>;
+            case 'A caminho':
+                return <button className="btn btn-primary" onClick={() => handleUpdateStatus(compra._id, 'Entregue')}>Marcar como "Entregue"</button>;
+            case 'Entregue':
+                return <button className="btn btn-success" onClick={() => handleApproveAndStock(compra._id)}>Aprovar e Adicionar ao Estoque</button>;
+            default:
+                return null;
+        }
+    };
+
+    const filteredCompras = compras.filter(c => c.status === activeTab);
 
     if (loading) return <p>A carregar compras...</p>;
 
@@ -65,6 +123,7 @@ function ComprasView() {
         <div>
             <div className="view-header"><h2>Registro de Compras</h2></div>
             <div className="action-bar">
+                 <StatusTabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 <button onClick={() => setAddModalVisible(true)} className="add-button">+ Registrar Nova Compra</button>
             </div>
             <div className="table-container">
@@ -82,7 +141,7 @@ function ComprasView() {
                         </tr>
                     </thead>
                     <tbody>
-                        {compras.map(compra => (
+                        {filteredCompras.map(compra => (
                             <tr key={compra._id}>
                                 <td>{compra.numeroNotaFiscal}</td>
                                 <td>{compra.produto?.nome}</td>
@@ -91,11 +150,17 @@ function ComprasView() {
                                 <td>{compra.quantidade}</td>
                                 <td>R$ {compra.precoTotal.toFixed(2)}</td>
                                 <td>{new Date(compra.dataCompra).toLocaleDateString('pt-BR')}</td>
-                                <td className="actions">
+                                <td className="actions" style={{display: 'flex', gap: '5px', justifyContent: 'flex-end'}}>
+                                    {renderActionButtons(compra)}
                                     <button className="btn" onClick={() => handleGerarNota(compra._id)}>Gerar Nota</button>
                                 </td>
                             </tr>
                         ))}
+                         {filteredCompras.length === 0 && (
+                            <tr>
+                                <td colSpan="8" style={{ textAlign: 'center' }}>Nenhuma compra encontrada para este status.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
