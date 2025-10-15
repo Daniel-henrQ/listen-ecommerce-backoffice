@@ -31,7 +31,8 @@ function ComprasView() {
     const [fornecedores, setFornecedores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalVisible, setAddModalVisible] = useState(false);
-    const [activeTab, setActiveTab] = useState('Processando'); // Estado para a aba ativa
+    const [activeTab, setActiveTab] = useState('Processando');
+    const [isNewProduct, setIsNewProduct] = useState(false);
 
     const fetchCompras = useCallback(async () => {
         setLoading(true);
@@ -69,9 +70,11 @@ function ComprasView() {
     const handleAddCompra = async (e) => {
         e.preventDefault();
         const formData = Object.fromEntries(new FormData(e.target).entries());
+        formData.isNewProduct = isNewProduct;
         try {
             await api.post('/compras', formData);
             setAddModalVisible(false);
+            setIsNewProduct(false);
             fetchCompras();
         } catch (err) {
             alert(err.response?.data?.msg || `Erro ao registrar compra.`);
@@ -81,7 +84,7 @@ function ComprasView() {
     const handleGerarNota = async (compraId) => {
         try {
             const response = await api.get(`/compras/${compraId}/nota`, {
-                responseType: 'blob', // Importante para receber o PDF como um blob
+                responseType: 'blob',
             });
             const file = new Blob([response.data], { type: 'application/pdf' });
             const fileURL = URL.createObjectURL(file);
@@ -105,7 +108,7 @@ function ComprasView() {
         if (window.confirm("Tem certeza que deseja finalizar esta compra e adicionar os produtos ao estoque? Esta ação não pode ser desfeita.")) {
             try {
                 await api.post('/produtos/aprovar-compra', { compraId });
-                fetchCompras(); // Atualiza a lista de compras
+                fetchCompras();
             } catch (error) {
                 alert(error.response?.data?.msg || "Erro ao aprovar a compra e atualizar o estoque.");
             }
@@ -175,17 +178,41 @@ function ComprasView() {
                 </table>
             </div>
 
-            {/* Modal de Adicionar Compra */}
-            <Modal isVisible={isAddModalVisible} onClose={() => setAddModalVisible(false)} title="Registrar Nova Compra">
+            <Modal isVisible={isAddModalVisible} onClose={() => { setAddModalVisible(false); setIsNewProduct(false); }} title="Registrar Nova Compra">
                 <div className="popup">
                     <form onSubmit={handleAddCompra} className="vertical-form">
-                        <div className="input-group">
-                            <label>Produto</label>
-                            <select name="produto" required>
-                                <option value="">Selecione um produto</option>
-                                {produtos.map(p => <option key={p._id} value={p._id}>{p.nome} - {p.artista}</option>)}
-                            </select>
+                        
+                        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+                            <input
+                                type="checkbox"
+                                id="is-new-product-checkbox"
+                                style={{ marginRight: '10px', height: '16px', width: '16px' }}
+                                checked={isNewProduct}
+                                onChange={(e) => setIsNewProduct(e.target.checked)}
+                            />
+                            <label htmlFor="is-new-product-checkbox" style={{ fontWeight: 'normal' }}>
+                                Cadastrar novo produto
+                            </label>
                         </div>
+
+                        {isNewProduct ? (
+                            <>
+                                <div className="input-group"><label>Nome do Novo Produto</label><input type="text" name="novoProdutoNome" required /></div>
+                                <div className="input-group"><label>Artista</label><input type="text" name="novoProdutoArtista" required /></div>
+                                <div className="input-group"><label>Categoria</label><input type="text" name="novoProdutoCategoria" required /></div>
+                            </>
+                        ) : (
+                            <div className="input-group">
+                                <label>Produto Existente</label>
+                                <select name="produto" required>
+                                    <option value="">Selecione um produto</option>
+                                    {produtos.map(p => <option key={p._id} value={p._id}>{p.nome} - {p.artista}</option>)}
+                                </select>
+                            </div>
+                        )}
+                        
+                        <hr style={{margin: '25px 0', border: 'none', borderTop: '1px solid var(--theme-border)'}} />
+
                         <div className="input-group">
                             <label>Fornecedor</label>
                             <select name="fornecedor" required>
@@ -194,11 +221,11 @@ function ComprasView() {
                             </select>
                         </div>
                         <div className="input-group"><label>Quantidade</label><input type="number" name="quantidade" required min="1" /></div>
-                        <div className="input-group"><label>Preço Unitário</label><input type="number" name="precoUnitario" required min="0" step="0.01" /></div>
+                        <div className="input-group"><label>Preço Unitário (R$)</label><input type="number" name="precoUnitario" required min="0" step="0.01" /></div>
                         
                         <div className="popup-actions">
-                            <button type="button" onClick={() => setAddModalVisible(false)} className="btn btn-secondary">Cancelar</button>
-                            <button type="submit" className="add-button">Salvar</button>
+                            <button type="button" onClick={() => { setAddModalVisible(false); setIsNewProduct(false); }} className="btn btn-secondary">Cancelar</button>
+                            <button type="submit" className="add-button">Salvar Compra</button>
                         </div>
                     </form>
                 </div>

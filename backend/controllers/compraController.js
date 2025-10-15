@@ -1,4 +1,5 @@
 const Compra = require('../models/compraModel');
+const Produto = require('../models/produtoModel'); // Importar o modelo de Produto
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
@@ -6,12 +7,37 @@ const fs = require('fs');
 // Criar nova compra
 exports.criarCompra = async (req, res) => {
     try {
-        const { produto, fornecedor, quantidade, precoUnitario } = req.body;
+        const {
+            produto, fornecedor, quantidade, precoUnitario,
+            isNewProduct, novoProdutoNome, novoProdutoArtista, novoProdutoCategoria
+        } = req.body;
+
+        const comprador = req.user.id;
         const precoTotal = quantidade * precoUnitario;
-        const comprador = req.user.id; // ID do usuário logado (do checkToken)
+        let produtoId;
+
+        if (isNewProduct === 'true') {
+            // Se for um novo produto, cria primeiro o produto
+            if (!novoProdutoNome || !novoProdutoArtista || !novoProdutoCategoria) {
+                return res.status(400).json({ msg: "Nome, artista e categoria são obrigatórios para um novo produto." });
+            }
+            const novoProduto = new Produto({
+                nome: novoProdutoNome,
+                artista: novoProdutoArtista,
+                categoria: novoProdutoCategoria,
+                fornecedor: fornecedor,
+                preco: 0, // Preço de venda pode ser definido depois
+                quantidade: 0, // O estoque será atualizado ao finalizar a compra
+            });
+            const produtoSalvo = await novoProduto.save();
+            produtoId = produtoSalvo._id;
+        } else {
+            // Usa o ID do produto existente
+            produtoId = produto;
+        }
 
         const novaCompra = new Compra({
-            produto,
+            produto: produtoId,
             fornecedor,
             comprador,
             quantidade,
@@ -60,11 +86,10 @@ exports.gerarNotaFiscalPDF = async (req, res) => {
         doc.pipe(res);
 
         // --- Cabeçalho com Logo ---
-        // Alterado para carregar um arquivo .png
-        const logoPath = path.join(__dirname, '..', '..', 'public', 'images', 'listen.png'); // Supondo que o nome seja 'listen.png'
+        const logoPath = path.join(__dirname, '..', '..', 'public', 'images', 'listen.png');
         if (fs.existsSync(logoPath)) {
             doc.image(logoPath, {
-                fit: [150, 150], // Tamanho da imagem
+                fit: [150, 150],
                 align: 'center',
                 valign: 'top'
             });
