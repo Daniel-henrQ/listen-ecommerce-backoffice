@@ -78,8 +78,18 @@ function ComprasView() {
         }
     };
 
-    const handleGerarNota = (compraId) => {
-        window.open(`/api/compras/${compraId}/nota`, '_blank');
+    const handleGerarNota = async (compraId) => {
+        try {
+            const response = await api.get(`/compras/${compraId}/nota`, {
+                responseType: 'blob', // Importante para receber o PDF como um blob
+            });
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        } catch (error) {
+            console.error("Erro ao gerar nota fiscal:", error);
+            alert("Não foi possível gerar a nota fiscal.");
+        }
     };
 
     const handleUpdateStatus = async (compraId, newStatus) => {
