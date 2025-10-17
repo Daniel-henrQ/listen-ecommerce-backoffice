@@ -86,59 +86,74 @@ exports.gerarNotaFiscalPDF = async (req, res) => {
         doc.pipe(res);
 
         // --- Cabeçalho com Logo ---
-        const logoPath = path.join(__dirname, '..', '..', 'public', 'images', 'listen.png');
+        // (Código da logo já existente e correto)
+        const logoPath = path.join(__dirname, '..', '..', 'public', 'images', 'listen.png'); // Caminho relativo ajustado
         if (fs.existsSync(logoPath)) {
             doc.image(logoPath, {
-                fit: [150, 150],
+                fit: [150, 150], // Ajuste o tamanho conforme necessário
                 align: 'center',
                 valign: 'top'
             });
+             doc.moveDown(2); // Espaço após a logo
         } else {
-            doc.fontSize(20).text('Listen E-commerce', { align: 'center' });
+            console.warn(`Logo não encontrada em: ${logoPath}`); // Aviso no console do servidor
+            doc.fontSize(20).text('Listen E-commerce', { align: 'center' }); // Texto alternativo
+             doc.moveDown(2);
         }
-        doc.moveDown(2);
-
 
         // --- Título ---
-        doc.fontSize(18).text(`Nota Fiscal: ${compra.numeroNotaFiscal}`, { align: 'center' });
+        doc.fontSize(18).text(`Nota Fiscal de Compra: ${compra.numeroNotaFiscal}`, { align: 'center' });
         doc.moveDown(2);
-
 
         // --- Informações do Fornecedor ---
         doc.fontSize(14).text('Dados do Fornecedor', { underline: true });
         doc.fontSize(12).text(`Nome Fantasia: ${compra.fornecedor.nomeFantasia}`);
         doc.text(`CNPJ: ${compra.fornecedor.cnpj}`);
-        doc.text(`Endereço: ${compra.fornecedor.endereco.logradouro || ''}, ${compra.fornecedor.endereco.numero || ''} - ${compra.fornecedor.endereco.cidade}, ${compra.fornecedor.endereco.estado}`);
+        doc.text(`Endereço: ${compra.fornecedor.endereco.logradouro || ''}, ${compra.fornecedor.endereco.numero || ''} - ${compra.fornecedor.endereco.cidade || ''}, ${compra.fornecedor.endereco.estado || ''}`);
         doc.moveDown();
 
         // --- Informações do Comprador ---
         doc.fontSize(14).text('Dados do Comprador (Listen)', { underline: true });
         doc.fontSize(12).text(`Comprado por: ${compra.comprador.name}`);
         doc.text(`Email: ${compra.comprador.email}`);
+        // Adicionar CNPJ da Listen se necessário/disponível
         doc.moveDown(2);
 
         // --- Detalhes da Compra ---
         doc.fontSize(14).text('Detalhes da Compra', { underline: true });
-        const tableTop = doc.y;
-        doc.fontSize(12);
-        doc.text('Produto', 50, tableTop);
-        doc.text('Qtd.', 300, tableTop, { width: 50, align: 'right'});
-        doc.text('Preço Unit.', 370, tableTop, { width: 80, align: 'right'});
-        doc.text('Subtotal', 470, tableTop, { width: 80, align: 'right'});
+        const tableTop = doc.y + 15; // Adiciona um pequeno espaço antes da tabela
+        doc.fontSize(10); // Fonte menor para a tabela
 
-        const y = tableTop + 25;
-        doc.text(`${compra.produto.nome} - ${compra.produto.artista}`, 50, y);
-        doc.text(compra.quantidade.toString(), 300, y, { width: 50, align: 'right'});
-        doc.text(`R$ ${compra.precoUnitario.toFixed(2)}`, 370, y, { width: 80, align: 'right'});
-        doc.text(`R$ ${compra.precoTotal.toFixed(2)}`, 470, y, { width: 80, align: 'right'});
-        
-        doc.moveTo(50, doc.y + 10).lineTo(550, doc.y + 10).stroke();
+        // Cabeçalhos da tabela
+        const headerY = tableTop;
+        doc.font('Helvetica-Bold'); // Negrito para cabeçalhos
+        doc.text('Produto', 50, headerY, { width: 240 });
+        doc.text('Qtd.', 300, headerY, { width: 50, align: 'right'});
+        doc.text('Preço Unit.', 370, headerY, { width: 80, align: 'right'});
+        doc.text('Subtotal', 470, headerY, { width: 80, align: 'right'});
+        doc.font('Helvetica'); // Volta para a fonte normal
+
+        // Linha abaixo dos cabeçalhos
+        doc.moveTo(50, headerY + 15).lineTo(550, headerY + 15).strokeOpacity(0.5).strokeColor('#aaaaaa').stroke();
+
+        // Linha do produto
+        const itemY = headerY + 25;
+        doc.fontSize(10).text(`${compra.produto.nome} - ${compra.produto.artista || ''}`, 50, itemY, { width: 240, ellipsis: true });
+        doc.text(compra.quantidade.toString(), 300, itemY, { width: 50, align: 'right'});
+        doc.text(`R$ ${compra.precoUnitario.toFixed(2)}`, 370, itemY, { width: 80, align: 'right'});
+        doc.text(`R$ ${compra.precoTotal.toFixed(2)}`, 470, itemY, { width: 80, align: 'right'});
+
+        // Linha abaixo do item
+        const endTableY = itemY + 20;
+        doc.moveTo(50, endTableY).lineTo(550, endTableY).strokeOpacity(0.5).strokeColor('#aaaaaa').stroke();
         doc.moveDown(2);
 
+
         // --- Total ---
-        doc.fontSize(16).text(`Total da Compra: R$ ${compra.precoTotal.toFixed(2)}`, { align: 'right'});
+        doc.fontSize(14).font('Helvetica-Bold').text(`Total da Compra: R$ ${compra.precoTotal.toFixed(2)}`, { align: 'right'});
+        doc.font('Helvetica'); // Volta para a fonte normal
         doc.moveDown();
-        
+
         // --- Data ---
         doc.fontSize(10).text(`Data da Compra: ${new Date(compra.dataCompra).toLocaleDateString('pt-BR')}`, { align: 'right'});
 
@@ -146,7 +161,7 @@ exports.gerarNotaFiscalPDF = async (req, res) => {
         doc.end();
 
     } catch (error) {
-        console.error("Erro ao gerar PDF:", error);
+        console.error("Erro ao gerar PDF da Nota Fiscal:", error);
         res.status(500).send("Erro ao gerar a nota fiscal.");
     }
 };
