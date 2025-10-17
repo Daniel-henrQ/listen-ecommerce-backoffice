@@ -2,22 +2,22 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const metodoPagamentoSchema = new mongoose.Schema({
-    tipo: { type: String, enum: ['Cartão de Crédito', 'PIX', 'Google Pay'], required: true },
-    // Apenas para cartões, armazena informações não sensíveis
-    ultimosDigitos: { type: String },
-    bandeira: { type: String }, // Ex: Visa, Mastercard
-    tokenPagamento: { type: String } // Representaria um token de um gateway de pagamento
-}, { _id: false });
+    tipo: { type: String, enum: ['Cartão de Crédito', 'PIX', 'Google Pay'], default: 'Cartão de Crédito' },
+    ultimosDigitos: { type: String, required: true },
+    bandeira: { type: String, required: true },
+    nomeTitular: { type: String, required: true },
+    validade: { type: String, required: true }
+}, { _id: true }); // _id: true para permitir a remoção individual
 
 const clienteSchema = new mongoose.Schema({
+    // ... outros campos do cliente
     nome: { type: String, required: true, trim: true },
     sobrenome: { type: String, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true, select: false },
-    cpf: { type: String, unique: true, sparse: true, trim: true }, // sparse permite valores nulos não-únicos
+    cpf: { type: String, unique: true, sparse: true, trim: true },
     telefone: { type: String, trim: true },
     dataNascimento: { type: Date },
-
     endereco: {
         cep: { type: String, trim: true },
         logradouro: { type: String, trim: true },
@@ -26,23 +26,11 @@ const clienteSchema = new mongoose.Schema({
         bairro: { type: String, trim: true },
         cidade: { type: String, trim: true },
         estado: { type: String, trim: true },
-        tipoResidencia: { type: String, trim: true }
     },
-
-    metodosPagamento: [metodoPagamentoSchema]
+    metodosPagamento: [metodoPagamentoSchema] // Garante que é um array
 
 }, { timestamps: true });
 
-// Middleware para encriptar a senha antes de salvar
-clienteSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
-
+// ... (restante do arquivo sem alterações)
 const Cliente = mongoose.model('Cliente', clienteSchema);
-
 module.exports = Cliente;

@@ -7,6 +7,7 @@ import AdminView from './pages/AdminView';
 import FornecedoresView from './pages/FornecedoresView';
 import ComprasView from './pages/ComprasView'; 
 import ClientesView from './pages/ClientesView';
+import VendasView from './pages/VendasView';    
 //
 // Componente para proteger rotas
 const PrivateRoute = ({ children }) => {
@@ -33,7 +34,8 @@ function App() {
                     <Route path="admin" element={<AdminView />} />
                      <Route path="fornecedor" element={<FornecedoresView />} />
                      <Route path="compras" element={<ComprasView />} />
-                        <Route path="clientes" element={<ClientesView />} />    
+                        <Route path="clientes" element={<ClientesView />} />  
+                        <Route path="vendas" element={<VendasView />} />          
                     {/* Adicione outras rotas do dashboard aqui (clientes, vendas, etc.) */}
                 </Route>
                 {/* Redireciona a rota raiz para o login ou para a app se já estiver logado */}
