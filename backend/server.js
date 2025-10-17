@@ -35,6 +35,7 @@ const fornecedorRoutes = require('./routes/fornecedorRoutes');
 const compraRoutes = require('./routes/compraRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 const vendaRoutes = require('./routes/vendaRoutes');
+const relatorioRoutes = require('./routes/relatorioRoutes');
 
 
 // Middlewares essenciais
@@ -53,6 +54,7 @@ app.use('/api/fornecedores', fornecedorRoutes);
 app.use('/api/compras', compraRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendas', vendaRoutes);
+app.use('/api/relatorios', relatorioRoutes);  
 
 // 2. Servir a pasta de uploads estaticamente.
 const publicPath = path.join(__dirname, '..', 'public');
