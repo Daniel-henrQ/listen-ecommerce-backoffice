@@ -127,13 +127,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function toggleActionMenu(button) {
         const id = button.dataset.id;
+        
+        if (activeActionMenu && activeButton === button) {
+            closeActiveActionMenu();
+            return;
+        }
+        
         closeActiveActionMenu();
+
         const menu = document.createElement('ul');
         menu.className = 'action-menu';
         menu.innerHTML = `<li class="edit-btn" data-id="${id}">Editar</li><li class="delete-btn delete" data-id="${id}">Excluir</li>`;
-        button.parentElement.appendChild(menu);
-        button.style.display = 'none';
-        setTimeout(() => menu.classList.add('show'), 10);
+        
+        const actionsCell = button.closest('td.actions');
+        if (actionsCell) {
+            actionsCell.appendChild(menu);
+        } else {
+            button.parentElement.appendChild(menu);
+        }
+
         activeActionMenu = menu;
         activeButton = button;
     }
@@ -143,10 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
             activeActionMenu.remove();
             activeActionMenu = null;
         }
-        if (activeButton) {
-            activeButton.style.display = '';
-            activeButton = null;
-        }
+        activeButton = null;
     }
 
     async function openEditPopup(id) {
@@ -263,7 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.actions')) {
+        if (!activeActionMenu) return;
+        
+        const isClickInsideMenu = activeActionMenu.contains(e.target);
+        const isClickOnButton = activeButton && activeButton.contains(e.target);
+
+        if (!isClickInsideMenu && !isClickOnButton) {
             closeActiveActionMenu();
         }
     });
