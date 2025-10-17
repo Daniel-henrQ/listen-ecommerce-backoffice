@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ActionMenu from '../components/ActionMenu';
 
 function ProductsView() {
     const [products, setProducts] = useState([]);
@@ -12,7 +13,6 @@ function ProductsView() {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState(new Set());
-    const [activeActionMenu, setActiveActionMenu] = useState(null);
 
     const fetchProducts = useCallback(async () => {
         setLoading(true);
@@ -140,7 +140,7 @@ function ProductsView() {
                             <th>Quantidade</th>
                             <th>Preço</th>
                             <th>Data</th>
-                            <th>Ação</th>
+                            <th style={{textAlign: 'right'}}>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -158,12 +158,11 @@ function ProductsView() {
                                 <td>{product.quantidade}</td>
                                 <td>R$ {product.preco.toFixed(2)}</td>
                                 <td>{new Date(product.createdAt).toLocaleDateString('pt-BR')}</td>
-                                <td className="actions">
-                                    <button className="action-button" onClick={() => setActiveActionMenu(activeActionMenu === product._id ? null : product._id)}>...</button>
-                                    <ul className={`action-menu ${activeActionMenu === product._id ? 'show' : ''}`}>
-                                        <li onClick={() => {openEditModal(product); setActiveActionMenu(null);}}>Editar</li>
-                                        <li className="delete" onClick={() => {handleDeleteProduct(product._id); setActiveActionMenu(null);}}>Excluir</li>
-                                    </ul>
+                                <td className="actions" style={{textAlign: 'right'}}>
+                                    <ActionMenu 
+                                        onEdit={() => openEditModal(product)}
+                                        onDelete={() => handleDeleteProduct(product._id)}
+                                    />
                                 </td>
                             </tr>
                         ))}

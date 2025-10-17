@@ -3,6 +3,10 @@
    ======================================================================= */
 /*/
 /* --- HEADER --- */
+.header-fixed h1, h2, h3 {
+   font-family: var(--font-family-title);
+}
+
 .header-fixed h1 {
    font-size: 20px;
    font-weight: 700;
@@ -60,6 +64,7 @@
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
    min-width: 120px;
    z-index: 1100;
+   border: 1px solid var(--theme-border);
 }
 
 .dropdown-user-menu.show {
@@ -74,13 +79,13 @@
 }
 
 .dropdown-user-menu a:hover {
-   background-color: #f5f5f5;
+   background-color: var(--gray-200);
 }
 
 /* --- SIDEBAR --- */
 .sidebar-header {
    padding: 20px 25px;
-   border-bottom: 1px solid #444;
+   border-bottom: 1px solid var(--gray-700);
 }
 
 .sidebar-header img {
@@ -110,7 +115,7 @@
 }
 
 .sidebar-menu a:hover {
-   background-color: #3a3a3a;
+   background-color: var(--gray-800);
    color: var(--theme-text-light);
 }
 
@@ -134,19 +139,10 @@
 }
 
 .view-header h2 {
+   font-family: var(--font-family-title);
    font-size: 28px;
    font-weight: 700;
    color: var(--theme-text-dark);
-}
-
-.delete-button {
-   background-color: var(--theme-danger);
-   color: white;
-   border: none;
-   padding: 10px 15px;
-   border-radius: 8px;
-   cursor: pointer;
-   font-weight: bold;
 }
 
 /* --- BARRA DE AÇÕES --- */
@@ -157,7 +153,8 @@
    margin-bottom: 25px;
    padding: 15px 20px;
    background-color: var(--theme-bg-surface);
-   border-radius: 12px;
+   border-radius: 8px;
+   border: 1px solid var(--theme-border);
 }
 
 .filter-tabs {
@@ -197,49 +194,61 @@
    fill: currentColor;
 }
 
-.search-box input {
-   width: 250px;
-   padding: 12px 15px 12px 40px;
-   border: 1px solid var(--theme-border);
-   border-radius: 8px;
-   background-color: #fff;
-}
-
 /* --- BOTÕES --- */
-.add-button {
-   background-color: var(--theme-accent-blue);
-   color: #fff;
-   padding: 12px 20px;
-   border-radius: 8px;
-   border: none;
-   font-weight: 700;
-   cursor: pointer;
-   transition: opacity 0.2s;
+.add-button, .delete-button, .edit-btn, .delete-btn {
+    background-color: var(--gray-800);
+    color: var(--white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s;
 }
 
-.add-button:hover {
-   opacity: 0.85;
+.add-button:hover, .delete-button:hover, .edit-btn:hover, .delete-btn:hover {
+    background-color: var(--gray-900);
 }
 
-.edit-btn,
-.delete-btn {
-   padding: 8px 12px;
-   border-radius: 6px;
-   border: 1px solid var(--theme-border);
-   cursor: pointer;
-   background-color: #fff;
-   font-weight: 700;
+.delete-button, .delete-btn, .action-menu-item.delete {
+    background-color: var(--theme-danger);
+    color: var(--white);
+}
+.delete-button:hover, .delete-btn:hover, .action-menu-item.delete:hover {
+    background-color: #c0392b;
 }
 
-.delete-btn {
-   color: var(--theme-danger);
-   border-color: var(--theme-danger);
+
+/* --- INPUTS --- */
+.search-box input, .vertical-form input, .vertical-form select {
+    background-color: transparent;
+    border: 1px solid var(--gray-400);
+    border-radius: 8px;
+    padding: 12px 15px;
+    width: 100%;
 }
+
+.search-box input {
+    padding-left: 40px;
+    width: 250px;
+}
+
+.vertical-form input:focus, .vertical-form select:focus {
+    outline: none;
+    border-color: var(--theme-accent-blue);
+}
+
+.input-group input.error {
+    border-color: var(--theme-danger);
+}
+
 
 /* --- TABELAS --- */
 .table-container {
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
+   border: 1px solid var(--theme-border);
+   overflow: hidden; /* Garante que o border-radius seja aplicado corretamente */
 }
 
 table {
@@ -259,6 +268,7 @@ th {
    font-size: 14px;
    font-weight: 400;
    text-transform: uppercase;
+   font-family: var(--font-family-title);
 }
 
 tr:last-child td {
@@ -275,47 +285,54 @@ tr:last-child td {
 }
 
 /* --- MENU DE AÇÃO "..." --- */
-td.actions {
+.td.actions {
    position: relative;
 }
 
-.action-button {
+.action-btn {
    background: none;
    border: none;
-   font-size: 20px;
    cursor: pointer;
-   color: var(--theme-text-medium);
+   padding: 5px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
 }
 
 .action-menu {
-   display: none;
    position: absolute;
-   top: 100%;
+   top: calc(100% - 10px); 
    right: 20px;
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
    z-index: 10;
    list-style: none;
-   padding: 5px 0;
-   min-width: 100px;
+   padding: 8px 0;
+   min-width: 140px;
+   border: 1px solid var(--theme-border);
+   overflow: hidden;
 }
 
-.action-menu.show {
-   display: block;
-}
-
-.action-menu li {
-   padding: 10px 15px;
+.action-menu-item {
+   padding: 10px 20px;
    cursor: pointer;
+   font-size: 14px;
+   color: var(--theme-text-dark);
+   background-color: var(--white);
 }
 
-.action-menu li:hover {
-   background-color: #f5f5f5;
+.action-menu-item:hover {
+   background-color: var(--gray-200);
 }
 
-.action-menu li.delete {
+.action-menu-item.delete {
    color: var(--theme-danger);
+}
+
+.action-menu-item.delete:hover {
+   background-color: #fbeae8;
+   color: #c0392b;
 }
 
 /* --- POPUPS (MODAL) --- */
@@ -335,11 +352,14 @@ td.actions {
 .popup {
    background: var(--theme-bg-surface);
    padding: 30px;
-   border-radius: 12px;
+   border-radius: 8px;
    min-width: 400px;
+   border: 1px solid var(--theme-border);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .popup h3 {
+   font-family: var(--font-family-title);
    text-align: center;
    margin-bottom: 25px;
    font-size: 24px;
@@ -354,14 +374,6 @@ td.actions {
    font-weight: bold;
    margin-bottom: 5px;
    text-align: left;
-}
-
-.vertical-form input,
-.vertical-form select {
-   width: 100%;
-   padding: 12px;
-   border: 1px solid var(--theme-border);
-   border-radius: 8px;
 }
 
 .popup-actions {
@@ -414,6 +426,7 @@ td.actions {
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
    z-index: 1100;
    flex-direction: column;
+   border: 1px solid var(--theme-border);
 }
 
 .dropdown-notification-menu.show {
@@ -428,6 +441,7 @@ td.actions {
 .notification-header h3 {
    margin: 0;
    font-size: 16px;
+   font-family: var(--font-family-title);
 }
 
 .notification-list {
@@ -492,4 +506,3 @@ td.actions {
    overflow-y: auto;
    padding-right: 15px; /* Espaço para a barra de scroll */
 }
-

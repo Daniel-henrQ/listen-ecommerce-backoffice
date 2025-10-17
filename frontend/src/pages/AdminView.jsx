@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ActionMenu from '../components/ActionMenu';
 
 function AdminView() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalVisible, setAddModalVisible] = useState(false);
-    const [activeActionMenu, setActiveActionMenu] = useState(null);
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
@@ -81,11 +81,8 @@ function AdminView() {
                                 <td>{user.email}</td>
                                 <td>{user.cpf}</td>
                                 <td>{user.role}</td>
-                                <td className="actions">
-                                    <button className="action-button" onClick={() => setActiveActionMenu(activeActionMenu === user._id ? null : user._id)}>...</button>
-                                    <ul className={`action-menu ${activeActionMenu === user._id ? 'show' : ''}`}>
-                                        <li className="delete" onClick={() => {handleDeleteUser(user._id); setActiveActionMenu(null);}}>Excluir</li>
-                                    </ul>
+                                <td className="actions" style={{textAlign: 'right'}}>
+                                    <ActionMenu onDelete={() => handleDeleteUser(user._id)} />
                                 </td>
                             </tr>
                         ))}
@@ -108,8 +105,8 @@ function AdminView() {
                         </select>
                     </div>
                     <div className="popup-actions">
-                        <button type="button" onClick={() => setAddModalVisible(false)} className="btn btn-secondary">Cancelar</button>
-                        <button type="submit" className="btn btn-primary">Criar Utilizador</button>
+                        <button type="button" onClick={() => setAddModalVisible(false)} className="delete-btn">Cancelar</button>
+                        <button type="submit" className="add-button">Criar Utilizador</button>
                     </div>
                 </form>
             </Modal>

@@ -3,20 +3,37 @@
    ======================================================================= */
    /*/*/
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 :root {
-    /* Cores do Tema (do seu projeto original) */
-    --theme-bg-sidebar: #2D2D2E;
-    --theme-bg-main: #F5F5F7;
-    --theme-bg-surface: #FFFFFF;
+    /* Paleta de Cores em Escala de Cinza */
+    --white: #FFFFFF;
+    --gray-200: #E9ECEF;
+    --gray-300: #DEE2E6;
+    --gray-400: #CED4DA;
+    --gray-500: #ADB5BD;
+    --gray-600: #6C757D;
+    --gray-700: #495057;
+    --gray-800: #343A40;
+    --gray-900: #212529;
+    --danger: #e74c3c; /* Mantido para mensagens de erro */
 
-    --theme-accent-blue: #007AFF;
-    --theme-text-light: #FFFFFF;
-    --theme-text-dark: #333333;
-    --theme-text-medium: #8E8E93;
-    --theme-border: #EAEAEA;
-    --theme-sidebar-active: #4A4A4A;
-    --theme-danger: #e74c3c;
+    /* Fontes */
+    --font-family-body: 'Lato', sans-serif;
+    --font-family-title: 'Inter', sans-serif;
+
+    /* Cores do Tema */
+    --theme-bg-sidebar: var(--gray-900);
+    --theme-bg-main: var(--gray-200);
+    --theme-bg-surface: var(--white);
+
+    --theme-accent-blue: #007AFF; /* Mantido para links e destaques ativos */
+    --theme-text-light: var(--white);
+    --theme-text-dark: var(--gray-800);
+    --theme-text-medium: var(--gray-600);
+    --theme-border: var(--gray-300);
+    --theme-sidebar-active: var(--gray-800);
+    --theme-danger: var(--danger);
 
     /* Layout */
     --sidebar-width: 250px;
@@ -31,7 +48,7 @@
 }
 
 body {
-    font-family: 'Lato', sans-serif;
+    font-family: var(--font-family-body);
     background-color: var(--theme-bg-main);
     color: var(--theme-text-dark);
     -webkit-font-smoothing: antialiased;

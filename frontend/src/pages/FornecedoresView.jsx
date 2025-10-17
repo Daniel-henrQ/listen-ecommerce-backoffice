@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
+import ActionMenu from '../components/ActionMenu';
 
 function FornecedoresView() {
     const [fornecedores, setFornecedores] = useState([]);
@@ -9,7 +10,6 @@ function FornecedoresView() {
     const [isAddModalVisible, setAddModalVisible] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [editingFornecedor, setEditingFornecedor] = useState(null);
-    const [activeActionMenu, setActiveActionMenu] = useState(null);
 
     const fetchFornecedores = useCallback(async () => {
         setLoading(true);
@@ -102,7 +102,7 @@ function FornecedoresView() {
                 </div>
             </div>
             <div className="popup-actions">
-                <button type="button" onClick={onCancel} className="btn btn-secondary">Cancelar</button>
+                <button type="button" onClick={onCancel} className="delete-btn">Cancelar</button>
                 <button type="submit" className="add-button">Salvar</button>
             </div>
         </form>
@@ -130,12 +130,11 @@ function FornecedoresView() {
                         {fornecedores.map(fornecedor => (
                             <tr key={fornecedor._id}>
                                 <td>{fornecedor.nomeFantasia}</td><td>{fornecedor.cnpj}</td><td>{fornecedor.email}</td><td>{fornecedor.telefone}</td><td>{fornecedor.endereco?.cidade}</td>
-                                <td className="actions">
-                                    <button className="action-button" onClick={() => setActiveActionMenu(activeActionMenu === fornecedor._id ? null : fornecedor._id)}>...</button>
-                                    <ul className={`action-menu ${activeActionMenu === fornecedor._id ? 'show' : ''}`}>
-                                        <li onClick={() => {openEditModal(fornecedor); setActiveActionMenu(null);}}>Editar</li>
-                                        <li className="delete" onClick={() => {handleDelete(fornecedor._id); setActiveActionMenu(null);}}>Excluir</li>
-                                    </ul>
+                                <td className="actions" style={{textAlign: 'right'}}>
+                                    <ActionMenu 
+                                        onEdit={() => openEditModal(fornecedor)}
+                                        onDelete={() => handleDelete(fornecedor._id)}
+                                    />
                                 </td>
                             </tr>
                         ))}

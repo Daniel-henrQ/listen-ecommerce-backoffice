@@ -118,11 +118,11 @@ function ComprasView() {
     const renderActionButtons = (compra) => {
         switch (compra.status) {
             case 'Processando':
-                return <button className="btn btn-primary" onClick={() => handleUpdateStatus(compra._id, 'A caminho')}>Marcar como "A Caminho"</button>;
+                return <button className="add-button" onClick={() => handleUpdateStatus(compra._id, 'A caminho')}>Marcar como "A Caminho"</button>;
             case 'A caminho':
-                return <button className="btn btn-primary" onClick={() => handleUpdateStatus(compra._id, 'Entregue')}>Marcar como "Entregue"</button>;
+                return <button className="add-button" onClick={() => handleUpdateStatus(compra._id, 'Entregue')}>Marcar como "Entregue"</button>;
             case 'Entregue':
-                return <button className="btn btn-success" onClick={() => handleApproveAndStock(compra._id)}>Aprovar e Adicionar ao Estoque</button>;
+                return <button className="add-button" onClick={() => handleApproveAndStock(compra._id)}>Aprovar e Adicionar ao Estoque</button>;
             default:
                 return null;
         }
@@ -165,7 +165,7 @@ function ComprasView() {
                                 <td>{new Date(compra.dataCompra).toLocaleDateString('pt-BR')}</td>
                                 <td className="actions" style={{display: 'flex', gap: '5px', justifyContent: 'flex-end'}}>
                                     {renderActionButtons(compra)}
-                                    <button className="btn" onClick={() => handleGerarNota(compra._id)}>Gerar Nota</button>
+                                    <button className="add-button" onClick={() => handleGerarNota(compra._id)}>Gerar Nota</button>
                                 </td>
                             </tr>
                         ))}
@@ -224,7 +224,7 @@ function ComprasView() {
                         <div className="input-group"><label>Preço Unitário (R$)</label><input type="number" name="precoUnitario" required min="0" step="0.01" /></div>
                         
                         <div className="popup-actions">
-                            <button type="button" onClick={() => { setAddModalVisible(false); setIsNewProduct(false); }} className="btn btn-secondary">Cancelar</button>
+                            <button type="button" onClick={() => { setAddModalVisible(false); setIsNewProduct(false); }} className="delete-btn">Cancelar</button>
                             <button type="submit" className="add-button">Salvar Compra</button>
                         </div>
                     </form>
