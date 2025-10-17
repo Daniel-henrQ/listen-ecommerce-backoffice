@@ -3,22 +3,125 @@
 const Venda = require('../models/vendaModel');
 const Compra = require('../models/compraModel');
 const Produto = require('../models/produtoModel');
-const Fornecedor = require('../models/fornecedorModel'); // Importar Fornecedor
-const mongoose = require('mongoose'); // Importar mongoose para usar ObjectId
+const Fornecedor = require('../models/fornecedorModel');
+const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
 
 // Função auxiliar para obter o início e o fim do dia
-const getStartOfDay = (date) => new Date(date.setHours(0, 0, 0, 0));
-const getEndOfDay = (date) => new Date(date.setHours(23, 59, 59, 999));
+const getStartOfDay = (date) => new Date(new Date(date).setHours(0, 0, 0, 0));
+const getEndOfDay = (date) => new Date(new Date(date).setHours(23, 59, 59, 999));
 
-// ... (função getReportData permanece a mesma) ...
+// *** FUNÇÃO CORRIGIDA / IMPLEMENTADA ***
 exports.getReportData = async (req, res) => {
-    // ... (código existente da função getReportData) ...
+    try {
+        const { startDate, endDate } = req.query;
+        if (!startDate || !endDate) {
+            // Retorna erro se as datas não forem fornecidas
+            return res.status(400).json({ error: 'Datas de início e fim são obrigatórias.' });
+        }
+
+        const start = getStartOfDay(startDate);
+        const end = getEndOfDay(endDate);
+
+        // --- Cálculos de Resumo (Summary) ---
+        const salesSummary = await Venda.aggregate([
+            { $match: { createdAt: { $gte: start, $lte: end } } },
+            { $group: {
+                _id: null,
+                totalRevenue: { $sum: '$valorTotal' },
+                totalItemsSold: { $sum: { $sum: '$itens.quantidade' } }
+            }},
+        ]);
+        const purchaseSummary = await Compra.aggregate([
+             // Usar dataCompra para compras
+            { $match: { dataCompra: { $gte: start, $lte: end } } },
+            { $group: {
+                 _id: null,
+                 totalCost: { $sum: '$precoTotal' },
+                 totalItemsPurchased: { $sum: '$quantidade' }
+            }},
+        ]);
+
+        const summary = {
+            receita: salesSummary[0]?.totalRevenue || 0,
+            custo: purchaseSummary[0]?.totalCost || 0,
+            lucro: (salesSummary[0]?.totalRevenue || 0) - (purchaseSummary[0]?.totalCost || 0),
+            quantidadeVendida: salesSummary[0]?.totalItemsSold || 0,
+            quantidadeComprada: purchaseSummary[0]?.totalItemsPurchased || 0,
+        };
+
+        // --- Cálculos para Gráficos (Charts) ---
+        // Exemplo: Evolução da Receita Diária (simplificado)
+        const revenueEvolution = await Venda.aggregate([
+            { $match: { createdAt: { $gte: start, $lte: end } } },
+            { $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                dailyRevenue: { $sum: '$valorTotal' }
+            }},
+            { $sort: { _id: 1 } },
+             // Mapeia para o formato { date: 'YYYY-MM-DD', value: X }
+            { $project: { _id: 0, date: '$_id', value: '$dailyRevenue' } }
+        ]);
+
+        // Exemplo: Vendas por Artista
+        const soldByArtist = await Venda.aggregate([
+            { $match: { createdAt: { $gte: start, $lte: end } } },
+            { $unwind: '$itens' },
+            { $lookup: { from: 'produtos', localField: 'itens.produto', foreignField: '_id', as: 'productInfo' } },
+            { $unwind: '$productInfo' },
+            { $group: {
+                _id: '$productInfo.artista',
+                totalQuantity: { $sum: '$itens.quantidade' }
+            }},
+            { $sort: { totalQuantity: -1 } },
+             // Mapeia para o formato { artist: 'Nome', quantity: X }
+            { $project: { _id: 0, artist: '$_id', quantity: '$totalQuantity' } }
+        ]);
+        
+        // Exemplo: Compras por Fornecedor (Custo)
+        const purchasesBySupplier = await Compra.aggregate([
+            { $match: { dataCompra: { $gte: start, $lte: end } } },
+            { $lookup: { from: 'fornecedors', localField: 'fornecedor', foreignField: '_id', as: 'supplierInfo' } }, // Corrigido para 'fornecedors' (nome da coleção)
+            { $unwind: '$supplierInfo' },
+            { $group: {
+                _id: '$supplierInfo.nomeFantasia', // Agrupa pelo nomeFantasia
+                totalCost: { $sum: '$precoTotal' }
+            }},
+            { $sort: { totalCost: -1 } },
+             // Mapeia para o formato { supplier: 'Nome', cost: X }
+            { $project: { _id: 0, supplier: '$_id', cost: '$totalCost' } }
+        ]);
+
+        // (Adicione aqui outras agregações necessárias para os restantes gráficos)
+        // ... revenueByCategory, revenueVsCostEvolution, topCategoriesRevenue, purchasesByCategory ...
+        // Certifique-se de que os nomes dos campos no $project correspondem ao que o frontend espera
+        
+        // --- Monta a Resposta ---
+        res.json({
+            summary,
+            charts: {
+                revenueEvolution, // Receita Diária
+                soldByArtist,     // Vendas por Artista
+                purchasesBySupplier, // Compras por Fornecedor
+                // Inclua os resultados das outras agregações aqui
+                // revenueByCategory: ...,
+                // revenueVsCostEvolution: ...,
+                // topCategoriesRevenue: ...,
+                // purchasesByCategory: ...,
+            }
+        });
+
+    } catch (error) {
+        console.error("Erro ao buscar dados do relatório:", error);
+        // Retorna um erro JSON padronizado
+        res.status(500).json({ error: "Erro interno do servidor ao processar o relatório." });
+    }
 };
 
 
+// ... (a função generatePDFReport permanece igual ao código fornecido) ...
 exports.generatePDFReport = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
