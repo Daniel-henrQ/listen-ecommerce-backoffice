@@ -8,6 +8,8 @@ function AdminView() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalVisible, setAddModalVisible] = useState(false);
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
@@ -40,6 +42,19 @@ function AdminView() {
             alert(err.response?.data?.msg || "Erro ao criar utilizador.");
         }
     };
+    
+    const handleEditUser = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const userData = Object.fromEntries(formData.entries());
+        try {
+            await api.put(`/admin/users/${editingUser._id}`, userData);
+            setEditModalVisible(false);
+            fetchUsers();
+        } catch (err) {
+            alert(err.response?.data?.msg || "Erro ao atualizar utilizador.");
+        }
+    };
 
     const handleDeleteUser = async (userId) => {
         if (window.confirm("Tem a certeza?")) {
@@ -50,6 +65,11 @@ function AdminView() {
                 alert("Falha ao excluir utilizador.");
             }
         }
+    };
+    
+    const openEditModal = (user) => {
+        setEditingUser(user);
+        setEditModalVisible(true);
     };
 
     if (loading) return <p>A carregar utilizadores...</p>;
@@ -82,7 +102,10 @@ function AdminView() {
                                 <td>{user.cpf}</td>
                                 <td>{user.role}</td>
                                 <td className="actions" style={{textAlign: 'right'}}>
-                                    <ActionMenu onDelete={() => handleDeleteUser(user._id)} />
+                                    <ActionMenu 
+                                        onEdit={() => openEditModal(user)}
+                                        onDelete={() => handleDeleteUser(user._id)} 
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -110,6 +133,27 @@ function AdminView() {
                     </div>
                 </form>
             </Modal>
+            
+            {editingUser && (
+                 <Modal isVisible={isEditModalVisible} onClose={() => setEditModalVisible(false)} title="Editar Utilizador">
+                    <form className="vertical-form" onSubmit={handleEditUser}>
+                        <div className="input-group"><label>Nome Completo</label><input type="text" name="name" defaultValue={editingUser.name} required /></div>
+                        <div className="input-group"><label>Email</label><input type="email" name="email" defaultValue={editingUser.email} required /></div>
+                        <div className="input-group"><label>CPF</label><input type="text" name="cpf" defaultValue={editingUser.cpf} required /></div>
+                        <div className="input-group">
+                            <label>Função</label>
+                            <select name="role" defaultValue={editingUser.role} required>
+                                <option value="vendas">Vendas</option>
+                                <option value="adm">Admin</option>
+                            </select>
+                        </div>
+                         <div className="popup-actions">
+                            <button type="button" onClick={() => setEditModalVisible(false)} className="delete-btn">Cancelar</button>
+                            <button type="submit" className="add-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
         </div>
     );
 }

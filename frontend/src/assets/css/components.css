@@ -1,7 +1,6 @@
 /* =======================================================================
    COMPONENTES REUTILIZÁVEIS (ESTILO ORIGINAL)
    ======================================================================= */
-/*/
 /* --- HEADER --- */
 .header-fixed h1, h2, h3 {
    font-family: var(--font-family-title);
@@ -248,7 +247,7 @@
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
    border: 1px solid var(--theme-border);
-   overflow: hidden; /* Garante que o border-radius seja aplicado corretamente */
+   overflow: visible; /* CORREÇÃO: Alterado de 'hidden' para 'visible' para não cortar o menu */
 }
 
 table {
@@ -285,7 +284,6 @@ tr:last-child td {
 }
 
 /* --- MENU DE AÇÃO "..." --- */
-/* CORREÇÃO: seletor corrigido e 'position' adicionada */
 td.actions {
    position: relative;
 }
@@ -302,8 +300,9 @@ td.actions {
 
 .action-menu {
    position: absolute;
-   top: 90%; 
-   right: 20px;
+   top: 100%;
+   right: 0;
+   margin-top: 5px;
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -321,14 +320,13 @@ td.actions {
    font-size: 14px;
    color: var(--theme-text-dark);
    background-color: var(--white);
-   display: block; /* Garante que o item ocupe a largura toda */
+   display: block;
 }
 
 .action-menu-item:hover {
    background-color: var(--gray-200);
 }
 
-/* CORREÇÃO: Classes para os botões dentro do menu antigo */
 .action-menu .edit-btn, .action-menu .delete-btn {
     padding: 10px 20px;
     font-size: 14px;
@@ -343,14 +341,13 @@ td.actions {
     background-color: var(--gray-200);
 }
 
-.action-menu-item.delete, .action-menu .delete-btn.delete {
-   color: var(--theme-danger);
-}
-
+/* CORREÇÃO: Regra que causava o texto vermelho em fundo vermelho foi removida. */
+/* A regra abaixo agora afeta apenas o estado :hover */
 .action-menu-item.delete:hover, .action-menu .delete-btn.delete:hover {
    background-color: #fbeae8;
-   color: #c0392b;
+   color: #c0392b; /* A cor do texto muda apenas no hover */
 }
+
 
 /* --- POPUPS (MODAL) --- */
 .popup-overlay {
