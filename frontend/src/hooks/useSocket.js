@@ -17,10 +17,43 @@ export const useSocket = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // --- Função para buscar histórico --- (Separada para reutilização)
+  const fetchInitialNotifications = async () => {
+     // Only fetch if token exists and socket is potentially connected
+     if (!token) {
+         console.warn("useSocket: Sem token, não buscando histórico.");
+         return;
+     }
+     // Não checa mais socket.connected aqui, pois será chamado no connect
+
+    try {
+      const res = await fetch('/api/notificacoes', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+       if (!res.ok) {
+           // Handle potential 401 Unauthorized if token is invalid/expired
+           if (res.status === 401) {
+               console.error("useSocket: Token inválido/expirado ao buscar histórico.");
+               localStorage.removeItem('authToken'); // Optional: logout user or redirect
+           }
+           throw new Error(`HTTP error! status: ${res.status}`);
+       }
+      const data = await res.json();
+       console.log("Histórico de notificações carregado:", data);
+      setNotifications(data.notificacoes || []); // Garante que é um array
+      setUnreadCount(data.naoLidas || 0);        // Garante que é um número
+    } catch (error) {
+      console.error("Erro ao buscar notificações iniciais:", error);
+    }
+  };
+
   useEffect(() => {
     // --- Conexão e Desconexão ---
-    // Ouvintes de conexão/desconexão/erro são úteis para depuração
-    const handleConnect = () => console.log('Socket conectado:', socket.id);
+    const handleConnect = () => {
+        console.log('Socket conectado:', socket.id);
+        // Tenta buscar o histórico ao conectar (ou reconectar)
+        fetchInitialNotifications();
+    };
     const handleDisconnect = (reason) => console.log('Socket desconectado:', reason);
     const handleConnectError = (err) => console.error('Socket erro de conexão:', err.message, err.data); // Loga mais detalhes se disponíveis
 
@@ -28,40 +61,9 @@ export const useSocket = () => {
     socket.on('disconnect', handleDisconnect);
     socket.on('connect_error', handleConnectError);
 
-
-    // --- Busca Histórico Inicial ---
-    const fetchInitialNotifications = async () => {
-       // Only fetch if token exists and socket is potentially connected
-       if (!token) {
-           console.warn("useSocket: Sem token, não buscando histórico.");
-           return;
-       }
-       if (!socket.connected) {
-           console.warn("useSocket: Socket não conectado, aguardando conexão para buscar histórico.");
-           // Poderia tentar buscar após um 'connect' event, mas buscar uma vez é mais simples
-       }
-
-      try {
-        const res = await fetch('/api/notificacoes', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-         if (!res.ok) {
-             // Handle potential 401 Unauthorized if token is invalid/expired
-             if (res.status === 401) {
-                 console.error("useSocket: Token inválido/expirado ao buscar histórico.");
-                 localStorage.removeItem('authToken'); // Optional: logout user or redirect
-             }
-             throw new Error(`HTTP error! status: ${res.status}`);
-         }
-        const data = await res.json();
-         console.log("Histórico de notificações carregado:", data);
-        setNotifications(data.notificacoes || []); // Garante que é um array
-        setUnreadCount(data.naoLidas || 0);        // Garante que é um número
-      } catch (error) {
-        console.error("Erro ao buscar notificações iniciais:", error);
-      }
-    };
-    fetchInitialNotifications(); // Chama imediatamente
+    // --- Busca Histórico Inicial (Mantida para o primeiro load) ---
+    // Chama imediatamente na montagem do hook, caso a conexão já esteja ativa ou ocorra muito rápido
+    fetchInitialNotifications();
 
 
     // --- Ouvir Novas Notificações ---
@@ -78,7 +80,6 @@ export const useSocket = () => {
 
 
     // --- Limpeza ---
-    // Limpa TODOS os listeners quando o componente que usa o hook desmontar
     return () => {
       console.log("Limpando listeners do socket...");
       socket.off('connect', handleConnect);
@@ -92,7 +93,6 @@ export const useSocket = () => {
 
   // --- Função para Marcar como Lidas ---
   const markAsRead = async () => {
-     // Só executa se houver não lidas e tiver token
      if (unreadCount === 0 || !token) return;
 
      try {
@@ -101,11 +101,9 @@ export const useSocket = () => {
           headers: { 'Authorization': `Bearer ${token}` }
         });
          if (!res.ok) {
-             // Tratar erro 401 aqui também, se necessário
              throw new Error(`HTTP error! status: ${res.status}`);
          }
-        setUnreadCount(0); // Zera o contador localmente
-        // Marca todas as notificações locais como lidas para refletir na UI imediatamente
+        setUnreadCount(0);
         setNotifications(prev => (prev || []).map(n => ({ ...n, lida: true })));
         console.log("Notificações marcadas como lidas.");
      } catch (error) {
@@ -113,6 +111,5 @@ export const useSocket = () => {
      }
   };
 
-  // Retorna o estado e a função para o componente
   return { notifications, unreadCount, markAsRead };
 };
