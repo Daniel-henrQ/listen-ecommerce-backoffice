@@ -1,6 +1,7 @@
 /* =======================================================================
-   COMPONENTES REUTILIZÁVEIS (ESTILO ORIGINAL)
+   COMPONENTES REUTILIZÁVEIS (ESTILO ORIGINAL + MELHORIAS)
    ======================================================================= */
+
 /* --- HEADER --- */
 .header-fixed h1, h2, h3 {
    font-family: var(--font-family-title);
@@ -88,7 +89,7 @@
 }
 
 .sidebar-header img {
-   height: 35px;
+   height: 35px; /* Mantido do original */
 }
 
 .sidebar-menu a {
@@ -122,11 +123,6 @@
    background-color: var(--theme-sidebar-active);
    border-left-color: var(--theme-accent-blue);
    color: var(--theme-text-light);
-}
-
-.sidebar-header img {
-   height: 45px;
-   /* Aumenta a altura do logo */
 }
 
 /* --- VIEW HEADER E AÇÕES DE SELEÇÃO --- */
@@ -203,42 +199,96 @@
     cursor: pointer;
     font-weight: 700;
     transition: background-color 0.2s;
+    font-size: 14px; /* Padronizar tamanho da fonte */
 }
 
 .add-button:hover, .delete-button:hover, .edit-btn:hover, .delete-btn:hover {
     background-color: var(--gray-900);
 }
 
-.delete-button, .delete-btn, .action-menu-item.delete {
+/* Botões específicos de Excluir/Cancelar */
+.delete-button, .delete-btn {
     background-color: var(--theme-danger);
     color: var(--white);
 }
-.delete-button:hover, .delete-btn:hover, .action-menu-item.delete:hover {
-    background-color: #c0392b;
+.delete-button:hover, .delete-btn:hover {
+    background-color: #c0392b; /* Um vermelho um pouco mais escuro no hover */
 }
 
 
 /* --- INPUTS --- */
-.search-box input, .vertical-form input, .vertical-form select {
-    background-color: transparent;
+.vertical-form input, .vertical-form select, .vertical-form textarea {
+    background-color: var(--white); /* Fundo branco para melhor leitura */
     border: 1px solid var(--gray-400);
     border-radius: 8px;
     padding: 12px 15px;
     width: 100%;
+    font-size: 14px; /* Padronizar fonte */
+    color: var(--theme-text-dark); /* Texto escuro */
+    transition: border-color 0.2s, box-shadow 0.2s; /* Adicionar transição */
+    /* Adiciona altura mínima para evitar colapso */
+    min-height: 45px;
+    box-sizing: border-box; /* Garante que padding não aumente o tamanho total */
 }
+/* Estilo para Select */
+.vertical-form select {
+    appearance: none; /* Remove estilo padrão */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236C757D' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* Seta customizada */
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px 12px;
+    padding-right: 40px; /* Espaço para a seta */
+}
+
 
 .search-box input {
     padding-left: 40px;
     width: 250px;
 }
 
-.vertical-form input:focus, .vertical-form select:focus {
+/* ESTADO DE FOCO */
+.vertical-form input:focus, .vertical-form select:focus, .vertical-form textarea:focus {
     outline: none;
     border-color: var(--theme-accent-blue);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); /* Sombra de foco mais visível */
 }
 
-.input-group input.error {
-    border-color: var(--theme-danger);
+/* ESTILO DE ERRO PARA INPUTS */
+.input-group input.input-error,
+.input-group select.input-error,
+.input-group textarea.input-error {
+    border-color: var(--theme-danger) !important; /* !important para garantir sobreposição */
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2) !important; /* Sombra vermelha suave */
+}
+.input-group input.input-error:focus,
+.input-group select.input-error:focus,
+.input-group textarea.input-error:focus {
+     box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.4) !important; /* Sombra vermelha mais forte no foco */
+}
+
+
+/* MENSAGEM DE ERRO ABAIXO DO INPUT */
+.error-message-text {
+    color: var(--theme-danger);
+    font-size: 0.85em; /* Ligeiramente menor */
+    margin-top: 5px; /* Mais espaço */
+    display: block;
+    text-align: left; /* Alinhar à esquerda por padrão */
+}
+
+/* MENSAGEM GERAL DO FORMULÁRIO */
+.form-message {
+   margin-top: 15px;
+   font-weight: bold;
+   text-align: center;
+   min-height: 20px; /* Evita 'pulos' no layout */
+   font-size: 0.9em; /* Ligeiramente menor */
+}
+.form-message.error {
+   color: var(--theme-danger);
+}
+.form-message.success {
+   color: green; /* Ou uma variável de tema, se preferir */
 }
 
 
@@ -247,7 +297,7 @@
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
    border: 1px solid var(--theme-border);
-   overflow: visible; /* CORREÇÃO: Alterado de 'hidden' para 'visible' para não cortar o menu */
+   overflow: visible; /* Mantido 'visible' para o menu */
 }
 
 table {
@@ -260,14 +310,16 @@ td {
    padding: 18px 20px;
    text-align: left;
    border-bottom: 1px solid var(--theme-border);
+   font-size: 14px; /* Padronizar fonte da tabela */
+   vertical-align: middle; /* Alinhar verticalmente */
 }
 
 th {
    color: var(--theme-text-medium);
-   font-size: 14px;
-   font-weight: 400;
+   font-weight: 700; /* Cabeçalho mais forte */
    text-transform: uppercase;
    font-family: var(--font-family-title);
+   white-space: nowrap; /* Evitar quebra de linha no cabeçalho */
 }
 
 tr:last-child td {
@@ -281,71 +333,86 @@ tr:last-child td {
    object-fit: cover;
    vertical-align: middle;
    margin-right: 10px;
+   border: 1px solid var(--theme-border); /* Adiciona uma borda sutil */
+   cursor: pointer; /* Indica que é clicável */
 }
 
 /* --- MENU DE AÇÃO "..." --- */
+/* Estilo do botão "..." permanece */
 td.actions {
    position: relative;
+   text-align: right;
+   white-space: nowrap;
 }
-
-.action-btn, .action-menu-btn {
+.action-menu-btn {
    background: none;
    border: none;
    cursor: pointer;
    padding: 5px;
-   display: flex;
+   display: inline-flex;
    align-items: center;
    justify-content: center;
+   border-radius: 4px;
+   transition: background-color 0.2s;
 }
-
-.action-menu {
-   position: absolute;
-   top: 100%;
-   right: 0;
-   margin-top: 5px;
-   background-color: var(--theme-bg-surface);
-   border-radius: 8px;
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-   z-index: 10;
-   list-style: none;
-   padding: 8px 0;
-   min-width: 140px;
-   border: 1px solid var(--theme-border);
-   overflow: hidden;
-}
-
-.action-menu-item {
-   padding: 10px 20px;
-   cursor: pointer;
-   font-size: 14px;
-   color: var(--theme-text-dark);
-   background-color: var(--white);
-   display: block;
-}
-
-.action-menu-item:hover {
-   background-color: var(--gray-200);
-}
-
-.action-menu .edit-btn, .action-menu .delete-btn {
-    padding: 10px 20px;
-    font-size: 14px;
-    color: var(--theme-text-dark);
-    background-color: var(--white);
-    border-radius: 0;
-    width: 100%;
-    text-align: left;
-}
-
-.action-menu .edit-btn:hover, .action-menu .delete-btn:hover {
+.action-menu-btn:hover {
     background-color: var(--gray-200);
 }
+.action-menu-btn svg {
+   width: 20px;
+   height: 20px;
+   stroke: var(--theme-text-medium);
+}
 
-/* CORREÇÃO: Regra que causava o texto vermelho em fundo vermelho foi removida. */
-/* A regra abaixo agora afeta apenas o estado :hover */
-.action-menu-item.delete:hover, .action-menu .delete-btn.delete:hover {
-   background-color: #fbeae8;
-   color: #c0392b; /* A cor do texto muda apenas no hover */
+/* --- NOVO MODAL DE AÇÕES --- */
+.action-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaço entre os botões */
+    padding: 20px; /* Padding interno */
+}
+
+.action-modal-button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border: 1px solid transparent; /* Para manter o layout consistente */
+}
+
+.action-modal-button.edit {
+    background-color: var(--gray-800);
+    color: var(--white);
+    border-color: var(--gray-800);
+}
+.action-modal-button.edit:hover {
+    background-color: var(--gray-900);
+    border-color: var(--gray-900);
+}
+
+.action-modal-button.delete {
+    background-color: var(--theme-danger);
+    color: var(--white);
+    border-color: var(--theme-danger);
+}
+.action-modal-button.delete:hover {
+    background-color: #c0392b; /* Vermelho mais escuro */
+    border-color: #c0392b;
+}
+
+.action-modal-button.cancel {
+    background-color: transparent;
+    color: var(--theme-text-medium);
+    border-color: var(--gray-400);
+}
+.action-modal-button.cancel:hover {
+    background-color: var(--gray-200);
+    color: var(--theme-text-dark);
+    border-color: var(--gray-500);
 }
 
 
@@ -357,26 +424,46 @@ td.actions {
    width: 100%;
    height: 100%;
    background: rgba(0, 0, 0, 0.5);
-   display: none;
+   display: none; /* Controlado pelo React agora */
    justify-content: center;
    align-items: center;
    z-index: 2000;
+   padding: 20px; /* Adicionar padding para evitar que o modal toque as bordas em telas pequenas */
 }
 
 .popup {
    background: var(--theme-bg-surface);
    padding: 30px;
    border-radius: 8px;
-   min-width: 400px;
    border: 1px solid var(--theme-border);
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   max-height: 90vh; /* Altura máxima */
+   display: flex; /* Usar flexbox para layout interno */
+   flex-direction: column; /* Organizar conteúdo verticalmente */
+   min-width: 400px; /* Largura mínima padrão */
+   max-width: 90vw; /* Largura máxima */
 }
+
+/* Estilo específico para modais menores, como o de Ações */
+.popup.popup-small {
+    min-width: 300px;
+    max-width: 400px;
+}
+
 
 .popup h3 {
    font-family: var(--font-family-title);
    text-align: center;
    margin-bottom: 25px;
    font-size: 24px;
+   color: var(--theme-text-dark); /* Cor do título */
+   flex-shrink: 0; /* Impedir que o título encolha */
+}
+
+.vertical-form {
+   overflow-y: auto; /* Permitir scroll APENAS no formulário */
+   padding-right: 10px; /* Espaço para scrollbar se necessário */
+   flex-grow: 1; /* Fazer o formulário ocupar o espaço restante */
 }
 
 .vertical-form .input-group {
@@ -388,25 +475,32 @@ td.actions {
    font-weight: bold;
    margin-bottom: 5px;
    text-align: left;
+   font-size: 13px; /* Tamanho da label */
+   color: var(--theme-text-medium); /* Cor mais suave */
+}
+
+/* Indicador de campo obrigatório */
+.vertical-form label.required::after {
+    content: " *";
+    color: var(--theme-danger);
+    font-weight: bold;
 }
 
 .popup-actions {
    display: flex;
    justify-content: flex-end;
    gap: 10px;
-   margin-top: 20px;
+   margin-top: 25px; /* Mais espaço acima dos botões */
+   padding-top: 20px; /* Espaço interno */
+   border-top: 1px solid var(--theme-border); /* Linha divisória */
+   flex-shrink: 0; /* Impedir que a área de ações encolha */
 }
 
-.form-message {
-   margin-top: 15px;
-   font-weight: bold;
-   text-align: center;
-   min-height: 20px;
-}
 
 /* --- NOTIFICAÇÕES --- */
 .notification-icon {
    position: relative;
+   cursor: pointer; /* Indicar que é clicável */
 }
 
 .notification-badge {
@@ -418,11 +512,12 @@ td.actions {
    border-radius: 50%;
    width: 20px;
    height: 20px;
-   display: none;
+   display: none; /* Controlado pelo JS/React */
    justify-content: center;
    align-items: center;
-   font-size: 12px;
+   font-size: 11px; /* Ligeiramente menor */
    font-weight: bold;
+   border: 1px solid var(--white); /* Borda branca para destaque */
 }
 
 .notification-badge.show {
@@ -430,17 +525,19 @@ td.actions {
 }
 
 .dropdown-notification-menu {
-   display: none;
+   display: none; /* Controlado pelo JS/React */
    position: absolute;
-   top: 60px;
-   right: 80px;
+   top: 60px; /* Ajustar conforme altura do header */
+   right: 80px; /* Ajustar posição */
    width: 350px;
+   max-width: 90vw; /* Limitar largura em telas menores */
    background-color: var(--theme-bg-surface);
    border-radius: 8px;
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
    z-index: 1100;
    flex-direction: column;
    border: 1px solid var(--theme-border);
+   overflow: hidden; /* Para bordas arredondadas */
 }
 
 .dropdown-notification-menu.show {
@@ -450,12 +547,14 @@ td.actions {
 .notification-header {
    padding: 15px;
    border-bottom: 1px solid var(--theme-border);
+   background-color: var(--gray-200); /* Fundo levemente diferente */
 }
 
 .notification-header h3 {
    margin: 0;
    font-size: 16px;
    font-family: var(--font-family-title);
+   color: var(--theme-text-dark);
 }
 
 .notification-list {
@@ -470,53 +569,73 @@ td.actions {
    padding: 15px;
    border-bottom: 1px solid var(--theme-border);
    font-size: 14px;
+   color: var(--theme-text-dark);
+   line-height: 1.4;
+}
+.notification-list li:last-child {
+    border-bottom: none; /* Remover borda do último item */
 }
 
 .notification-list li.unread {
-   background-color: #f0f8ff;
+   background-color: #f0f8ff; /* Azul claro para não lidas */
+   font-weight: bold; /* Destacar não lidas */
 }
 
 .notification-list .empty-state {
    text-align: center;
    color: var(--theme-text-medium);
    padding: 30px;
+   font-style: italic;
 }
 
-/* --- Estilos Específicos para Popup de Fornecedores --- */
-
-.popup.popup-fornecedor {
+/* --- Estilos Específicos para Popup de Fornecedores/Clientes --- */
+.popup.popup-fornecedor, /* Reutilizar para clientes */
+.popup.popup-cliente {
    min-width: 700px;
-   /* Aumenta a largura mínima do popup em telas maiores */
-   max-height: 85vh;
-   /* Define uma altura máxima */
-   display: flex;
-   flex-direction: column;
-}
-
-.popup-fornecedor .vertical-form {
-   overflow-y: auto;
-   /* Adiciona scroll apenas ao formulário, não ao popup inteiro */
-   padding-right: 15px;
-   /* Espaço para a barra de scroll */
+   max-width: 800px; /* Aumentar um pouco a largura máxima */
 }
 
 .form-grid {
    display: grid;
-   grid-template-columns: 1fr 1fr;
-   /* Cria duas colunas de largura igual */
-   gap: 0 20px;
-   /* Adiciona um espaço de 20px entre as colunas */
+   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Colunas responsivas */
+   gap: 20px 30px; /* Aumentar espaço entre colunas */
 }
 
 /* --- Estilos Específicos para Popup de Produtos --- */
 .popup.popup-produto {
-   min-width: 700px;
-   max-height: 85vh;
-   display: flex;
-   flex-direction: column;
+   min-width: 700px; /* Manter largura */
+   max-width: 800px;
 }
 
-.popup-produto .vertical-form {
-   overflow-y: auto;
-   padding-right: 15px; /* Espaço para a barra de scroll */
+/* --- Estilo para popup de imagem --- */
+.image-popup-content {
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Sombra para destacar */
+}
+
+.close-image-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--gray-600);
+    cursor: pointer;
+    line-height: 1; /* Ajustar alinhamento */
+}
+.close-image-popup:hover {
+    color: var(--gray-900);
+}
+
+#imagem-ampliada {
+    max-width: 100%;
+    max-height: calc(90vh - 80px); /* Ajustar altura máxima considerando padding e espaço */
+    display: block;
+    margin: auto;
+    border-radius: 4px; /* Pequeno arredondamento */
 }

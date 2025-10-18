@@ -7,28 +7,21 @@ const createUser = async (req, res) => {
     const { name, email, password, confirmpassword, cpf, role } = req.body;
 
     // Validações
-    if (!name || !email || !password || !cpf || !role) {
-        return res.status(422).json({ msg: "Todos os campos (Nome, Email, Senha, CPF, Função) são obrigatórios!" });
-    }
-    if (password !== confirmpassword) {
-        return res.status(422).json({ msg: "As senhas não conferem!" });
-    }
-    // Validar se o role é permitido
-    const allowedRoles = User.schema.path('role').enumValues;
-    if (!allowedRoles.includes(role)) {
-        return res.status(422).json({ msg: `Função inválida. Permitidas: ${allowedRoles.join(', ')}` });
-    }
-
-    // Verifica duplicidade de email e CPF
-    const userExists = await User.findOne({ email: email });
-    if (userExists) {
-        return res.status(422).json({ msg: "Este e-mail já está em uso!" });
-    }
-    const cpfExists = await User.findOne({ cpf: cpf });
-     if (cpfExists) {
-         return res.status(422).json({ msg: "Este CPF já está cadastrado!" });
-     }
-
+if (!name || !email || !password || !cpf || !role) {
+    // Mensagem mais específica
+    return res.status(422).json({ msg: "Preencha todos os campos obrigatórios: Nome, Email, CPF, Senha e Função." });
+}
+// ...
+const userExists = await User.findOne({ email: email });
+if (userExists) {
+    // Mensagem clara
+    return res.status(422).json({ msg: "Este e-mail já está em uso por outro usuário." });
+}
+ const cpfExists = await User.findOne({ cpf: cpf });
+ if (cpfExists) {
+     // Mensagem clara
+     return res.status(422).json({ msg: "Este CPF já está cadastrado para outro usuário." });
+ }
 
     // Hash da senha
     const salt = await bcrypt.genSalt(12);
