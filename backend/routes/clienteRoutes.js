@@ -7,12 +7,13 @@ const checkRole = require('../middleware/checkRole');
 
 // Middleware para todas as rotas de clientes
 router.use(checkToken);
-router.use(checkRole(['adm'])); // Apenas administradores podem gerenciar clientes
+// CORREÇÃO: Permite acesso para 'adm' E 'vendas'
+router.use(checkRole(['adm', 'vendas'])); // <<< ALTERAÇÃO AQUI
 
-router.post('/', clienteController.criarCliente);
+router.post('/', clienteController.criarCliente); // Nota: Vendas poderão criar clientes agora
 router.get('/', clienteController.listarClientes);
 router.get('/:id', clienteController.obterClientePorId);
-router.put('/:id', clienteController.atualizarCliente);
-router.delete('/:id', clienteController.deletarCliente);
+router.put('/:id', clienteController.atualizarCliente); // Nota: Vendas poderão atualizar clientes agora
+router.delete('/:id', clienteController.deletarCliente); // Nota: Vendas poderão deletar clientes agora
 
 module.exports = router;
