@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Adicionado useCallback
 import io from 'socket.io-client';
 
 // Get token ONCE when the hook is initialized
 const token = localStorage.getItem('authToken');
 
 // Pass token in auth object during connection
-// Certifique-se de que o servidor está configurado para receber isso (como fizemos no backend)
 const socket = io({
   auth: {
     token: token // Send token here
@@ -18,20 +17,17 @@ export const useSocket = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // --- Função para buscar histórico --- (Separada para reutilização)
-  const fetchInitialNotifications = async () => {
-     // Only fetch if token exists and socket is potentially connected
+  const fetchInitialNotifications = useCallback(async () => { // Usar useCallback
      if (!token) {
          console.warn("useSocket: Sem token, não buscando histórico.");
          return;
      }
-     // Não checa mais socket.connected aqui, pois será chamado no connect
 
     try {
       const res = await fetch('/api/notificacoes', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
        if (!res.ok) {
-           // Handle potential 401 Unauthorized if token is invalid/expired
            if (res.status === 401) {
                console.error("useSocket: Token inválido/expirado ao buscar histórico.");
                localStorage.removeItem('authToken'); // Optional: logout user or redirect
@@ -40,38 +36,33 @@ export const useSocket = () => {
        }
       const data = await res.json();
        console.log("Histórico de notificações carregado:", data);
-      setNotifications(data.notificacoes || []); // Garante que é um array
-      setUnreadCount(data.naoLidas || 0);        // Garante que é um número
+      setNotifications(data.notificacoes || []);
+      setUnreadCount(data.naoLidas || 0);
     } catch (error) {
       console.error("Erro ao buscar notificações iniciais:", error);
+       // Limpar estado em caso de erro pode ser uma opção
+       setNotifications([]);
+       setUnreadCount(0);
     }
-  };
+  }, []); // Dependência vazia, pois 'token' é constante no escopo do hook
 
   useEffect(() => {
     // --- Conexão e Desconexão ---
     const handleConnect = () => {
         console.log('Socket conectado:', socket.id);
-        // Tenta buscar o histórico ao conectar (ou reconectar)
-        fetchInitialNotifications();
+        fetchInitialNotifications(); // Busca histórico ao conectar
     };
     const handleDisconnect = (reason) => console.log('Socket desconectado:', reason);
-    const handleConnectError = (err) => console.error('Socket erro de conexão:', err.message, err.data); // Loga mais detalhes se disponíveis
+    const handleConnectError = (err) => console.error('Socket erro de conexão:', err.message, err.data);
 
     socket.on('connect', handleConnect);
     socket.on('disconnect', handleDisconnect);
     socket.on('connect_error', handleConnectError);
 
-    // --- Busca Histórico Inicial (Mantida para o primeiro load) ---
-    // Chama imediatamente na montagem do hook, caso a conexão já esteja ativa ou ocorra muito rápido
-    fetchInitialNotifications();
-
-
     // --- Ouvir Novas Notificações ---
     const handleNewNotification = (novaNotificacao) => {
       console.log('Nova notificação recebida via WebSocket:', novaNotificacao);
-      // Adiciona no início da lista
       setNotifications(prev => [novaNotificacao, ...(prev || [])]);
-      // Incrementa o contador apenas se a notificação não estiver lida
        if (!novaNotificacao.lida) {
           setUnreadCount(prev => (prev || 0) + 1);
        }
@@ -86,24 +77,22 @@ export const useSocket = () => {
       socket.off('disconnect', handleDisconnect);
       socket.off('connect_error', handleConnectError);
       socket.off('nova_notificacao', handleNewNotification);
-      // Não desconecte o socket aqui, pois outros componentes podem estar usando
     };
-  }, []); // Array de dependências vazio para rodar setup/cleanup apenas uma vez
+  // A dependência fetchInitialNotifications garante que o listener seja atualizado se a função mudar (embora não deva mudar com useCallback)
+  }, [fetchInitialNotifications]);
 
 
   // --- Função para Marcar como Lidas ---
   const markAsRead = async () => {
      if (unreadCount === 0 || !token) return;
-
      try {
         const res = await fetch('/api/notificacoes/ler', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         });
-         if (!res.ok) {
-             throw new Error(`HTTP error! status: ${res.status}`);
-         }
+         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         setUnreadCount(0);
+        // Atualiza o estado local para refletir que foram lidas
         setNotifications(prev => (prev || []).map(n => ({ ...n, lida: true })));
         console.log("Notificações marcadas como lidas.");
      } catch (error) {
@@ -111,5 +100,41 @@ export const useSocket = () => {
      }
   };
 
-  return { notifications, unreadCount, markAsRead };
+  // --- NOVA FUNÇÃO ---
+  // Função para Limpar Notificações Lidas
+  const clearReadNotifications = async () => {
+      if (!token) return; // Precisa de token para autenticar a exclusão
+
+      // Opcional: Confirmar com o utilizador
+      // if (!window.confirm("Tem a certeza que deseja limpar as notificações lidas?")) {
+      //     return;
+      // }
+
+      try {
+          const res = await fetch('/api/notificacoes/read', { // Chama a nova rota DELETE
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (!res.ok) {
+              const errorData = await res.json(); // Tenta pegar a mensagem de erro do backend
+              throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+          }
+
+          // Atualiza o estado local removendo as notificações lidas
+          setNotifications(prev => (prev || []).filter(n => !n.lida));
+          // O contador de não lidas (unreadCount) não deve mudar aqui, pois só excluímos as lidas.
+
+          console.log("Notificações lidas foram excluídas.");
+          // Poderia adicionar uma notificação de sucesso para o utilizador aqui, se desejado
+
+      } catch (error) {
+          console.error("Erro ao limpar notificações lidas:", error);
+          // Poderia mostrar uma mensagem de erro para o utilizador
+      }
+  };
+  // --- FIM NOVA FUNÇÃO ---
+
+  // Retorna a nova função junto com as outras
+  return { notifications, unreadCount, markAsRead, clearReadNotifications };
 };

@@ -151,7 +151,7 @@ function ComprasView() {
          }
      };
 
-     // Função renderActionButtons permanece igual
+    // Função renderActionButtons ATUALIZADA com botão Cancelar
     const renderActionButtons = (compra) => {
         // Estilo base comum para os botões de status
         const statusButtonStyle = {
@@ -164,39 +164,89 @@ function ComprasView() {
             fontWeight: '600',
             transition: 'background-color 0.2s, opacity 0.2s', // Adicionado opacity
             opacity: loading ? 0.6 : 1, // Reduz opacidade se loading geral estiver ativo
+            marginRight: '5px', // Adiciona um pequeno espaço entre os botões
+        };
+
+        // Estilo específico para o botão Cancelar (baseado no delete-btn)
+        const cancelButtonStyle = {
+            ...statusButtonStyle,
+            backgroundColor: 'var(--theme-danger)',
+        };
+
+        const cancelButtonHoverStyle = { backgroundColor: '#c0392b' }; // Vermelho mais escuro
+
+        // Função para lidar com o hover do botão Cancelar
+        const handleCancelHover = (e, isHovering) => {
+            if (!loading) {
+                e.currentTarget.style.backgroundColor = isHovering
+                    ? cancelButtonHoverStyle.backgroundColor
+                    : cancelButtonStyle.backgroundColor;
+            }
         };
 
         switch (compra.status) {
             case 'Processando':
                 return (
-                    <button
-                        style={{ ...statusButtonStyle, backgroundColor: 'var(--gray-600)' /* Cinza médio */ }}
-                        onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-700)')} // Efeito hover
-                        onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-600)')} // Restaura cor
-                        onClick={() => handleUpdateStatus(compra._id, 'A caminho')}
-                        disabled={loading} // Desabilita durante o loading
-                    >
-                        Marcar "A Caminho"
-                    </button>
+                    <>
+                        <button
+                            style={statusButtonStyle}
+                            onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-700)')}
+                            onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-600)')}
+                            onClick={() => handleUpdateStatus(compra._id, 'A caminho')}
+                            disabled={loading}
+                        >
+                            Marcar "A Caminho"
+                        </button>
+                        {/* Botão Cancelar */}
+                        <button
+                            style={cancelButtonStyle}
+                            onMouseOver={e => handleCancelHover(e, true)}
+                            onMouseOut={e => handleCancelHover(e, false)}
+                            onClick={() => {
+                                if (window.confirm("Tem certeza que deseja cancelar esta compra?")) {
+                                    handleUpdateStatus(compra._id, 'Cancelada');
+                                }
+                            }}
+                            disabled={loading}
+                        >
+                            Cancelar
+                        </button>
+                    </>
                 );
             case 'A caminho':
                 return (
-                    <button
-                        style={{ ...statusButtonStyle, backgroundColor: 'var(--gray-700)' /* Cinza mais escuro */ }}
-                         onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-800)')}
-                         onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-700)')}
-                        onClick={() => handleUpdateStatus(compra._id, 'Entregue')}
-                        disabled={loading}
-                    >
-                        Marcar "Entregue"
-                    </button>
+                    <>
+                        <button
+                            style={statusButtonStyle}
+                            onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-800)')}
+                            onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-700)')}
+                            onClick={() => handleUpdateStatus(compra._id, 'Entregue')}
+                            disabled={loading}
+                        >
+                            Marcar "Entregue"
+                        </button>
+                        {/* Botão Cancelar */}
+                        <button
+                            style={cancelButtonStyle}
+                            onMouseOver={e => handleCancelHover(e, true)}
+                            onMouseOut={e => handleCancelHover(e, false)}
+                            onClick={() => {
+                                if (window.confirm("Tem certeza que deseja cancelar esta compra?")) {
+                                    handleUpdateStatus(compra._id, 'Cancelada');
+                                }
+                            }}
+                            disabled={loading}
+                        >
+                            Cancelar
+                        </button>
+                    </>
                 );
             case 'Entregue':
                 return (
                     <button
-                        style={{ ...statusButtonStyle, backgroundColor: 'var(--gray-800)' /* Cinza bem escuro */ }}
-                         onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-900)')}
-                         onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-800)')}
+                        style={{ ...statusButtonStyle, backgroundColor: 'var(--gray-800)' }}
+                        onMouseOver={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-900)')}
+                        onMouseOut={e => !loading && (e.currentTarget.style.backgroundColor = 'var(--gray-800)')}
                         onClick={() => handleApproveAndStock(compra._id)}
                         disabled={loading}
                     >
@@ -204,14 +254,14 @@ function ComprasView() {
                     </button>
                 );
             case 'Finalizada':
-                // Estilo para o texto "Finalizada"
-                 return <span style={{ color: 'var(--gray-600)', fontWeight: 'bold', fontSize: '12px', padding: '8px 0' }}>Finalizada</span>;
+                return <span style={{ color: 'var(--gray-600)', fontWeight: 'bold', fontSize: '12px', padding: '8px 0' }}>Finalizada</span>;
             case 'Cancelada':
-                 return <span style={{ color: 'var(--theme-danger)', fontWeight: 'bold', fontSize: '12px', padding: '8px 0' }}>Cancelada</span>;
+                return <span style={{ color: 'var(--theme-danger)', fontWeight: 'bold', fontSize: '12px', padding: '8px 0' }}>Cancelada</span>;
             default:
                 return null;
         }
     };
+
 
     // Componente StatusTabs permanece igual
     const StatusTabs = ({ activeTab, setActiveTab }) => {

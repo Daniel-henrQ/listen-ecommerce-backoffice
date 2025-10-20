@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import api from '../services/api';
-import Modal from '../components/Modal';
-import ActionMenu from '../components/ActionMenu';
+import api from '../services/api'; // Certifique-se que o caminho está correto
+import Modal from '../components/Modal'; // Certifique-se que o caminho está correto
+import ActionMenu from '../components/ActionMenu'; // Certifique-se que o caminho está correto
 
 function AdminView() {
     const [users, setUsers] = useState([]);
@@ -15,11 +15,13 @@ function AdminView() {
     const [formMessage, setFormMessage] = useState({ text: '', type: '' });
     const [fieldErrors, setFieldErrors] = useState({});
 
+    // Limpa estado do formulário
     const clearFormState = () => {
         setFormMessage({ text: '', type: '' });
         setFieldErrors({});
     };
 
+    // Busca utilizadores
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
@@ -28,8 +30,9 @@ function AdminView() {
             const response = await api.get(`/admin/users?${params.toString()}`);
             setUsers(response.data);
         } catch (err) {
-            console.error(err);
+            console.error("Erro ao buscar utilizadores:", err);
              // Aqui você pode definir uma mensagem de erro geral para a view, se desejar
+             // setViewMessage('Erro ao carregar utilizadores.');
         } finally {
             setLoading(false);
         }
@@ -39,6 +42,7 @@ function AdminView() {
         fetchUsers();
     }, [fetchUsers]);
 
+    // Handler para adicionar utilizador
     const handleAddUser = async (e) => {
         e.preventDefault();
         clearFormState(); // Limpa erros anteriores
@@ -50,6 +54,7 @@ function AdminView() {
         if (!userData.email?.trim() || !/\S+@\S+\.\S+/.test(userData.email)) errors.email = "Email inválido.";
         if (!userData.cpf?.trim()) errors.cpf = "CPF é obrigatório."; // Adicionar validação de formato se necessário
         if (!userData.password) errors.password = "Senha é obrigatória.";
+        if (userData.password.length < 6) errors.password = "Senha deve ter no mínimo 6 caracteres."; // Exemplo validação mínima
         if (userData.password !== userData.confirmpassword) {
             errors.password = "As senhas não conferem.";
             errors.confirmpassword = "As senhas não conferem.";
@@ -81,9 +86,11 @@ function AdminView() {
             if (apiErrorMessage.includes('CPF')) {
                 setFieldErrors(prev => ({ ...prev, cpf: 'Verifique o CPF.' }));
             }
+            console.error("Erro API ao criar utilizador:", err.response || err);
         }
     };
 
+    // Handler para editar utilizador
     const handleEditUser = async (e) => {
         e.preventDefault();
         clearFormState();
@@ -120,22 +127,28 @@ function AdminView() {
              if (apiErrorMessage.includes('CPF')) {
                  setFieldErrors(prev => ({ ...prev, cpf: 'Verifique o CPF.' }));
              }
+             console.error("Erro API ao atualizar utilizador:", err.response || err);
         }
     };
 
-    // Recebe userId diretamente do ActionMenu
+    // Handler para excluir utilizador (COM MELHORIA NO CATCH)
     const handleDeleteUser = async (userId) => {
         if (window.confirm("Tem a certeza que deseja excluir este utilizador?")) {
             try {
                 await api.delete(`/admin/users/${userId}`);
                 fetchUsers(); // Atualiza a lista após exclusão
             } catch (err) {
-                alert("Falha ao excluir utilizador.");
+                // *** MELHORIA AQUI ***
+                // Exibe a mensagem do backend se existir, senão a mensagem genérica
+                const errorMsg = err.response?.data?.msg || "Falha ao excluir utilizador.";
+                alert(errorMsg); // Ou use um método de notificação mais sofisticado
+                console.error("Erro ao excluir utilizador:", err.response || err); // Log detalhado no console
+                // *** FIM DA MELHORIA ***
             }
         }
     };
 
-    // Recebe userId diretamente do ActionMenu
+    // Abre modal de edição
     const openEditModal = (userId) => {
          const userToEdit = users.find(u => u._id === userId);
          if (userToEdit) {
@@ -148,24 +161,41 @@ function AdminView() {
          }
     };
 
+    // Abre modal de adição
      const openAddModal = () => {
          clearFormState(); // Limpa erros ao abrir modal de adição
          setAddModalVisible(true);
      };
 
-    if (loading && users.length === 0) return <p>A carregar utilizadores...</p>; // Mostrar loading inicial
+    // Renderização condicional de loading inicial
+    if (loading && users.length === 0) return <p style={{textAlign: 'center', padding: '40px'}}>A carregar utilizadores...</p>;
 
     return (
         <div>
-            <div className="view-header"><h2>Gestão de Utilizadores</h2></div>
+            {/* Cabeçalho da View */}
+            <div className="view-header">
+                <h2>Gestão de Utilizadores</h2>
+            </div>
+
+            {/* Barra de Ações */}
             <div className="action-bar">
                 <div className="search-box">
-                    <input type="text" placeholder="Buscar por nome ou email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                     {/* Ícone de busca pode ser adicionado aqui se desejar */}
+                    <input
+                        type="text"
+                        placeholder="Buscar por nome ou email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
-                {/* Usar a função que limpa o estado */}
+                {/* Usar a função que limpa o estado ao abrir modal */}
                 <button onClick={openAddModal} className="add-button">+ ADD Novo Utilizador</button>
             </div>
-            {loading && <p style={{textAlign: 'center'}}>Atualizando lista...</p>}
+
+            {/* Indicador de loading para recarga */}
+            {loading && <p style={{textAlign: 'center', margin: '20px'}}>Atualizando lista...</p>}
+
+            {/* Tabela de Utilizadores */}
             <div className="table-container">
                 <table>
                     <thead>
@@ -178,20 +208,23 @@ function AdminView() {
                         </tr>
                     </thead>
                     <tbody>
+                        {/* Mensagem se não houver utilizadores */}
                         {users.length === 0 && !loading ? (
-                            <tr><td colSpan="5" style={{ textAlign: 'center' }}>Nenhum utilizador encontrado.</td></tr>
+                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}>Nenhum utilizador encontrado.</td></tr>
                         ) : (
+                            // Mapeia os utilizadores para linhas da tabela
                             users.map(user => (
                                 <tr key={user._id}>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td>{user.cpf}</td>
-                                    <td>{user.role}</td>
-                                    <td className="actions"> {/* Não precisa mais de style={{textAlign: 'right'}} aqui */}
+                                    {/* Exibe 'Admin' ou 'Vendas' de forma mais amigável */}
+                                    <td>{user.role === 'adm' ? 'Admin' : 'Vendas'}</td>
+                                    <td className="actions">
                                         <ActionMenu
                                             itemId={user._id} // Passa o ID diretamente
-                                            onEdit={openEditModal} // Função já recebe ID
-                                            onDelete={handleDeleteUser} // Função já recebe ID
+                                            onEdit={() => openEditModal(user._id)} // Passa função com ID
+                                            onDelete={() => handleDeleteUser(user._id)} // Passa função com ID
                                         />
                                     </td>
                                 </tr>
@@ -205,41 +238,49 @@ function AdminView() {
             <Modal isVisible={isAddModalVisible} onClose={() => setAddModalVisible(false)} title="Adicionar Novo Utilizador">
                  <div className="popup"> {/* Adicione a classe popup */}
                     <form className="vertical-form" onSubmit={handleAddUser} noValidate> {/* noValidate para permitir controle total */}
+                        {/* Nome Completo */}
                         <div className="input-group">
                             <label htmlFor="add-name" className="required">Nome Completo</label>
                             <input id="add-name" type="text" name="name" className={fieldErrors.name ? 'input-error' : ''} required />
                              {fieldErrors.name && <span className="error-message-text">{fieldErrors.name}</span>}
                         </div>
+                        {/* Email */}
                         <div className="input-group">
                             <label htmlFor="add-email" className="required">Email</label>
                             <input id="add-email" type="email" name="email" className={fieldErrors.email ? 'input-error' : ''} required />
                             {fieldErrors.email && <span className="error-message-text">{fieldErrors.email}</span>}
                         </div>
+                        {/* CPF */}
                         <div className="input-group">
                             <label htmlFor="add-cpf" className="required">CPF</label>
                             <input id="add-cpf" type="text" name="cpf" className={fieldErrors.cpf ? 'input-error' : ''} required />
                             {fieldErrors.cpf && <span className="error-message-text">{fieldErrors.cpf}</span>}
                         </div>
+                        {/* Senha */}
                         <div className="input-group">
                             <label htmlFor="add-password" className="required">Senha</label>
                             <input id="add-password" type="password" name="password" className={fieldErrors.password ? 'input-error' : ''} required />
                              {fieldErrors.password && <span className="error-message-text">{fieldErrors.password}</span>}
                         </div>
+                        {/* Confirmar Senha */}
                         <div className="input-group">
                             <label htmlFor="add-confirmpassword" className="required">Confirmar Senha</label>
                             <input id="add-confirmpassword" type="password" name="confirmpassword" className={fieldErrors.confirmpassword ? 'input-error' : ''} required />
                             {fieldErrors.confirmpassword && <span className="error-message-text">{fieldErrors.confirmpassword}</span>}
                         </div>
+                        {/* Função */}
                         <div className="input-group">
                             <label htmlFor="add-role" className="required">Função</label>
-                            <select id="add-role" name="role" className={fieldErrors.role ? 'input-error' : ''} required>
-                                <option value="">Selecione...</option> {/* Boa prática */}
+                            <select id="add-role" name="role" defaultValue="" className={fieldErrors.role ? 'input-error' : ''} required>
+                                <option value="" disabled>Selecione...</option> {/* Boa prática */}
                                 <option value="vendas">Vendas</option>
                                 <option value="adm">Admin</option>
                             </select>
                              {fieldErrors.role && <span className="error-message-text">{fieldErrors.role}</span>}
                         </div>
+                        {/* Mensagem de Feedback */}
                          {formMessage.text && <p className={`form-message ${formMessage.type}`}>{formMessage.text}</p>}
+                        {/* Ações do Modal */}
                         <div className="popup-actions">
                             <button type="button" onClick={() => setAddModalVisible(false)} className="delete-btn">Cancelar</button>
                             <button type="submit" className="add-button">Criar Utilizador</button>
@@ -249,38 +290,45 @@ function AdminView() {
             </Modal>
 
             {/* Modal Editar */}
+            {/* Renderiza apenas se editingUser não for null */}
             {editingUser && (
-                 <Modal isVisible={isEditModalVisible} onClose={() => setEditModalVisible(false)} title="Editar Utilizador">
+                 <Modal isVisible={isEditModalVisible} onClose={() => { setEditModalVisible(false); setEditingUser(null); }} title="Editar Utilizador">
                     <div className="popup">
                         <form className="vertical-form" onSubmit={handleEditUser} noValidate>
                             {/* Não incluir campos de senha na edição aqui */}
+                            {/* Nome Completo */}
                             <div className="input-group">
                                 <label htmlFor="edit-name" className="required">Nome Completo</label>
                                 <input id="edit-name" type="text" name="name" defaultValue={editingUser.name} className={fieldErrors.name ? 'input-error' : ''} required />
                                 {fieldErrors.name && <span className="error-message-text">{fieldErrors.name}</span>}
                             </div>
+                            {/* Email */}
                             <div className="input-group">
                                 <label htmlFor="edit-email" className="required">Email</label>
                                 <input id="edit-email" type="email" name="email" defaultValue={editingUser.email} className={fieldErrors.email ? 'input-error' : ''} required />
                                  {fieldErrors.email && <span className="error-message-text">{fieldErrors.email}</span>}
                             </div>
+                            {/* CPF */}
                             <div className="input-group">
                                 <label htmlFor="edit-cpf" className="required">CPF</label>
                                 <input id="edit-cpf" type="text" name="cpf" defaultValue={editingUser.cpf} className={fieldErrors.cpf ? 'input-error' : ''} required />
                                 {fieldErrors.cpf && <span className="error-message-text">{fieldErrors.cpf}</span>}
                             </div>
+                             {/* Função */}
                             <div className="input-group">
                                 <label htmlFor="edit-role" className="required">Função</label>
                                 <select id="edit-role" name="role" defaultValue={editingUser.role} className={fieldErrors.role ? 'input-error' : ''} required>
-                                     <option value="">Selecione...</option>
+                                     <option value="" disabled>Selecione...</option>
                                     <option value="vendas">Vendas</option>
                                     <option value="adm">Admin</option>
                                 </select>
                                 {fieldErrors.role && <span className="error-message-text">{fieldErrors.role}</span>}
                             </div>
+                             {/* Mensagem de Feedback */}
                              {formMessage.text && <p className={`form-message ${formMessage.type}`}>{formMessage.text}</p>}
+                            {/* Ações do Modal */}
                             <div className="popup-actions">
-                                <button type="button" onClick={() => setEditModalVisible(false)} className="delete-btn">Cancelar</button>
+                                <button type="button" onClick={() => { setEditModalVisible(false); setEditingUser(null); }} className="delete-btn">Cancelar</button>
                                 <button type="submit" className="add-button">Salvar Alterações</button>
                             </div>
                         </form>

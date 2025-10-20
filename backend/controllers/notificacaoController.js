@@ -20,3 +20,14 @@ exports.marcarComoLidas = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// Excluir todas as notificações que já foram lidas
+exports.excluirNotificacoesLidas = async (req, res) => {
+    try {
+        const result = await Notificacao.deleteMany({ lida: true });
+        // result.deletedCount contém o número de documentos excluídos
+        res.json({ message: `${result.deletedCount} notificações lidas foram excluídas.` });
+    } catch (error) {
+        console.error("Erro ao excluir notificações lidas:", error); // Log do erro no servidor
+        res.status(500).json({ error: 'Erro ao excluir notificações lidas.', details: error.message });
+    }
+};
