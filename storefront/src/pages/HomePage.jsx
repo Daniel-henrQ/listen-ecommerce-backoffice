@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../assets/css/HomePage.css'; // Importa o CSS adaptado
-import logoWhite from '../assets/images/listen-white.svg'; // Importa a imagem
-import logoDark from '../assets/images/listen.svg'; // Importa a imagem
+
+// Use /listen.png como fallback se os SVGs não funcionarem ou estiverem vazios
+// const logoWhitePath = '/listen-white.svg'; // Caminho no public
+// const logoDarkPath = '/listen.svg'; // Caminho no public
+const logoWhitePath = '/listen.png'; // Usando PNG como fallback
+const logoDarkPath = '/listen.png';  // Usando PNG como fallback
+
 
 function HomePage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,8 +15,8 @@ function HomePage() {
 
     // Lógica para o menu lateral
     const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-        document.body.classList.toggle('menu-is-open', !isMenuOpen);
+        // Usa o estado anterior para garantir a atualização correta
+        setIsMenuOpen(prev => !prev);
     };
 
     // Lógica para a navegação sticky
@@ -32,11 +37,13 @@ function HomePage() {
         };
     }, []); // Array vazio significa que este efeito corre apenas uma vez (montagem/desmontagem)
 
-    // Efeito para adicionar/remover a classe do body (menu lateral)
+    // Efeito para adicionar/remover a classe do body e estilo overflow (menu lateral)
     useEffect(() => {
         if (isMenuOpen) {
+            document.body.classList.add('menu-is-open');
             document.body.style.overflow = 'hidden'; // Impede scroll do fundo
         } else {
+            document.body.classList.remove('menu-is-open');
             document.body.style.overflow = '';
         }
         // Cleanup: remove a classe e o estilo se o componente for desmontado
@@ -44,22 +51,26 @@ function HomePage() {
             document.body.classList.remove('menu-is-open');
             document.body.style.overflow = '';
         };
-    }, [isMenuOpen]);
+    }, [isMenuOpen]); // Executa sempre que isMenuOpen mudar
 
 
     return (
         <>
             {/* Overlay e Menu Lateral */}
+            {/* Renderização condicional da classe 'show' no overlay */}
             <div className={`menu-overlay ${isMenuOpen ? 'show' : ''}`} onClick={toggleMenu}></div>
+            {/* Renderização condicional da classe 'open' no menu */}
             <aside className={`side-menu ${isMenuOpen ? 'open' : ''}`}>
                 <div className="side-menu-header">
                     <h2>Menu</h2>
                     <button className="close-menu-btn" onClick={toggleMenu}>
+                        {/* Ícone de fechar */}
                         <span className="material-symbols-outlined">close</span>
                     </button>
                 </div>
                 <nav className="side-menu-nav">
                     <ul>
+                        {/* Links do menu lateral */}
                         <li><a href="#">Rock</a></li>
                         <li><a href="#">Bossa nova</a></li>
                         <li><a href="#">Jazz e Blues</a></li>
@@ -74,18 +85,21 @@ function HomePage() {
             {/* Secção Hero */}
             <header className="hero-section">
                 <div className="video-background">
-                    {/* O vídeo deve estar na pasta public */}
+                    {/* Referencia o vídeo na pasta public */}
                     <video src="/Minimalist_Vinyl_Record_Video_Generation.mp4" autoPlay muted loop playsInline></video>
                     <div className="video-overlay"></div>
                 </div>
 
                 {/* Navegação Principal */}
+                {/* Adiciona ref e classe sticky condicional */}
                 <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}>
                     <div className="nav-left">
+                        {/* Botão de abrir menu */}
                         <button className="menu-btn" onClick={toggleMenu}>
                             <span className="material-symbols-outlined">menu</span>
                             MENU
                         </button>
+                        {/* Barra de pesquisa */}
                         <div className="search-bar">
                             <span className="material-symbols-outlined">search</span>
                             <input type="search" placeholder="Search" />
@@ -94,12 +108,13 @@ function HomePage() {
 
                     <div className="nav-center">
                         <div className="logo-container">
-                            {/* Usa a imagem importada correta com base no estado sticky */}
-                            <img src={isNavSticky ? logoDark : logoWhite} alt="Listen." className="logo-svg" />
+                            {/* Logo que muda com o scroll */}
+                            <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" />
                         </div>
                     </div>
 
                     <div className="nav-right">
+                        {/* Ícones da direita */}
                         <a href="#" title="Localização">
                             <span className="material-symbols-outlined">location_on</span>
                         </a>
@@ -107,6 +122,7 @@ function HomePage() {
                             <a href="#" title="Minha Conta">
                                 <span className="material-symbols-outlined">person</span>
                             </a>
+                            {/* Dropdown da conta */}
                             <ul className="dropdown-menu">
                                 <li><a href="#">Meus pedidos</a></li>
                                 <li><a href="#">Meus dados</a></li>
