@@ -10,6 +10,7 @@ body {
     line-height: 1.6;
     color: #333;
     transition: transform 0.3s ease-in-out;
+    /* Remove overflow: hidden; daqui se foi colocado para o menu */
 }
 
 h1,
@@ -63,8 +64,10 @@ button {
     top: 0;
     left: 0;
     width: 100%;
-    height: 120%;
+    height: 100%;
+    /* Ajustado para 100% */
     background-color: rgba(0, 0, 0, 0.3);
+    /* Overlay mais sutil como na imagem */
     z-index: 1;
 }
 
@@ -84,17 +87,17 @@ button {
         padding 0.3s ease-in-out;
 }
 
-/* --- ALTERADO: Barra sticky menor --- */
 .main-nav.nav-is-sticky {
     position: fixed;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(255, 255, 255, 0.98);
+    /* Fundo branco quase opaco */
     backdrop-filter: blur(5px);
     color: #333;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-    /* --- Padding menor para a barra fixa --- */
+    /* Texto escuro */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    /* Sombra mais suave */
     padding: 1rem 3rem;
-
+    /* Padding menor */
     transform: translateY(0);
     animation: slideDown 0.3s ease-in-out;
 }
@@ -109,28 +112,38 @@ button {
     }
 }
 
-
-/* Esquerda (Menu) */
+/* Esquerda (Menu e Busca) */
 .nav-left {
     justify-self: start;
     display: flex;
     align-items: center;
-    gap: 2.5rem;
+    gap: 1.5rem;
+    /* Reduzido um pouco o espaço */
 }
 
 .nav-left .menu-btn {
     background: none;
     border: none;
     color: inherit;
+    /* Herda a cor do .main-nav */
     font-family: 'Lato', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    /* Um pouco menor */
     display: flex;
     align-items: center;
     gap: 0.5rem;
     transition: color 0.3s ease-in-out;
+    font-weight: bold;
+    /* Deixar em negrito como na imagem */
 }
 
-/* Centro (Logo e Busca) */
+.nav-left .menu-btn .material-symbols-outlined {
+    font-size: 1.5rem;
+    /* Ajustar tamanho do ícone de menu */
+}
+
+
+/* Centro (Logo) */
 .nav-center {
     justify-self: center;
     display: flex;
@@ -138,46 +151,57 @@ button {
 }
 
 .logo-svg {
-    width: 160px;
-    height: 40px;
-    margin-bottom: 0.5rem;
-    color: #fff;
+    /* Ajuste tamanho conforme a imagem final do logo */
+    height: 25px;
+    /* Altura menor, como na imagem */
+    width: auto;
+    /* color: #fff; */
+    /* Cor é herdada ou definida pelo SVG/PNG */
+    transition: filter 0.3s ease-in-out;
 }
 
+/*.nav-is-sticky .logo-svg {
+    /* filter: invert(1); */
+    /* Isso pode funcionar para SVGs simples, senão use imagens separadas */
+/*}      */
 
-/* --- ALTERADO: Barra de pesquisa com fundo no topo --- */
+
+/* Barra de pesquisa (inicialmente à esquerda) */
 .search-bar {
     display: flex;
     align-items: center;
-    width: 300px;
-    transition: background-color 0.3s ease-in-out;
-
-    /* Fundo e borda para o topo (sobre o vídeo) */
-    background-color: #f2f2f2;
-    border: 1px solid #f2f2f2;
-    border-radius: 8px;
+    width: 250px;
+    /* Largura como na imagem */
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Fundo branco semi-transparente no início */
+    border: 1px solid transparent;
+    /* Sem borda no início */
+    border-radius: 4px;
+    /* Bordas levemente arredondadas */
     padding: 0.4rem 0.8rem;
-    /* Espaçamento interno */
 }
 
 /* Estilo da barra de pesquisa no sticky */
 .nav-is-sticky .search-bar {
     background-color: #f0f0f0;
-    /* Fundo cinza-claro */
-    border-color: transparent;
-    /* Remove a borda no sticky */
+    /* Fundo cinza claro */
+    border-color: #e0e0e0;
+    /* Borda cinza claro */
 }
 
 
 .search-bar .material-symbols-outlined {
-    color: #3c3c4c;
-    /* Herda a cor */
+    color: #555;
+    /* Ícone cinza escuro */
+    font-size: 1.3rem;
+    /* Tamanho do ícone */
     transition: color 0.3s ease-in-out;
 }
 
-/* Cor do ícone de busca no estado sticky */
 .nav-is-sticky .search-bar .material-symbols-outlined {
     color: #777;
+    /* Mantém ou ajusta a cor no sticky */
 }
 
 
@@ -186,25 +210,26 @@ button {
     outline: none;
     margin-left: 0.5rem;
     font-family: 'Lato', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    /* Fonte um pouco menor */
     width: 100%;
     background: none;
-    color: #3c3c4c;
-    /* Herda a cor */
-    /* --- ALTERADO: Padding removido, agora está no .search-bar --- */
+    color: #333;
+    /* Cor do texto dentro da busca */
     padding: 0;
     transition: color 0.3s ease-in-out;
 }
 
 .search-bar input::placeholder {
-    color: #3c3c4c;
+    color: #777;
+    /* Placeholder cinza */
     opacity: 1;
     transition: color 0.3s ease-in-out;
 }
 
-/* Cor do placeholder no estado sticky */
 .nav-is-sticky .search-bar input::placeholder {
     color: #999;
+    /* Placeholder mais claro no sticky */
 }
 
 
@@ -214,16 +239,21 @@ button {
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    /* Espaçamento entre ícones */
 }
 
 .nav-right a {
     color: inherit;
+    /* Herda cor branca ou escura do .main-nav */
     text-decoration: none;
     transition: color 0.3s ease-in-out;
+    position: relative;
+    /* Para o dropdown */
 }
 
 .nav-right .material-symbols-outlined {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
+    /* Tamanho dos ícones */
 }
 
 /* Dropdown da Conta */
@@ -235,29 +265,50 @@ button {
     display: none;
     position: absolute;
     top: 150%;
-    right: 0;
+    /* Posição abaixo do ícone */
+    right: -10px;
+    /* Ajuste fino do alinhamento */
     background-color: #fff;
     color: #333;
     border: 1px solid #eee;
     border-radius: 4px;
-    width: 200px;
+    min-width: 160px;
+    /* Largura mínima */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    /* Garante que fique sobre outros elementos */
+    padding: 0.5rem 0;
+    /* Espaçamento interno vertical */
 }
 
-.user-account:hover .dropdown-menu {
+/* Ajuste importante: Mostrar menu no hover */
+.user-account:hover .dropdown-menu,
+.user-account>a:focus+.dropdown-menu,
+/* Para acessibilidade */
+.dropdown-menu:hover
+
+/* Manter aberto ao mover para o menu */
+    {
     display: block;
 }
+
 
 .dropdown-menu li a {
     display: block;
-    padding: 0.8rem 1rem;
+    padding: 0.7rem 1.2rem;
+    /* Mais padding */
     font-family: 'Lato', sans-serif;
     font-size: 0.9rem;
-    color: #444;
+    color: #555;
+    /* Cor do link */
+    white-space: nowrap;
+    /* Evita quebra de linha */
 }
 
 .dropdown-menu li a:hover {
-    background-color: #f9f9f9;
+    background-color: #f8f8f8;
+    /* Fundo suave no hover */
+    color: #111;
 }
 
 /* --- 1.2. Menu Lateral (Toggle) --- */
@@ -271,15 +322,24 @@ button {
     z-index: 999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    transition: opacity 0.3s ease-in-out, visibility 0s 0.3s linear;
+    /* Atraso na visibilidade */
 }
+
+.menu-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in-out;
+}
+
 
 .side-menu {
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: 320px;
+    width: 300px;
+    /* Largura como na imagem */
     background-color: #fff;
     z-index: 1000;
     padding: 2rem;
@@ -287,6 +347,12 @@ button {
     flex-direction: column;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+}
+
+.side-menu.open {
+    transform: translateX(0);
 }
 
 .side-menu-header {
@@ -300,41 +366,52 @@ button {
 
 .side-menu-header h2 {
     font-family: 'Inter', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    /* Um pouco menor */
+    color: #333;
 }
 
 .close-menu-btn {
     background: none;
     border: none;
-    font-size: 2rem;
-    color: #333;
+    font-size: 1.8rem;
+    /* Ícone de fechar */
+    color: #555;
+    padding: 5px;
+    /* Área de clique */
+    line-height: 1;
+}
+
+.close-menu-btn:hover {
+    color: #111;
 }
 
 .side-menu-nav ul li a {
     display: block;
-    padding: 1rem 0;
+    padding: 0.9rem 0;
+    /* Ajuste no padding */
     font-family: 'Lato', sans-serif;
-    font-size: 1.1rem;
-    color: #444;
+    font-size: 1rem;
+    /* Tamanho da fonte */
+    color: #555;
     border-bottom: 1px solid #f0f0f0;
+    transition: color 0.2s ease;
 }
+
+.side-menu-nav ul li:last-child a {
+    border-bottom: none;
+    /* Remove borda do último item */
+}
+
 
 .side-menu-nav ul li a:hover {
     color: #000;
 }
 
-/* Estado "Aberto" (controlado pelo JS) */
-body.menu-is-open .side-menu {
-    transform: translateX(0);
-}
-
-body.menu-is-open .menu-overlay {
-    opacity: 1;
-    visibility: visible;
-}
-
+/* Estado "Aberto" para body (controlado pelo JS) */
 body.menu-is-open {
-    overflow: hidden;
+    /* overflow: hidden; */
+    /* Cuidado: pode causar perda de scroll em alguns casos */
 }
 
 
@@ -350,96 +427,121 @@ body.menu-is-open {
     font-size: 2.5rem;
     margin-bottom: 2rem;
     color: #222;
+    font-weight: 500;
+    /* Peso da fonte como na imagem */
 }
 
 .about-us p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+    /* Levemente maior */
     color: #555;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    /* Mais espaço entre parágrafos */
+    line-height: 1.7;
+    /* Maior espaçamento entre linhas */
 }
 
 /* --- 3. Rodapé --- */
 footer {
-    background-color: #fdfdfd;
+    background-color: #f8f8f8;
+    /* Fundo cinza bem claro */
     border-top: 1px solid #eee;
-    padding: 4rem 2rem;
+    padding: 4rem 2rem 3rem;
+    /* Padding ajustado */
 }
 
 .footer-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    /* Usar grid para melhor controle */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* Colunas responsivas */
+    gap: 2rem 3rem;
+    /* Espaço entre colunas e linhas */
     width: 90%;
-    max-width: 1200px;
+    max-width: 1100px;
+    /* Um pouco menor */
     margin: 0 auto;
-    gap: 2rem;
 }
 
 .footer-column {
-    flex: 1;
-    min-width: 250px;
-    /* --- REMOVIDO: text-align: center; --- */
-}
-
-/* --- ADICIONADO: Alinhamento da primeira coluna à direita --- */
-.footer-column:first-child {
+    /* flex: 1; */
+    /* Não necessário com grid */
+    /* min-width: 250px; */
+    /* Controlado pelo grid */
     text-align: left;
+    /* Alinhar tudo à esquerda como padrão */
 }
-
-/* --- ADICIONADO: Alinhamento das outras colunas ao centro --- */
-.footer-column:not(:first-child) {
-    text-align: center;
-}
-
 
 .footer-column h3 {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: 1.1rem;
+    /* Título menor */
+    font-weight: bold;
+    /* Negrito */
+    margin-bottom: 1.2rem;
+    /* Mais espaço abaixo do título */
+    color: #444;
 }
 
 .footer-column p,
-.footer-column li {
+.footer-column li,
+.footer-column li a {
     font-size: 0.9rem;
     color: #666;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
+    /* Espaçamento entre itens/parágrafos */
+    line-height: 1.5;
+}
+
+.footer-column li a:hover {
+    color: #111;
 }
 
 .newsletter-form input {
     width: 100%;
-    padding: 0.8rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ccc;
+    padding: 0.7rem 0.9rem;
+    /* Padding interno */
+    margin-bottom: 0.8rem;
+    /* Espaço entre inputs */
+    border: 1px solid #ddd;
+    /* Borda mais clara */
     border-radius: 4px;
     font-family: 'Lato', sans-serif;
     font-size: 0.9rem;
     text-align: left;
+    background-color: #fff;
+}
+
+.newsletter-form input::placeholder {
+    color: #aaa;
+}
+
+/* Adicionar botão se houver */
+.newsletter-form button {
+    /* Estilos para o botão de submit da newsletter */
 }
 
 
+/* --- Media Queries (Ajustes finos se necessário) --- */
 
-/* --- Telas Médias (Tablets em paisagem, Desktops pequenos) --- */
+/* Telas Médias */
 @media (max-width: 1024px) {
 
     .main-nav,
     .main-nav.nav-is-sticky {
         padding: 1.5rem 2rem;
-        /* Reduz o padding */
     }
 
     .nav-left {
-        gap: 1.5rem;
-        /* Reduz o espaço entre menu e busca */
+        gap: 1rem;
     }
 
     .nav-right {
         gap: 1.2rem;
-        /* Reduz o espaço entre ícones */
     }
 
     .search-bar {
-        width: 250px;
-        /* Reduz um pouco a barra de pesquisa */
+        width: 200px;
+        /* Reduzir mais a busca */
     }
 
     .about-us {
@@ -448,121 +550,111 @@ footer {
 }
 
 
-/* --- Telas Pequenas (Tablets em retrato, Celulares) --- */
+/* Telas Pequenas */
 @media (max-width: 768px) {
 
-    /* --- Ajustes na Navegação Principal --- */
     .main-nav,
     .main-nav.nav-is-sticky {
-        padding: 1.5rem;
-        /* Mantém o grid de 3 colunas, mas ajusta o conteúdo */
-        grid-template-columns: 1fr auto 1fr;
+        padding: 1.2rem 1.5rem;
+        grid-template-columns: auto 1fr auto;
+        /* Menu | Logo | Ícones */
     }
 
-    /* Oculta a barra de pesquisa no 'nav-left', mantendo só o botão de menu */
     .nav-left .search-bar {
         display: none;
+        /* Esconde barra de busca */
     }
 
     .nav-left {
         gap: 0;
-        /* Remove o gap, já que só o menu-btn fica */
         justify-self: start;
-        /* Garante alinhamento à esquerda */
     }
 
     .nav-center {
         justify-self: center;
-        /* Garante centralização do logo */
+        /* Centraliza logo */
+        padding: 0 1rem;
+        /* Adiciona espaço lateral para o logo não colar */
     }
 
     .logo-svg {
-        width: 140px;
-        /* Diminui o logo */
-        height: 35px;
+        height: 22px;
+        /* Logo menor */
     }
 
-    /* Oculta ícones não essenciais da navegação */
     .nav-right a[title="Localização"],
     .nav-right a[title="Favoritos"] {
         display: none;
+        /* Esconde ícones não essenciais */
     }
 
     .nav-right {
-        gap: 1.2rem;
+        gap: 1rem;
         justify-self: end;
-        /* Garante alinhamento à direita */
     }
 
     .nav-right .material-symbols-outlined {
-        font-size: 1.6rem;
-        /* Diminui o tamanho dos ícones */
+        font-size: 1.5rem;
     }
 
-    /* --- Ajustes no Conteúdo Principal --- */
     .about-us {
         margin: 3rem auto;
         width: 90%;
-        /* Usa mais da largura da tela */
     }
 
     .about-us h2 {
         font-size: 2rem;
-        /* Diminui o título */
         margin-bottom: 1.5rem;
     }
 
     .about-us p {
         font-size: 1rem;
-        /* Diminui o texto */
     }
 
-    /* --- Ajustes no Rodapé --- */
     footer {
         padding: 3rem 1.5rem;
     }
 
     .footer-container {
-        flex-direction: column;
-        /* Força o empilhamento das colunas */
+        grid-template-columns: 1fr;
+        /* Coluna única */
         gap: 2.5rem;
     }
 
-    /* Alinha todo o texto do rodapé à esquerda em telas pequenas */
-    .footer-column,
-    .footer-column:first-child,
-    .footer-column:not(:first-child) {
+    .footer-column {
         text-align: left;
-        min-width: 100%;
-        /* Garante que ocupem a largura total */
+        /* Garante alinhamento esquerdo */
     }
 }
 
 
-/* --- Telas Muito Pequenas (Celulares em retrato) --- */
+/* Telas Muito Pequenas */
 @media (max-width: 480px) {
 
     .main-nav,
     .main-nav.nav-is-sticky {
-        padding: 1rem 1.2rem;
-        /* Mais redução de padding */
+        padding: 1rem 1rem;
+        /* Menos padding */
     }
 
     .logo-svg {
-        width: 120px;
+        height: 20px;
         /* Logo ainda menor */
-        height: 30px;
     }
 
     .nav-right {
-        gap: 1rem;
-        /* Menor espaçamento entre ícones */
+        gap: 0.8rem;
+        /* Menor espaço */
     }
 
-    /* Ajusta o menu lateral para não ocupar tanto da tela */
+    .nav-right .material-symbols-outlined {
+        font-size: 1.4rem;
+    }
+
     .side-menu {
-        width: 90%;
-        max-width: 300px;
+        width: 85%;
+        /* Menu lateral ocupa mais tela */
+        max-width: 280px;
     }
 
     .about-us h2 {
