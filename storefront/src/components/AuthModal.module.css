@@ -1,0 +1,290 @@
+/* AuthModal.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modalContent {
+  /* Fundo mais opaco, como na imagem */
+  background-color: rgba(40, 40, 40, 0.9); /* Ajuste a opacidade (0.9 = 90%) */
+  border-radius: 8px; /* Menos arredondado */
+  max-width: 800px; /* Largura maior para comportar as duas colunas */
+  width: 100%;
+  position: relative;
+  color: #e0e0e0; /* Texto um pouco mais claro */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden; /* Para garantir que a linha divisória não vaze */
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  z-index: 10; /* Para ficar acima de tudo */
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+.splitLayout {
+  display: flex;
+  width: 100%;
+}
+
+.leftColumn,
+.rightColumn {
+  flex: 1; /* Ocupa metade do espaço */
+  padding: 40px 35px; /* Padding interno das colunas */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza o conteúdo verticalmente */
+}
+
+.divider {
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.15); /* Cor da linha divisória */
+  flex-shrink: 0; /* Impede que a linha encolha */
+}
+
+.columnTitle {
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400; /* Mais fino, como na imagem */
+  color: #fff;
+  font-size: 1.8rem; /* Ajuste tamanho */
+  letter-spacing: 1px;
+  text-transform: uppercase; /* Caixa alta */
+}
+
+/* Estilos específicos da coluna esquerda */
+.welcomeContent {
+    text-align: center;
+}
+
+.welcomeText {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* Estilos de input (aplicados a ambas as colunas) */
+.inputGroup {
+  display: flex;
+  align-items: center;
+  /* Fundo mais claro e menos transparente, como na imagem */
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 0 15px;
+  transition: border-color 0.2s;
+}
+
+.inputGroup:focus-within {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.icon {
+  color: #ccc;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.inputGroup input[type="email"],
+.inputGroup input[type="text"],
+.inputGroup input[type="password"] {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  padding: 15px 0; /* Aumentei padding vertical */
+  background: transparent;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  font-family: 'Lato', sans-serif;
+}
+
+.inputGroup input::placeholder {
+  color: #aaa;
+  text-transform: uppercase; /* Placeholder em caixa alta */
+  letter-spacing: 0.5px;
+}
+
+/* Checkbox (Lembrar Senha / Termos) */
+.rememberGroup,
+.termsGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 0.8rem; /* Menor */
+  color: #ccc;
+}
+
+.rememberGroup input[type="checkbox"],
+.termsGroup input[type="checkbox"] {
+  margin-right: 8px;
+  width: 14px; /* Tamanho do checkbox */
+  height: 14px;
+  accent-color: #555; /* Cor do check */
+  background-color: transparent; /* Fundo transparente */
+  border: 1px solid #888; /* Borda visível */
+  appearance: none; /* Remover aparência padrão */
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+}
+.rememberGroup input[type="checkbox"]:checked,
+.termsGroup input[type="checkbox"]:checked {
+    background-color: #ccc; /* Fundo quando checado */
+    border-color: #ccc;
+}
+/* Adiciona o "check" visualmente */
+.rememberGroup input[type="checkbox"]:checked::before,
+.termsGroup input[type="checkbox"]:checked::before{
+    content: '✔';
+    position: absolute;
+    color: #333; /* Cor do check */
+    top: -2px;
+    left: 1px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+
+.termsLink {
+  color: #fff;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+.termsLink:hover {
+  color: #ddd;
+}
+
+/* Botão Primário (Login / Criar conta / Cadastrar) */
+.primaryButton {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2e2e2e; /* Cinza escuro */
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500; /* Médio */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase; /* Caixa alta */
+  letter-spacing: 0.5px;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #444; /* Mais claro no hover */
+}
+
+.primaryButton:disabled {
+  background-color: #555;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Mensagens de erro/sucesso */
+.message {
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.error {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f8d7da;
+}
+
+.success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #d4edda;
+}
+
+.toggleText {
+  margin-top: 25px;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #ccc;
+}
+
+.toggleLink {
+  background: none;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 5px;
+}
+
+.toggleLink:hover {
+  color: #ddd;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .modalContent {
+    max-width: 450px; /* Reduz um pouco em telas médias */
+  }
+  .splitLayout {
+    flex-direction: column; /* Empilha as colunas */
+  }
+  .divider {
+    width: 80%; /* Linha horizontal */
+    height: 1px;
+    margin: 30px auto; /* Espaçamento */
+  }
+  .leftColumn, .rightColumn {
+      padding: 30px 25px; /* Reduz padding */
+  }
+  .columnTitle {
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+  }
+   /* Esconde a opção de registrar no lado direito em telas pequenas quando já está mostrando o registro */
+   .showRegister .rightColumn .toggleText {
+        display: none;
+   }
+    /* Esconde a opção de login no lado esquerdo em telas pequenas quando está mostrando o registro */
+   .showRegister .leftColumn .toggleText {
+       display: block; /* Garante que o "Já tem conta?" apareça */
+   }
+
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    padding: 30px 15px 20px; /* Menos padding lateral */
+  }
+   .leftColumn, .rightColumn {
+       padding: 25px 15px; /* Menos padding lateral */
+   }
+}

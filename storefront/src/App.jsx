@@ -1,35 +1,85 @@
-import React, { useState } from 'react';
-// Certifique-se de importar HomePage e LiquidGlassSidebar corretamente
-import HomePage from './pages/HomePage'; // Ajuste o caminho se necessário
-import LiquidGlassSidebar from './components/LiquidGlassSidebar'; // Ajuste o caminho
-
-// Se estiver usando react-router-dom, a estrutura será um pouco diferente,
-// mas a lógica de remover o marginLeft do container principal permanece.
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route /* ... */ } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LiquidGlassSidebar from './components/LiquidGlassSidebar';
+import AuthModal from './components/AuthModal';
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); //
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  // Não precisa mais de authModalView aqui, será controlado pelo AuthModal
+  // const [authModalView, setAuthModalView] = useState('login');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // A função handleCloseSidebar é passada para o LiquidGlassSidebar
-  const handleCloseSidebar = () => setIsSidebarOpen(false); //
+  useEffect(() => {
+    console.log("App.jsx: Verificando token...");
+    const token = localStorage.getItem('authToken');
+    setIsAuthenticated(!!token);
+    if (!token) {
+      console.log("App.jsx: Token não encontrado. Abrindo modal de boas-vindas.");
+      openAuthModal(); // Chama sem argumento para usar o default 'welcome'
+    } else {
+      console.log("App.jsx: Token encontrado.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleCloseSidebar = () => setIsSidebarOpen(false);
+
+  // Função openAuthModal agora pode receber a view desejada ('login' ou 'register')
+  // Se não receber nada, o AuthModal usará 'welcome' como padrão.
+  const openAuthModal = (view) => {
+    console.log(`App.jsx: Chamando openAuthModal (view desejada: ${view || 'welcome'})`);
+    // Passamos a view desejada para o AuthModal via props se necessário,
+    // mas como o useEffect no AuthModal reseta para 'welcome',
+    // só precisamos garantir que ele abra.
+    // setAuthModalView(view || 'welcome'); // Não precisa mais definir a view aqui
+    setIsAuthModalOpen(true);
+    document.body.classList.add('modal-open');
+  };
+
+
+  const closeAuthModal = () => {
+    console.log("App.jsx: Chamando closeAuthModal");
+    setIsAuthModalOpen(false);
+     document.body.classList.remove('modal-open');
+     const token = localStorage.getItem('authToken');
+     setIsAuthenticated(!!token);
+  };
+
+  console.log("App.jsx: Renderizando. isAuthModalOpen:", isAuthModalOpen);
 
   return (
-    <div>
-      {/* GARANTIR QUE NÃO HÁ NENHUM BOTÃO "Abrir Menu" AQUI */}
+    <Router>
+      <div>
+        <LiquidGlassSidebar
+          isOpen={isSidebarOpen}
+          onClose={handleCloseSidebar}
+        />
 
-      {/* Renderiza o Menu Lateral */}
-      <LiquidGlassSidebar
-        isOpen={isSidebarOpen} //
-        onClose={handleCloseSidebar} //
-        userName="Seu Nome" // Ou pegue dinamicamente
-      />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={closeAuthModal}
+          // initialView não é mais necessário aqui, o AuthModal gerencia
+        />
 
-      {/* Conteúdo Principal da Página (HomePage ou outras rotas) */}
-      <main> {/* */}
-        {/* Passa a função para abrir o sidebar para HomePage */}
-        <HomePage onOpenSidebar={() => setIsSidebarOpen(true)} />
-        {/* Outras páginas/rotas viriam aqui */}
-      </main>
-    </div>
+        <main>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <HomePage
+                  onOpenSidebar={() => setIsSidebarOpen(true)}
+                   onOpenAuthModal={openAuthModal} // Passa a função para abrir (pode especificar view)
+                   isAuthenticated={isAuthenticated}
+                />
+              }
+            />
+            {/* Outras rotas */}
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 
