@@ -1,12 +1,12 @@
 // storefront/src/pages/HomePage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import '../assets/css/HomePage.css';
-// Não precisa mais importar LiquidGlassSidebar aqui
+import { jwtDecode } from "jwt-decode"; 
 
 const logoWhitePath = '/listen-white.svg';
 const logoDarkPath = '/listen.svg';
 
-// Recebe as novas props: onOpenAuthModal e isAuthenticated
+// Recebe as props: onOpenSidebar, onOpenAuthModal, isAuthenticated
 function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
     const [isNavSticky, setIsNavSticky] = useState(false);
     const mainNavRef = useRef(null);
@@ -20,31 +20,69 @@ function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
     }, []);
 
     // Função para renderizar os botões de autenticação ou perfil
-     const renderAuthSection = () => {
-         if (isAuthenticated) {
-             // Exemplo: Mostrar um ícone de perfil logado
-             // Você pode expandir isso para um dropdown de usuário se necessário
-             return (
-                  <a href="/app" title="Minha Conta Backoffice" target="_blank" rel="noopener noreferrer"> {/* Link para backoffice */}
-                      <span className="material-symbols-outlined">account_circle</span>
-                  </a>
-             );
-         } else {
-             // Mostrar botões de Entrar/Criar Conta
-             return (
-                 <>
-                     {/* Botão/Link para abrir modal de Login */}
-                     <button className="menu-btn" onClick={() => onOpenAuthModal('login')}>
-                         ENTRAR
-                     </button>
-                     {/* Botão/Link para abrir modal de Cadastro */}
-                     <button className="menu-btn" onClick={() => onOpenAuthModal('register')}>
-                         CRIAR CONTA
-                     </button>
-                 </>
-             );
-         }
-     };
+    const renderAuthSection = () => {
+        if (isAuthenticated) {
+            let userRole = null;
+            let userName = 'Utilizador';
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    // Usar jwt-decode para extrair informações do token
+                    const decoded = jwtDecode(token);
+                    userRole = decoded.role;
+                    userName = decoded.name; // Pega o nome do token
+                } catch (e) {
+                    console.error("Erro ao descodificar token:", e);
+                    // Opcional: Deslogar se o token for inválido?
+                    // localStorage.removeItem('authToken');
+                    // window.location.reload();
+                }
+            }
+
+            // Ação de Logout
+            const handleLogout = () => {
+                localStorage.removeItem('authToken');
+                window.location.reload(); // Recarrega a página para atualizar o estado
+            };
+
+            if (userRole === 'adm' || userRole === 'vendas') {
+                // Funcionário: Link para o backoffice + botão Sair
+                return (
+                    <>
+                        <a href="/app" title="Acessar Backoffice" className="menu-btn" style={{ textDecoration: 'none' }}>
+                            <span className="material-symbols-outlined">admin_panel_settings</span>
+                            BACKOFFICE
+                        </a>
+                        <button className="menu-btn" onClick={handleLogout}>SAIR</button>
+                    </>
+                );
+            } else {
+                // Cliente: Ícone de conta + botão Sair
+                return (
+                    <>
+                        <a href="#" title={`Conta de ${userName}`} className="menu-btn" onClick={(e) => { e.preventDefault(); alert('Página Minha Conta (Cliente) - Não implementado.'); }}>
+                            <span className="material-symbols-outlined">account_circle</span>
+                            {/* Opcional: Mostrar nome do cliente */}
+                            {/* {userName.split(' ')[0]} */}
+                        </a>
+                        <button className="menu-btn" onClick={handleLogout}>SAIR</button>
+                    </>
+                );
+            }
+        } else {
+            // Não Autenticado: Botões Entrar/Criar Conta
+            return (
+                <>
+                    <button className="menu-btn" onClick={() => onOpenAuthModal('login')}>
+                        ENTRAR
+                    </button>
+                    <button className="menu-btn" onClick={() => onOpenAuthModal('register')}>
+                        CRIAR CONTA
+                    </button>
+                </>
+            );
+        }
+    };
 
     return (
         <>
@@ -61,7 +99,6 @@ function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
                             <span className="material-symbols-outlined">menu</span>
                             MENU
                         </button>
-                        {/* A barra de pesquisa pode permanecer */}
                         <div className="search-bar">
                              <span className="material-symbols-outlined">search</span>
                              <input type="search" placeholder="Search" />
@@ -105,6 +142,8 @@ function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
                         <form className="newsletter-form">
                             <input type="text" placeholder="Nome" />
                             <input type="email" placeholder="E-mail" />
+                            {/* Adicionar botão de submit ao formulário do newsletter */}
+                             <button type="submit" className="newsletter-button" style={{ /* Estilos básicos */ padding: '10px 15px', marginTop: '10px', cursor: 'pointer', background: '#333', color: '#fff', border: 'none', borderRadius: '4px' }}>Inscrever</button>
                         </form>
                     </div>
                     <div className="footer-column">

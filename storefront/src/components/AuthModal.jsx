@@ -1,8 +1,6 @@
 // storefront/src/components/AuthModal.jsx
 
 import React, { useState, useEffect } from 'react';
-// Removido useNavigate pois usaremos window.location.href
-// import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './AuthModal.module.css';
 
@@ -14,23 +12,21 @@ const CloseIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" heigh
 
 // Componente do Modal
 function AuthModal({ isOpen, onClose }) {
-    // 'view' controla o conteúdo da coluna ESQUERDA: 'welcome' ou 'register'
-    const [view, setView] = useState('welcome');
-    // Estados separados para login e registro
+    const [view, setView] = useState('welcome'); // 'welcome' ou 'register'
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
 
     const [registerEmail, setRegisterEmail] = useState('');
-    const [registerUsername, setRegisterUsername] = useState('');
+    const [registerUsername, setRegisterUsername] = useState(''); // Usado como 'nome' para Cliente
     const [registerPassword, setRegisterPassword] = useState('');
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
     const [registerTermsAccepted, setRegisterTermsAccepted] = useState(false);
+    // Adicionar CPF ao registo
+    const [registerCpf, setRegisterCpf] = useState('');
 
     const [message, setMessage] = useState({ text: '', type: '', target: null }); // target: 'login' | 'register'
     const [isLoading, setIsLoading] = useState(false);
-    // Removido useNavigate
-    // const navigate = useNavigate();
 
     // Reseta tudo ao abrir/fechar
     useEffect(() => {
@@ -44,6 +40,7 @@ function AuthModal({ isOpen, onClose }) {
             setRegisterPassword('');
             setRegisterConfirmPassword('');
             setRegisterTermsAccepted(false);
+            setRegisterCpf(''); // Limpa CPF
             setMessage({ text: '', type: '', target: null });
             setIsLoading(false);
         }
@@ -56,18 +53,34 @@ function AuthModal({ isOpen, onClose }) {
         setIsLoading(true);
 
         if (!loginEmail || !loginPassword) {
-            setMessage({ text: 'Usuário e Senha são obrigatórios.', type: 'error', target: 'login' });
+            setMessage({ text: 'Email e Senha são obrigatórios.', type: 'error', target: 'login' });
             setIsLoading(false); return;
         }
         try {
+            // Esta chamada agora funciona para ambos os tipos de utilizador
             const response = await axios.post('/api/auth/login', { email: loginEmail, password: loginPassword });
             setMessage({ text: 'Login bem-sucedido! Redirecionando...', type: 'success', target: 'login' });
             localStorage.setItem('authToken', response.data.token);
-            setTimeout(() => {
-                // ***** Alterado para window.location.href *****
-                window.location.href = '/app';
-                // ***** Fim da alteração *****
-            }, 1000);
+
+            // Verifica o papel retornado pela API para decidir o redirecionamento
+            const userRole = response.data.user?.role;
+            if (userRole === 'adm' || userRole === 'vendas') {
+                // Redireciona funcionário para o backoffice
+                setTimeout(() => {
+                    window.location.href = '/app'; // Redireciona para o backoffice
+                }, 1000);
+            } else if (userRole === 'cliente') {
+                // Mantém cliente no storefront (ou redireciona para dashboard de cliente, se houver)
+                setTimeout(() => {
+                    onClose(); // Fecha o modal
+                    window.location.reload(); // Recarrega a página para atualizar o estado de autenticação na HomePage
+                }, 1000);
+            } else {
+                 // Caso inesperado (papel não reconhecido)
+                 console.error("Papel de utilizador desconhecido recebido:", userRole);
+                 setMessage({ text: 'Login bem-sucedido, mas papel desconhecido.', type: 'error', target: 'login' });
+                 setTimeout(onClose, 1500); // Fecha o modal após um tempo
+            }
         } catch (error) {
             setMessage({ text: error.response?.data?.msg || 'Erro no login.', type: 'error', target: 'login' });
         } finally { setIsLoading(false); }
@@ -77,7 +90,7 @@ function AuthModal({ isOpen, onClose }) {
         e.preventDefault();
         setMessage({ text: '', type: '', target: null });
         setIsLoading(true);
-        if (!registerEmail || !registerUsername || !registerPassword || !registerConfirmPassword) {
+        if (!registerEmail || !registerUsername || !registerCpf || !registerPassword || !registerConfirmPassword) {
             setMessage({ text: 'Todos os campos são obrigatórios.', type: 'error', target: 'register' });
             setIsLoading(false); return;
         }
@@ -90,11 +103,20 @@ function AuthModal({ isOpen, onClose }) {
             setIsLoading(false); return;
         }
         try {
+            // Envia para a rota de criação de Cliente
             const response = await axios.post('/api/clientes', {
-                email: registerEmail, nome: registerUsername, password: registerPassword, confirmpassword: registerConfirmPassword
+                email: registerEmail,
+                nome: registerUsername, // O backend espera 'nome' para Cliente
+                cpf: registerCpf,
+                password: registerPassword,
+                confirmpassword: registerConfirmPassword
+                // Outros campos de cliente poderiam ser adicionados aqui
             });
             setMessage({ text: response.data.msg || 'Cadastro realizado com sucesso!', type: 'success', target: 'register' });
-             setTimeout(() => { onClose(); }, 1500);
+             setTimeout(() => {
+                 setView('welcome'); // Muda para a view de login após sucesso
+                 setMessage({ text: 'Cadastro realizado! Faça login para continuar.', type: 'success', target: 'login' }); // Mensagem na tela de login
+             }, 1500);
         } catch (error) {
             setMessage({ text: error.response?.data?.msg || 'Erro ao cadastrar.', type: 'error', target: 'register' });
         } finally { setIsLoading(false); }
@@ -123,6 +145,10 @@ function AuthModal({ isOpen, onClose }) {
                                 >
                                     Criar conta
                                 </button>
+                                {/* Mensagem de sucesso do registo pode aparecer aqui */}
+                                {message.target === 'login' && message.type === 'success' && !message.text.includes('Redirecionando') &&
+                                    <p className={`${styles.message} ${styles.success}`} style={{marginTop: '15px'}}>{message.text}</p>
+                                }
                             </div>
                         )}
 
@@ -130,12 +156,16 @@ function AuthModal({ isOpen, onClose }) {
                             <form onSubmit={handleRegister}>
                                 <h2 className={styles.columnTitle}>CADASTRE-SE</h2>
                                 <div className={styles.inputGroup}>
+                                    <span className={styles.icon}><UserIcon /></span>
+                                    <input type="text" placeholder="NOME" value={registerUsername} onChange={(e) => setRegisterUsername(e.target.value)} required />
+                                </div>
+                                <div className={styles.inputGroup}>
                                     <span className={styles.icon}><EmailIcon /></span>
                                     <input type="email" placeholder="EMAIL" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} required />
                                 </div>
                                 <div className={styles.inputGroup}>
-                                    <span className={styles.icon}><UserIcon /></span>
-                                    <input type="text" placeholder="USUÁRIO" value={registerUsername} onChange={(e) => setRegisterUsername(e.target.value)} required />
+                                    <span className={styles.icon}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M1 1h14v2H1zM3 5h10v2H3zm0 4h10v2H3zm0 4h10v2H3z"/></svg></span> {/* Ícone genérico para CPF */}
+                                    <input type="text" placeholder="CPF" value={registerCpf} onChange={(e) => setRegisterCpf(e.target.value)} required />
                                 </div>
                                 <div className={styles.inputGroup}>
                                     <span className={styles.icon}><LockIcon /></span>
@@ -168,10 +198,10 @@ function AuthModal({ isOpen, onClose }) {
                         <form onSubmit={handleLogin}>
                             <h2 className={styles.columnTitle}>FAÇA LOGIN</h2>
                             <div className={styles.inputGroup}>
-                                <span className={styles.icon}><UserIcon /></span>
+                                <span className={styles.icon}><EmailIcon /></span> {/* Alterado para EmailIcon */}
                                 <input
-                                    type="email"
-                                    placeholder="USUÁRIO"
+                                    type="email" // Alterado para email
+                                    placeholder="EMAIL" // Placeholder atualizado
                                     value={loginEmail}
                                     onChange={(e) => setLoginEmail(e.target.value)}
                                     required
@@ -200,7 +230,8 @@ function AuthModal({ isOpen, onClose }) {
                             <button type="submit" className={styles.primaryButton} disabled={isLoading}>
                                 {isLoading ? 'ENTRANDO...' : 'Entrar'}
                             </button>
-                            {view !== 'register' && (
+                            {/* Mostra "Criar conta" apenas se a view esquerda for 'welcome' */}
+                            {view === 'welcome' && (
                                 <p className={styles.toggleText}>
                                    Não tem conta? <button type="button" onClick={() => setView('register')} className={styles.toggleLink}>Criar conta</button>
                                 </p>
