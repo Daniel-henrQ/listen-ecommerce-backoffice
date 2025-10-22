@@ -23,18 +23,18 @@
   height: 100vh;
   width: 300px; /* Largura do menu */
   max-width: 90%; /* Limite em telas pequenas */
-  background-color: rgba(50, 50, 50, 0.7); /* Cor de fundo cinza semi-transparente - baseada na imagem */
-  backdrop-filter: blur(15px); /* Efeito de vidro/blur */
-  -webkit-backdrop-filter: blur(15px); /* Suporte para Safari */
-  border-right: 1px solid rgba(255, 255, 255, 0.1); /* Borda direita sutil */
-  color: #f0f0f0; /* Cor do texto clara */
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */
-  overflow-y: auto; /* Permite scroll se o conteúdo for maior */
-  box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+  background-color: rgba(50, 50, 50, 0.3); /* Cor de fundo cinza semi-transparente */ /* */
+  backdrop-filter: blur(15px); /* Efeito de vidro/blur */ /* */
+  -webkit-backdrop-filter: blur(15px); /* Suporte para Safari */ /* */
+  border-right: 1px solid rgba(255, 255, 255, 0.1); /* Borda direita sutil */ /* */
+  color: #f0f0f0; /* Cor do texto clara */ /* */
+  z-index: 1000; /* */
+  display: flex; /* */
+  flex-direction: column; /* */
+  transform: translateX(-100%); /* */
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */ /* */
+  overflow-y: auto; /* Permite scroll se o conteúdo for maior */ /* */
+  box-shadow: 5px 0 25px rgba(0,0,0,0.3); /* */
 }
 
 .open {
