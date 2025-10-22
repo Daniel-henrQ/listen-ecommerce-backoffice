@@ -1,23 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../assets/css/HomePage.css'; // Importa o CSS adaptado
+import LiquidGlassSidebar from '../components/LiquidGlassSidebar'; // Ajuste o caminho se necessário
 
-// *** AJUSTE AQUI SE NECESSÁRIO ***
-// Verifique se os arquivos existem em storefront/public/
-// Se usar PNGs diferentes, altere os nomes: ex: '/listen-white.png'
-const logoWhitePath = '/listen-white.svg'; // Ou '/listen-white.png'
-const logoDarkPath = '/listen.svg';      // Ou '/listen-dark.png' ou '/listen.png'
+const logoWhitePath = '/listen-white.svg'; // Ou .png
+const logoDarkPath = '/listen.svg';      // Ou .png
 
 function HomePage() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNavSticky, setIsNavSticky] = useState(false);
     const mainNavRef = useRef(null);
 
-    // Lógica para o menu lateral
-    const toggleMenu = () => {
-        setIsMenuOpen(prev => !prev);
-    };
+    const handleOpenSidebar = () => setIsSidebarOpen(true);
+    const handleCloseSidebar = () => setIsSidebarOpen(false);
 
-    // Lógica para a navegação sticky
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 20) {
@@ -32,57 +27,24 @@ function HomePage() {
         };
     }, []);
 
-    // Efeito para adicionar/remover a classe do body (menu lateral)
-    useEffect(() => {
-        if (isMenuOpen) {
-            document.body.classList.add('menu-is-open');
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.classList.remove('menu-is-open');
-            document.body.style.overflow = '';
-        }
-        return () => {
-            document.body.classList.remove('menu-is-open');
-            document.body.style.overflow = '';
-        };
-    }, [isMenuOpen]);
-
     return (
         <>
-            {/* Overlay e Menu Lateral */}
-            <div className={`menu-overlay ${isMenuOpen ? 'show' : ''}`} onClick={toggleMenu}></div>
-            <aside className={`side-menu ${isMenuOpen ? 'open' : ''}`}>
-                <div className="side-menu-header">
-                    <h2>Menu</h2>
-                    <button className="close-menu-btn" onClick={toggleMenu}>
-                        <span className="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <nav className="side-menu-nav">
-                    <ul>
-                        <li><a href="#">Rock</a></li>
-                        <li><a href="#">Bossa nova</a></li>
-                        <li><a href="#">Jazz e Blues</a></li>
-                        <li><a href="#">Soul</a></li>
-                        <li><a href="#">Mpb</a></li>
-                        <li><a href="#">Meus Pedidos</a></li>
-                        <li><a href="#">Fale Conosco</a></li>
-                    </ul>
-                </nav>
-            </aside>
+            <LiquidGlassSidebar
+                isOpen={isSidebarOpen}
+                onClose={handleCloseSidebar}
+                userName="Bernardo" // Ou pegue o nome do usuário de algum lugar
+            />
 
-            {/* Secção Hero */}
             <header className="hero-section">
                 <div className="video-background">
-                    {/* Certifique-se que o vídeo existe em storefront/public/ */}
                     <video src="/Minimalist_Vinyl_Record_Video_Generation.mp4" autoPlay muted loop playsInline></video>
                     <div className="video-overlay"></div>
                 </div>
 
-                {/* Navegação Principal */}
                 <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}>
                     <div className="nav-left">
-                        <button className="menu-btn" onClick={toggleMenu}>
+                        {/* Botão que abre o menu */}
+                        <button className="menu-btn" onClick={handleOpenSidebar}>
                             <span className="material-symbols-outlined">menu</span>
                             MENU
                         </button>
@@ -94,7 +56,6 @@ function HomePage() {
 
                     <div className="nav-center">
                         <div className="logo-container">
-                            {/* Usa os caminhos definidos acima */}
                             <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" />
                         </div>
                     </div>
@@ -125,7 +86,6 @@ function HomePage() {
                 </nav>
             </header>
 
-            {/* Conteúdo Principal */}
             <main>
                 <section className="about-us">
                     <h2>A listen.</h2>
@@ -135,7 +95,6 @@ function HomePage() {
                 </section>
             </main>
 
-            {/* Rodapé */}
             <footer>
                 <div className="footer-container">
                     <div className="footer-column">
@@ -144,7 +103,6 @@ function HomePage() {
                         <form className="newsletter-form">
                             <input type="text" placeholder="Nome" />
                             <input type="email" placeholder="E-mail" />
-                            {/* Adicionar botão de submissão se necessário */}
                         </form>
                     </div>
                     <div className="footer-column">
@@ -153,7 +111,6 @@ function HomePage() {
                             <li><a href="#">Rock</a></li>
                             <li><a href="#">Bossa nova</a></li>
                             <li><a href="#">Jazz e Blues</a></li>
-                            {/* Adicione outros links se houver */}
                         </ul>
                     </div>
                     <div className="footer-column">

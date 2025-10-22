@@ -1,0 +1,189 @@
+/* LiquidGlassSidebar.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0; /* top, right, bottom, left = 0 */
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s linear;
+}
+
+.showOverlay {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 300px; /* Largura do menu */
+  max-width: 90%; /* Limite em telas pequenas */
+  background-color: rgba(50, 50, 50, 0.7); /* Cor de fundo cinza semi-transparente - baseada na imagem */
+  backdrop-filter: blur(15px); /* Efeito de vidro/blur */
+  -webkit-backdrop-filter: blur(15px); /* Suporte para Safari */
+  border-right: 1px solid rgba(255, 255, 255, 0.1); /* Borda direita sutil */
+  color: #f0f0f0; /* Cor do texto clara */
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */
+  overflow-y: auto; /* Permite scroll se o conteúdo for maior */
+  box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+}
+
+.open {
+  transform: translateX(0);
+}
+
+/* --- Cabeçalho --- */
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem; /* Mais espaçamento */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0; /* Não encolher */
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.greeting {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #ffffff;
+}
+
+/* --- Seção Descubra --- */
+.discoverSection {
+  padding: 1.5rem 1.5rem 1rem; /* Padding vertical e horizontal */
+  background-color: rgba(255, 255, 255, 0.08); /* Fundo sutilmente diferente */
+  margin: 1.5rem; /* Margem para separar */
+  border-radius: 8px; /* Bordas arredondadas */
+}
+
+.discoverTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.discoverText {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #d0d0d0; /* Texto um pouco mais claro */
+  padding-top: 0.8rem;
+  margin: 0;
+}
+
+/* --- Navegação --- */
+.navigation {
+  flex-grow: 1; /* Ocupa espaço restante */
+  padding: 0 1.5rem 1.5rem; /* Padding inferior */
+}
+
+.navSection {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0; /* Espaçamento menor entre seções principais */
+}
+.navSection:last-child {
+    border-bottom: none;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.8rem 0; /* Padding vertical no header da seção */
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.arrowIcon {
+  transition: transform 0.3s ease;
+  color: #b0b0b0; /* Cor da seta */
+}
+
+.arrowOpen {
+  transform: rotate(180deg); /* Gira a seta quando aberto */
+}
+
+/* --- Conteúdo Colapsável (Texto Descubra e Sublinks) --- */
+.collapsibleContent, .subLinks {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding-left: 0.5rem; /* Pequeno recuo para sublinks/texto */
+}
+
+/* Estado Aberto */
+.contentOpen, .subLinksOpen {
+  max-height: 500px; /* Ou um valor grande o suficiente */
+  transition: max-height 0.3s ease-in;
+}
+
+.subLinks {
+  list-style: none;
+  padding-left: 0.8rem; /* Recuo maior para sublinks */
+  margin-top: 0.5rem;
+}
+
+.subLink {
+  display: block;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #d0d0d0;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.subLink:hover {
+  color: #ffffff;
+  padding-left: 0.3rem; /* Efeito sutil no hover */
+}
+
+/* Scrollbar (opcional, para navegadores WebKit) */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
