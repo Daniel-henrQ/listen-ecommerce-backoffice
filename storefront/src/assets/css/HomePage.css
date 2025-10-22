@@ -1,667 +1,503 @@
-/* --- Configurações Globais e Fontes --- */
+/* =========================================================
+   RESET & CONFIGURAÇÕES GERAIS
+   ========================================================= */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Lato', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    transition: transform 0.3s ease-in-out;
-    /* Remove overflow: hidden; daqui se foi colocado para o menu */
+  font-family: 'Lato', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #ffffff; /* ← fundo branco fixo */
+  transition: transform 0.3s ease-in-out;
 }
 
-h1,
-h2,
-h3 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+
+h1, h2, h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
 }
 
 ul {
-    list-style: none;
+  list-style: none;
 }
 
 a {
-    text-decoration: none;
-    color: inherit;
+  text-decoration: none;
+  color: inherit;
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-/* --- 1. Cabeçalho e Vídeo de Fundo --- */
+/* =========================================================
+   1. SEÇÃO PRINCIPAL (HERO + VÍDEO)
+   ========================================================= */
 .hero-section {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    color: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  color: #fff;
 }
 
 .video-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 
 .video-background video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Ajustado para 100% */
-    background-color: rgba(0, 0, 0, 0.3);
-    /* Overlay mais sutil como na imagem */
-    z-index: 1;
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 
-/* --- 1.1. Navegação (Menu) --- */
+/* =========================================================
+   2. NAVEGAÇÃO SUPERIOR
+   ========================================================= */
 .main-nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 2rem 3rem;
-    z-index: 10;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out,
-        color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
-        padding 0.3s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 3rem;
+  z-index: 10;
+  transition:
+    background-color 0.3s ease-in-out,
+    transform 0.3s ease-in-out,
+    color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out,
+    padding 0.3s ease-in-out;
 }
 
+/* --- Navegação Sticky --- */
 .main-nav.nav-is-sticky {
-    position: fixed;
-    background-color: rgba(255, 255, 255, 0.98);
-    /* Fundo branco quase opaco */
-    backdrop-filter: blur(5px);
-    color: #333;
-    /* Texto escuro */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    /* Sombra mais suave */
-    padding: 1rem 3rem;
-    /* Padding menor */
-    transform: translateY(0);
-    animation: slideDown 0.3s ease-in-out;
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(5px);
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem 3rem;
+  transform: translateY(0);
+  animation: slideDown 0.3s ease-in-out;
 }
 
 @keyframes slideDown {
-    from {
-        transform: translateY(-100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
 }
 
-/* Esquerda (Menu e Busca) */
+/* =========================================================
+   2.1. MENU ESQUERDO
+   ========================================================= */
 .nav-left {
-    justify-self: start;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    /* Reduzido um pouco o espaço */
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  justify-self: start;
 }
 
-.nav-left .menu-btn {
-    background: none;
-    border: none;
-    color: inherit;
-    /* Herda a cor do .main-nav */
-    font-family: 'Lato', sans-serif;
-    font-size: 0.9rem;
-    /* Um pouco menor */
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.3s ease-in-out;
-    font-weight: bold;
-    /* Deixar em negrito como na imagem */
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: inherit;
+  transition: color 0.3s ease-in-out;
 }
 
-.nav-left .menu-btn .material-symbols-outlined {
-    font-size: 1.5rem;
-    /* Ajustar tamanho do ícone de menu */
+.menu-btn .material-symbols-outlined {
+  font-size: 1.5rem;
 }
 
-
-/* Centro (Logo) */
+/* =========================================================
+   2.2. LOGO CENTRAL
+   ========================================================= */
 .nav-center {
-    justify-self: center;
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  justify-self: center;
 }
 
 .logo-svg {
-    /* Ajuste tamanho conforme a imagem final do logo */
-    height: 25px;
-    /* Altura menor, como na imagem */
-    width: auto;
-    /* color: #fff; */
-    /* Cor é herdada ou definida pelo SVG/PNG */
-    transition: filter 0.3s ease-in-out;
+  height: 45px;
+  width: auto;
+  transition: filter 0.3s ease-in-out;
 }
 
-/*.nav-is-sticky .logo-svg {
-    /* filter: invert(1); */
-    /* Isso pode funcionar para SVGs simples, senão use imagens separadas */
-/*}      */
-
-
-/* Barra de pesquisa (inicialmente à esquerda) */
+/* =========================================================
+   2.3. BARRA DE PESQUISA
+   ========================================================= */
 .search-bar {
-    display: flex;
-    align-items: center;
-    width: 250px;
-    /* Largura como na imagem */
-    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-    background-color: rgba(255, 255, 255, 0.9);
-    /* Fundo branco semi-transparente no início */
-    border: 1px solid transparent;
-    /* Sem borda no início */
-    border-radius: 4px;
-    /* Bordas levemente arredondadas */
-    padding: 0.4rem 0.8rem;
+  display: flex;
+  align-items: center;
+  width: 250px;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
-/* Estilo da barra de pesquisa no sticky */
 .nav-is-sticky .search-bar {
-    background-color: #f0f0f0;
-    /* Fundo cinza claro */
-    border-color: #e0e0e0;
-    /* Borda cinza claro */
+  background-color: #f0f0f0;
+  border-color: #e0e0e0;
 }
-
 
 .search-bar .material-symbols-outlined {
-    color: #555;
-    /* Ícone cinza escuro */
-    font-size: 1.3rem;
-    /* Tamanho do ícone */
-    transition: color 0.3s ease-in-out;
+  color: #555;
+  font-size: 1.3rem;
+  transition: color 0.3s ease-in-out;
 }
 
 .nav-is-sticky .search-bar .material-symbols-outlined {
-    color: #777;
-    /* Mantém ou ajusta a cor no sticky */
+  color: #777;
 }
 
-
 .search-bar input {
-    border: none;
-    outline: none;
-    margin-left: 0.5rem;
-    font-family: 'Lato', sans-serif;
-    font-size: 0.9rem;
-    /* Fonte um pouco menor */
-    width: 100%;
-    background: none;
-    color: #333;
-    /* Cor do texto dentro da busca */
-    padding: 0;
-    transition: color 0.3s ease-in-out;
+  border: none;
+  outline: none;
+  margin-left: 0.5rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  width: 100%;
+  background: none;
+  color: #333;
+  transition: color 0.3s ease-in-out;
 }
 
 .search-bar input::placeholder {
-    color: #777;
-    /* Placeholder cinza */
-    opacity: 1;
-    transition: color 0.3s ease-in-out;
+  color: #777;
+  transition: color 0.3s ease-in-out;
 }
 
 .nav-is-sticky .search-bar input::placeholder {
-    color: #999;
-    /* Placeholder mais claro no sticky */
+  color: #999;
 }
 
-
-/* Direita (Ícones) */
+/* =========================================================
+   2.4. ÍCONES DIREITOS (CONTA, LOCAL, ETC.)
+   ========================================================= */
 .nav-right {
-    justify-self: end;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    /* Espaçamento entre ícones */
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 1.5rem;
 }
 
 .nav-right a {
-    color: inherit;
-    /* Herda cor branca ou escura do .main-nav */
-    text-decoration: none;
-    transition: color 0.3s ease-in-out;
-    position: relative;
-    /* Para o dropdown */
+  color: inherit;
+  position: relative;
+  transition: color 0.3s ease-in-out;
 }
 
 .nav-right .material-symbols-outlined {
-    font-size: 1.6rem;
-    /* Tamanho dos ícones */
+  font-size: 1.6rem;
 }
 
-/* Dropdown da Conta */
+/* --- Dropdown da Conta --- */
 .user-account {
-    position: relative;
+  position: relative;
 }
 
 .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 150%;
-    /* Posição abaixo do ícone */
-    right: -10px;
-    /* Ajuste fino do alinhamento */
-    background-color: #fff;
-    color: #333;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    min-width: 160px;
-    /* Largura mínima */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    z-index: 20;
-    /* Garante que fique sobre outros elementos */
-    padding: 0.5rem 0;
-    /* Espaçamento interno vertical */
+  display: none;
+  position: absolute;
+  top: 150%;
+  right: -10px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  min-width: 160px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  padding: 0.5rem 0;
 }
 
-/* Ajuste importante: Mostrar menu no hover */
 .user-account:hover .dropdown-menu,
-.user-account>a:focus+.dropdown-menu,
-/* Para acessibilidade */
-.dropdown-menu:hover
-
-/* Manter aberto ao mover para o menu */
-    {
-    display: block;
+.user-account > a:focus + .dropdown-menu,
+.dropdown-menu:hover {
+  display: block;
 }
-
 
 .dropdown-menu li a {
-    display: block;
-    padding: 0.7rem 1.2rem;
-    /* Mais padding */
-    font-family: 'Lato', sans-serif;
-    font-size: 0.9rem;
-    color: #555;
-    /* Cor do link */
-    white-space: nowrap;
-    /* Evita quebra de linha */
+  display: block;
+  padding: 0.7rem 1.2rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  color: #555;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-menu li a:hover {
-    background-color: #f8f8f8;
-    /* Fundo suave no hover */
-    color: #111;
+  background-color: #f8f8f8;
+  color: #111;
 }
 
-/* --- 1.2. Menu Lateral (Toggle) --- */
+/* =========================================================
+   3. MENU LATERAL
+   ========================================================= */
 .menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0s 0.3s linear;
-    /* Atraso na visibilidade */
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s linear;
 }
 
 .menu-overlay.show {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-in-out;
 }
 
-
 .side-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 300px;
-    /* Largura como na imagem */
-    background-color: #fff;
-    z-index: 1000;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-    /* Sombra suave */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 300px;
+  background-color: #fff;
+  z-index: 1000;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .side-menu.open {
-    transform: translateX(0);
+  transform: translateX(0);
 }
 
 .side-menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .side-menu-header h2 {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.4rem;
-    /* Um pouco menor */
-    color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.4rem;
+  color: #333;
 }
 
 .close-menu-btn {
-    background: none;
-    border: none;
-    font-size: 1.8rem;
-    /* Ícone de fechar */
-    color: #555;
-    padding: 5px;
-    /* Área de clique */
-    line-height: 1;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #555;
+  padding: 5px;
+  line-height: 1;
 }
 
 .close-menu-btn:hover {
-    color: #111;
+  color: #111;
 }
 
 .side-menu-nav ul li a {
-    display: block;
-    padding: 0.9rem 0;
-    /* Ajuste no padding */
-    font-family: 'Lato', sans-serif;
-    font-size: 1rem;
-    /* Tamanho da fonte */
-    color: #555;
-    border-bottom: 1px solid #f0f0f0;
-    transition: color 0.2s ease;
+  display: block;
+  padding: 0.9rem 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: #555;
+  border-bottom: 1px solid #f0f0f0;
+  transition: color 0.2s ease;
 }
 
 .side-menu-nav ul li:last-child a {
-    border-bottom: none;
-    /* Remove borda do último item */
+  border-bottom: none;
 }
-
 
 .side-menu-nav ul li a:hover {
-    color: #000;
+  color: #000;
 }
 
-/* Estado "Aberto" para body (controlado pelo JS) */
-body.menu-is-open {
-    /* overflow: hidden; */
-    /* Cuidado: pode causar perda de scroll em alguns casos */
-}
-
-
-/* --- 2. Conteúdo Principal --- */
+/* =========================================================
+   4. SEÇÃO "SOBRE NÓS"
+   ========================================================= */
 .about-us {
-    width: 90%;
-    max-width: 800px;
-    margin: 5rem auto;
-    text-align: center;
+  width: 90%;
+  max-width: 800px;
+  margin: 5rem auto;
+  text-align: center;
 }
 
 .about-us h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #222;
-    font-weight: 500;
-    /* Peso da fonte como na imagem */
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #222;
+  font-weight: 500;
 }
 
 .about-us p {
-    font-size: 1.05rem;
-    /* Levemente maior */
-    color: #555;
-    margin-bottom: 1.5rem;
-    /* Mais espaço entre parágrafos */
-    line-height: 1.7;
-    /* Maior espaçamento entre linhas */
+  font-size: 1.05rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
 }
 
-/* --- 3. Rodapé --- */
+/* =========================================================
+   RODAPÉ — estilo clean e alinhado
+   ========================================================= */
 footer {
-    background-color: #f8f8f8;
-    /* Fundo cinza bem claro */
-    border-top: 1px solid #eee;
-    padding: 4rem 2rem 3rem;
-    /* Padding ajustado */
+  background-color: #ffffff;              /* fundo branco */
+  border-top: 1px solid #e9ecef;          /* linha superior suave */
+  padding: 3rem 2rem 2rem;
+  font-family: 'Lato', sans-serif;
+  color: #333;
 }
 
 .footer-container {
-    display: grid;
-    /* Usar grid para melhor controle */
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    /* Colunas responsivas */
-    gap: 2rem 3rem;
-    /* Espaço entre colunas e linhas */
-    width: 90%;
-    max-width: 1100px;
-    /* Um pouco menor */
-    margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* colunas adaptáveis */
+  gap: 2rem 3rem;
+  width: 90%;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .footer-column {
-    /* flex: 1; */
-    /* Não necessário com grid */
-    /* min-width: 250px; */
-    /* Controlado pelo grid */
-    text-align: left;
-    /* Alinhar tudo à esquerda como padrão */
+  text-align: left;
 }
 
 .footer-column h3 {
-    font-size: 1.1rem;
-    /* Título menor */
-    font-weight: bold;
-    /* Negrito */
-    margin-bottom: 1.2rem;
-    /* Mais espaço abaixo do título */
-    color: #444;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 1rem;
+  text-transform: none;
 }
 
 .footer-column p,
 .footer-column li,
 .footer-column li a {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.6rem;
-    /* Espaçamento entre itens/parágrafos */
-    line-height: 1.5;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  transition: color 0.2s ease;
 }
 
 .footer-column li a:hover {
-    color: #111;
+  color: #000;
 }
 
+/* --- Formulário Newsletter --- */
 .newsletter-form input {
-    width: 100%;
-    padding: 0.7rem 0.9rem;
-    /* Padding interno */
-    margin-bottom: 0.8rem;
-    /* Espaço entre inputs */
-    border: 1px solid #ddd;
-    /* Borda mais clara */
-    border-radius: 4px;
-    font-family: 'Lato', sans-serif;
-    font-size: 0.9rem;
-    text-align: left;
-    background-color: #fff;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 0.8rem;
+  transition: border-color 0.2s ease;
+}
+
+.newsletter-form input:focus {
+  border-color: #999;
+  outline: none;
 }
 
 .newsletter-form input::placeholder {
-    color: #aaa;
+  color: #aaa;
 }
 
-/* Adicionar botão se houver */
-.newsletter-form button {
-    /* Estilos para o botão de submit da newsletter */
-}
-
-
-/* --- Media Queries (Ajustes finos se necessário) --- */
-
-/* Telas Médias */
-@media (max-width: 1024px) {
-
-    .main-nav,
-    .main-nav.nav-is-sticky {
-        padding: 1.5rem 2rem;
-    }
-
-    .nav-left {
-        gap: 1rem;
-    }
-
-    .nav-right {
-        gap: 1.2rem;
-    }
-
-    .search-bar {
-        width: 200px;
-        /* Reduzir mais a busca */
-    }
-
-    .about-us {
-        margin: 4rem auto;
-    }
-}
-
-
-/* Telas Pequenas */
+/* --- Responsividade --- */
 @media (max-width: 768px) {
+  footer {
+    padding: 2rem 1.5rem;
+  }
 
-    .main-nav,
-    .main-nav.nav-is-sticky {
-        padding: 1.2rem 1.5rem;
-        grid-template-columns: auto 1fr auto;
-        /* Menu | Logo | Ícones */
-    }
-
-    .nav-left .search-bar {
-        display: none;
-        /* Esconde barra de busca */
-    }
-
-    .nav-left {
-        gap: 0;
-        justify-self: start;
-    }
-
-    .nav-center {
-        justify-self: center;
-        /* Centraliza logo */
-        padding: 0 1rem;
-        /* Adiciona espaço lateral para o logo não colar */
-    }
-
-    .logo-svg {
-        height: 22px;
-        /* Logo menor */
-    }
-
-    .nav-right a[title="Localização"],
-    .nav-right a[title="Favoritos"] {
-        display: none;
-        /* Esconde ícones não essenciais */
-    }
-
-    .nav-right {
-        gap: 1rem;
-        justify-self: end;
-    }
-
-    .nav-right .material-symbols-outlined {
-        font-size: 1.5rem;
-    }
-
-    .about-us {
-        margin: 3rem auto;
-        width: 90%;
-    }
-
-    .about-us h2 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .about-us p {
-        font-size: 1rem;
-    }
-
-    footer {
-        padding: 3rem 1.5rem;
-    }
-
-    .footer-container {
-        grid-template-columns: 1fr;
-        /* Coluna única */
-        gap: 2.5rem;
-    }
-
-    .footer-column {
-        text-align: left;
-        /* Garante alinhamento esquerdo */
-    }
+  .footer-container {
+    grid-template-columns: 1fr;  /* colunas empilhadas no mobile */
+    gap: 2rem;
+  }
 }
 
 
-/* Telas Muito Pequenas */
+/* =========================================================
+   6. MEDIA QUERIES
+   ========================================================= */
+@media (max-width: 1024px) {
+  .main-nav,
+  .main-nav.nav-is-sticky {
+    padding: 1.5rem 2rem;
+  }
+
+  .nav-left { gap: 1rem; }
+  .nav-right { gap: 1.2rem; }
+  .search-bar { width: 200px; }
+  .about-us { margin: 4rem auto; }
+}
+
+@media (max-width: 768px) {
+  .main-nav,
+  .main-nav.nav-is-sticky {
+    padding: 1.2rem 1.5rem;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .nav-left .search-bar { display: none; }
+  .nav-center { justify-self: center; padding: 0 1rem; }
+  .logo-svg { height: 22px; }
+
+  .nav-right a[title="Localização"],
+  .nav-right a[title="Favoritos"] { display: none; }
+
+  .nav-right { gap: 1rem; }
+  .about-us { margin: 3rem auto; width: 90%; }
+  .about-us h2 { font-size: 2rem; margin-bottom: 1.5rem; }
+  .about-us p { font-size: 1rem; }
+
+  footer { padding: 3rem 1.5rem; }
+  .footer-container { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+
 @media (max-width: 480px) {
+  .main-nav,
+  .main-nav.nav-is-sticky { padding: 1rem; }
 
-    .main-nav,
-    .main-nav.nav-is-sticky {
-        padding: 1rem 1rem;
-        /* Menos padding */
-    }
+  .logo-svg { height: 20px; }
+  .nav-right { gap: 0.8rem; }
+  .nav-right .material-symbols-outlined { font-size: 1.4rem; }
 
-    .logo-svg {
-        height: 20px;
-        /* Logo ainda menor */
-    }
+  .side-menu { width: 85%; max-width: 280px; }
 
-    .nav-right {
-        gap: 0.8rem;
-        /* Menor espaço */
-    }
-
-    .nav-right .material-symbols-outlined {
-        font-size: 1.4rem;
-    }
-
-    .side-menu {
-        width: 85%;
-        /* Menu lateral ocupa mais tela */
-        max-width: 280px;
-    }
-
-    .about-us h2 {
-        font-size: 1.8rem;
-    }
-
-    .about-us p {
-        font-size: 0.95rem;
-    }
+  .about-us h2 { font-size: 1.8rem; }
+  .about-us p { font-size: 0.95rem; }
 }
