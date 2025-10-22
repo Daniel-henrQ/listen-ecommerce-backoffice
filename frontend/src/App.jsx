@@ -1,59 +1,63 @@
 // frontend/src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// Não importa mais o LoginPage
-import DashboardLayout from './layouts/DashboardLayout';
+// --- AJUSTE AQUI ---
+// Importe BrowserRouter e renomeie para Router, ou use diretamente BrowserRouter
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// --- FIM DO AJUSTE ---
+import DashboardLayout from './layouts/DashboardLayout'; // Layout principal do backoffice
+// Importa as diferentes visualizações (páginas) do backoffice
 import ProductsView from './pages/ProductsView';
 import AdminView from './pages/AdminView';
 import FornecedoresView from './pages/FornecedoresView';
 import ComprasView from './pages/ComprasView';
 import ClientesView from './pages/ClientesView';
 import VendasView from './pages/VendasView';
-import { jwtDecode } from 'jwt-decode'; // Importar jwt-decode
+import { jwtDecode } from 'jwt-decode'; // Para decodificar o token JWT
 
-// Componente PrivateRoute atualizado para verificar o papel
+// Componente PrivateRoute (mantido como antes)
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-        // Se não há token, redireciona para o storefront
-        return <Navigate to="/" />;
+        return <Navigate to="/" replace />; // Redireciona para storefront se não houver token
     }
     try {
         const decoded = jwtDecode(token);
-        // Verifica se o papel é de funcionário (adm ou vendas)
         if (decoded.role === 'adm' || decoded.role === 'vendas') {
-            return children; // Permite acesso ao backoffice
+            return children; // Permite acesso se for funcionário
         } else {
-            // Se for cliente ou outro papel, redireciona para o storefront
-            return <Navigate to="/" />;
+            return <Navigate to="/" replace />; // Redireciona para storefront se for cliente
         }
     } catch (error) {
-        // Se o token for inválido, remove e redireciona para o storefront
-        console.error("Token inválido:", error);
+        console.error("Token inválido ou expirado:", error);
         localStorage.removeItem('authToken');
-        return <Navigate to="/" />;
+        return <Navigate to="/" replace />; // Redireciona para storefront se token inválido
     }
 };
 
+// Componente principal da aplicação do Backoffice
 function App() {
     return (
-        <Router>
+        // --- AJUSTE AQUI ---
+        // Adicione a propriedade basename="/app" ao BrowserRouter
+        <BrowserRouter basename="/app">
+        {/* --- FIM DO AJUSTE --- */}
             <Routes>
-                {/* A rota /login foi removida */}
-
-                {/* Rota protegida para o backoffice (/app) */}
+                {/* Rota principal protegida para o backoffice */}
+                {/* O path aqui continua '/', pois o basename já cuida do prefixo /app */}
                 <Route
-                    path="/app"
+                    path="/"
                     element={
                         <PrivateRoute>
                             <DashboardLayout />
                         </PrivateRoute>
                     }
                 >
-                    {/* Rota Index: Redireciona de /app para /app/produtos */}
-                    <Route index element={<Navigate to="produtos" />} />
+                    {/* Rota Index: Redireciona de '/' (relativo ao basename) para 'produtos' */}
+                    {/* O destino agora é relativo ao basename */}
+                    <Route index element={<Navigate to="produtos" replace />} />
 
                     {/* Rotas filhas do backoffice */}
+                    {/* Os paths são relativos ao path pai ('/') */}
                     <Route path="produtos" element={<ProductsView />} />
                     <Route path="admin" element={<AdminView />} />
                     <Route path="fornecedor" element={<FornecedoresView />} />
@@ -61,20 +65,15 @@ function App() {
                     <Route path="clientes" element={<ClientesView />} />
                     <Route path="vendas" element={<VendasView />} />
 
-                    {/* Catch-all DENTRO de /app: Se nenhuma rota filha corresponder, redireciona para /app/produtos */}
-                    <Route path="*" element={<Navigate to="/app/produtos" />} />
+                    {/* Catch-all DENTRO do backoffice: Redireciona rotas inválidas para 'produtos' */}
+                    {/* O destino também é relativo */}
+                    <Route path="*" element={<Navigate to="produtos" replace />} />
                 </Route>
 
-                {/* Rota catch-all GERAL:
-                    - Se nenhuma rota acima corresponder (nem /app nem suas filhas),
-                      redireciona para o storefront ('/').
-                 */}
-                <Route
-                     path="*"
-                     element={<Navigate to="/" />}
-                />
+                {/* Rotas fora do backoffice não são necessárias aqui */}
+
             </Routes>
-        </Router>
+        </BrowserRouter> // Fechar BrowserRouter
     );
 }
 

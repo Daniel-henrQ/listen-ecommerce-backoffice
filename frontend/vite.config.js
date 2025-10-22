@@ -4,16 +4,21 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  // Caminho base para assets em produção E desenvolvimento
+  base: '/app/',
   server: {
+    // --- DEFINIR PORTA DIFERENTE ---
+    port: 5174,
+    // -----------------------------
     proxy: {
-    // Qualquer pedido que comece com /api será redirecionado
-    '/api': 'http://localhost:3000',
-    // Mantém o proxy para os uploads de imagens
-    '/uploads': 'http://localhost:3000',
-    // Mantém o proxy para as notificações em tempo real
-    '/socket.io': {
-      target: 'ws://localhost:3000',
-      ws: true
+      // Proxy para a API (mantido)
+      '/api': 'http://localhost:3000',
+      // Proxy para uploads (mantido)
+      '/uploads': 'http://localhost:3000',
+      // Proxy para WebSocket (mantido)
+      '/socket.io': {
+        target: 'ws://localhost:3000',
+        ws: true
       },
     },
   },

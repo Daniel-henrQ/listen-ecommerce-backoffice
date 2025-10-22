@@ -1,19 +1,26 @@
+// frontend/src/components/Header.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSocket } from '../hooks/useSocket'; // Importa o hook
+// useNavigate não é mais necessário aqui para o logout
+// import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../hooks/useSocket'; // Importa o hook de socket
 
 // Recebe a função onMenuClick como propriedade
 function Header({ user, title, onMenuClick }) {
-    const navigate = useNavigate();
-    // Obtém a nova função clearReadNotifications do hook
+    // useNavigate não é mais necessário
+    // const navigate = useNavigate();
+    // Obtém a função clearReadNotifications do hook
     const { notifications, unreadCount, markAsRead, clearReadNotifications } = useSocket();
     const [userDropdownVisible, setUserDropdownVisible] = useState(false);
     const [notificationPanelVisible, setNotificationPanelVisible] = useState(false);
 
+    // --- FUNÇÃO DE LOGOUT ATUALIZADA ---
     const handleLogout = () => {
-        localStorage.removeItem('authToken');
-        navigate('/login');
+        localStorage.removeItem('authToken'); // Remove o token de autenticação
+        // Redireciona para a raiz (homepage do storefront)
+        window.location.href = '/';
+        // Não usamos mais navigate('/login')
     };
+    // --- FIM DA ATUALIZAÇÃO ---
 
     const toggleNotificationPanel = () => {
         const isVisible = !notificationPanelVisible;
@@ -24,15 +31,13 @@ function Header({ user, title, onMenuClick }) {
         }
     };
 
-    // Função para chamar a limpeza do hook
+    // Função para chamar a limpeza do hook (mantida)
     const handleClearRead = (e) => {
         e.stopPropagation(); // Impede que o painel feche ao clicar no botão
         clearReadNotifications();
-        // Opcional: Fechar o painel após limpar?
-        // setNotificationPanelVisible(false);
     };
 
-    // Verifica se há alguma notificação lida para habilitar o botão
+    // Verifica se há alguma notificação lida para habilitar o botão (mantida)
     const hasReadNotifications = notifications && notifications.some(n => n.lida);
 
     return (
@@ -46,7 +51,7 @@ function Header({ user, title, onMenuClick }) {
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <h1>{title}</h1>
+                <h1>{title}</h1> {/* Título dinâmico da página */}
             </div>
 
             <div className="header-actions">
@@ -64,7 +69,7 @@ function Header({ user, title, onMenuClick }) {
                 <div className={`dropdown-notification-menu ${notificationPanelVisible ? 'show' : ''}`}>
                     <div className="notification-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3>Notificações</h3>
-                        {/* --- BOTÃO LIMPAR LIDAS --- */}
+                        {/* Botão Limpar Lidas */}
                         <button
                             onClick={handleClearRead}
                             disabled={!hasReadNotifications} // Desabilita se não houver lidas
@@ -81,8 +86,8 @@ function Header({ user, title, onMenuClick }) {
                         >
                             Limpar Lidas
                         </button>
-                         {/* --- FIM BOTÃO --- */}
                     </div>
+                    {/* Lista de Notificações */}
                     <ul className="notification-list">
                         {notifications && notifications.length > 0 ? (
                             notifications.map(notif => (
@@ -97,11 +102,13 @@ function Header({ user, title, onMenuClick }) {
                 {/* Perfil do Utilizador */}
                 <div className="user-profile" onClick={() => setUserDropdownVisible(!userDropdownVisible)}>
                     <div className="user-details">
+                        {/* Exibe o nome e o papel do usuário */}
                         <span className="user-name">{user.name}</span>
                         <span className="user-role">{user.role === 'adm' ? 'CEO ADM' : 'Vendedor'}</span>
                     </div>
                     {/* Dropdown do Utilizador */}
                     <div className={`dropdown-user-menu ${userDropdownVisible ? 'show' : ''}`}>
+                        {/* Link/Botão de Sair que chama handleLogout */}
                         <a href="#" onClick={handleLogout}>Sair</a>
                     </div>
                 </div>
