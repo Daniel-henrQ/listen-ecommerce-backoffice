@@ -1,3 +1,4 @@
+// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -16,14 +17,11 @@ import VendasView from './pages/VendasView';
 // --- Componente de rota protegida ---
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('authToken');
-  
-  // Se não existir token, redireciona para a homepage
+
   if (!token) return <Navigate to="/" replace />;
 
   try {
     const decoded = jwtDecode(token);
-
-    // Permite acesso apenas para funções internas
     if (decoded.role === 'adm' || decoded.role === 'vendas') {
       return children;
     } else {
@@ -39,10 +37,9 @@ const PrivateRoute = ({ children }) => {
 // --- Aplicação principal ---
 function App() {
   return (
-    // Define o prefixo das rotas do backoffice
-    <BrowserRouter basename="/app">
+    // Define o prefixo das rotas do backoffice COM BARRA NO FINAL
+    <BrowserRouter basename="/app/"> {/* << CORREÇÃO APLICADA AQUI */}
       <Routes>
-        {/* Área protegida do sistema */}
         <Route
           path="/"
           element={
@@ -51,18 +48,13 @@ function App() {
             </PrivateRoute>
           }
         >
-          {/* Redireciona /app → /app/produtos */}
           <Route index element={<Navigate to="produtos" replace />} />
-
-          {/* Rotas internas */}
           <Route path="produtos" element={<ProductsView />} />
           <Route path="admin" element={<AdminView />} />
           <Route path="fornecedor" element={<FornecedoresView />} />
           <Route path="compras" element={<ComprasView />} />
           <Route path="clientes" element={<ClientesView />} />
           <Route path="vendas" element={<VendasView />} />
-
-          {/* Rota padrão para erros */}
           <Route path="*" element={<Navigate to="produtos" replace />} />
         </Route>
       </Routes>

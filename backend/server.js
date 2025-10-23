@@ -19,12 +19,12 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // Em produção, restrinja para o URL do seu frontend Vercel/Netlify/etc.
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
-initNotificacaoService(io); // Inicializa o serviço de notificações com Socket.IO
+initNotificacaoService(io);
 
 // Importação das rotas da API
 const produtoRoutes = require('./routes/produtoRoutes');
@@ -39,13 +39,12 @@ const relatorioRoutes = require('./routes/relatorioRoutes');
 
 
 // Middlewares essenciais
-app.use(cors()); // Permite requisições de diferentes origens (importante para dev com Vite)
-app.use(express.json()); // Permite que o Express interprete JSON no corpo das requisições
+app.use(cors());
+app.use(express.json());
 
 // --- CONFIGURAÇÃO DAS ROTAS E ARQUIVOS ESTÁTICOS ---
 
-// 1. ROTAS DA API (sempre com prefixo /api)
-// Todas as requisições que começam com /api/... serão direcionadas para os roteadores específicos.
+// 1. ROTAS DA API
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -56,51 +55,43 @@ app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendas', vendaRoutes);
 app.use('/api/relatorios', relatorioRoutes);
 
-// 2. SERVIR ARQUIVOS DE UPLOAD (pasta /public/uploads)
-// Permite acessar as imagens dos produtos via URL (ex: http://localhost:3000/uploads/nome_da_imagem.jpg)
-const publicPath = path.join(__dirname, '..', 'public'); // Caminho para a pasta public
+// 2. SERVIR ARQUIVOS DE UPLOAD
+const publicPath = path.join(__dirname, '..', 'public');
 app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
 
 // --- SERVIR OS FRONTENDS ESTÁTICOS (APENAS EM PRODUÇÃO) ---
-// Em desenvolvimento, o Vite serve os SPAs em suas próprias portas (ex: 5173, 5174)
 if (process.env.NODE_ENV === 'production') {
     console.log('Modo de produção detetado. Servindo ficheiros estáticos...');
 
     // 3. SERVIR O FRONTEND (BACKOFFICE) a partir do caminho '/app'
-    // Constrói o caminho para a pasta 'dist' do build do frontend
     const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
-    // Serve os arquivos estáticos (JS, CSS, imagens) do backoffice quando a URL começa com /app
-    // Ex: /app/assets/index-*.js será servido de frontend/dist/assets/index-*.js
-    app.use('/app', express.static(frontendBuildPath));
+    app.use('/app', express.static(frontendBuildPath)); // Serve arquivos estáticos (JS, CSS)
 
-    // Rota "catch-all" para o backoffice: Qualquer requisição para /app OU /app/* que não seja um arquivo estático
-    // (ex: /app/produtos, /app/admin/usuarios) deve servir o index.html do backoffice.
-    // Isso permite que o React Router (no frontend) controle a navegação interna do backoffice.
-    // --- CORREÇÃO APLICADA AQUI ---
+    // Rota "catch-all" para o backoffice: /app ou /app/*
+    // A sua versão original `app.get(['/app', '/app/*'], ...)` está correta.
+    // Nenhuma alteração necessária aqui se ela funciona.
     app.get(['/app', '/app/*'], (req, res) => {
-    // --- FIM DA CORREÇÃO ---
         res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
     });
 
     // 4. SERVIR O STOREFRONT a partir da raiz '/'
-    // Constrói o caminho para a pasta 'dist' do build do storefront
     const storefrontBuildPath = path.join(__dirname, '..', 'storefront', 'dist');
-    // Serve os arquivos estáticos do storefront na raiz do servidor
-    // Ex: /assets/index-*.js será servido de storefront/dist/assets/index-*.js
-    app.use(express.static(storefrontBuildPath));
+    app.use(express.static(storefrontBuildPath)); // Serve arquivos estáticos (JS, CSS) na raiz
 
     // 5. ROTA "CATCH-ALL" PRINCIPAL para o STOREFRONT (Deve ser a ÚLTIMA rota)
-    // Qualquer outra requisição que não corresponda à API (/api/*), aos uploads (/uploads/*)
-    // ou ao backoffice (/app/*) deve servir o index.html do storefront.
-    // Isso permite que o React Router (no storefront) controle a navegação do site principal.
     app.get('*', (req, res) => {
-        res.sendFile(path.resolve(storefrontBuildPath, 'index.html'));
+        // Verifica se a requisição não é para a API nem para uploads
+        if (!req.originalUrl.startsWith('/api') && !req.originalUrl.startsWith('/uploads')) {
+             res.sendFile(path.resolve(storefrontBuildPath, 'index.html'));
+        } else {
+             // Deixa outros middlewares (ou erro 404 padrão do Express) lidarem com API/uploads não encontrados
+             next();
+        }
     });
 
 } else {
-    // Modo de desenvolvimento: O backend não serve os arquivos do frontend.
+    // Modo de desenvolvimento
     console.log('Modo de desenvolvimento. Os frontends (Vite) devem estar a rodar separadamente.');
-    // Rota raiz apenas para indicar que o backend está online
     app.get('/', (req, res) => {
       res.send('Servidor backend em execução. Aceda aos frontends pelas portas do Vite.');
     });
@@ -111,34 +102,27 @@ if (process.env.NODE_ENV === 'production') {
 // Conectar ao banco de dados MongoDB
 conectarBanco();
 
-// Lógica de conexão do Socket.IO (mantida)
+// Lógica de conexão do Socket.IO
 io.on('connection', (socket) => {
   console.log('Um utilizador conectou-se via WebSocket:', socket.id);
-  // A lógica de associação usuário/role já está no notificacaoService.js (io.use)
   socket.on('disconnect', () => {
     console.log('O utilizador desconectou-se:', socket.id);
   });
 });
 
-// Middleware de tratamento de erros (deve ser o último 'use')
+// Middleware de tratamento de erros
 app.use((err, req, res, next) => {
-  console.error("ERRO NÃO TRATADO:", err.stack || err.message); // Log detalhado do erro
-
-  // Tratamento específico para erros do Multer (upload)
+  console.error("ERRO NÃO TRATADO:", err.stack || err.message);
   if (err instanceof multer.MulterError) {
     return res.status(400).json({ msg: `Erro no upload: ${err.message}` });
   }
-  // Tratamento específico para erro de tipo de arquivo inválido (do filtro do Multer)
   if (err.message === 'Tipo de arquivo inválido.') {
-    // 422 Unprocessable Entity é mais apropriado que 400 Bad Request aqui
     return res.status(422).json({ msg: err.message });
   }
-
-  // Resposta de erro genérica para outros erros internos do servidor
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
 });
 
-// Iniciar o servidor HTTP (que inclui o Express e o Socket.IO)
+// Iniciar o servidor
 server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
     if (process.env.NODE_ENV !== 'production') {
@@ -146,7 +130,8 @@ server.listen(PORT, () => {
   }
 });
 
-// --- Código para encerramento gracioso (mantido) ---
+// --- Código para encerramento gracioso 
+
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {
