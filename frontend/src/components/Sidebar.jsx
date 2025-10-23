@@ -27,7 +27,7 @@ function Sidebar({ userRole, isOpen }) {
              <div className="sidebar-header"><img src={logo} alt="Logo Listen" /></div>
             <nav className="sidebar-menu">
                 {menuItems.filter(item => userPermissions.includes(item.id)).map(item => (
-                    <NavLink to={`/app/${item.id}`} key={item.id} className={({ isActive }) => isActive ? "active" : ""}>
+                    <NavLink to={item.id} key={item.id} className={({ isActive }) => isActive ? "active" : ""}>
                         {React.cloneElement(item.icon, { fill: "none", stroke: "currentColor", strokeWidth: "2" })}
                         <span>{item.label}</span>
                     </NavLink>
