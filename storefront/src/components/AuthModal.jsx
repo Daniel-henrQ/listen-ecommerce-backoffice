@@ -78,6 +78,7 @@ function AuthModal({ isOpen, onClose }) {
             // Redireciona com base no papel ('role') retornado pela API
             if (user?.role === 'adm' || user?.role === 'vendas') {
                 // --- AJUSTE AQUI ---
+                // Verifica se está em modo de desenvolvimento usando import.meta.env.DEV
                 if (import.meta.env.DEV) {
                     // Desenvolvimento: Redireciona para a URL completa do servidor Vite do backoffice
                     console.log("DEV Mode: Redirecionando para http://localhost:5174/app/");
