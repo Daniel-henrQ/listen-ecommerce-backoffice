@@ -72,10 +72,13 @@ if (process.env.NODE_ENV === 'production') {
     // Serve os arquivos estáticos (JS, CSS, imagens) do backoffice quando a URL começa com /app
     // Ex: /app/assets/index-*.js será servido de frontend/dist/assets/index-*.js
     app.use('/app', express.static(frontendBuildPath));
-    // Rota "catch-all" para o backoffice: Qualquer requisição para /app/* que não seja um arquivo estático
+
+    // Rota "catch-all" para o backoffice: Qualquer requisição para /app OU /app/* que não seja um arquivo estático
     // (ex: /app/produtos, /app/admin/usuarios) deve servir o index.html do backoffice.
     // Isso permite que o React Router (no frontend) controle a navegação interna do backoffice.
-    app.get('/app/*', (req, res) => {
+    // --- CORREÇÃO APLICADA AQUI ---
+    app.get(['/app', '/app/*'], (req, res) => {
+    // --- FIM DA CORREÇÃO ---
         res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
     });
 
