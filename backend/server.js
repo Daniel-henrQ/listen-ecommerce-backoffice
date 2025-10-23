@@ -19,11 +19,12 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "*", // Em produção, restrinja para as origens dos seus frontends
     methods: ["GET", "POST"]
   }
 });
 
+// Inicializa o serviço de notificação com a instância do Socket.IO
 initNotificacaoService(io);
 
 // Importação das rotas da API
@@ -36,15 +37,18 @@ const compraRoutes = require('./routes/compraRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 const vendaRoutes = require('./routes/vendaRoutes');
 const relatorioRoutes = require('./routes/relatorioRoutes');
+// Remova ou comente rotas não utilizadas se houver (ex: userRoutes, managementsRoutes)
+// const userRoutes = require('./routes/userRoutes');
+// const managementsRoutes = require('./routes/managementsRoutes');
 
 
 // Middlewares essenciais
-app.use(cors());
+app.use(cors()); // Considere configurar origens específicas para produção
 app.use(express.json());
 
 // --- CONFIGURAÇÃO DAS ROTAS E ARQUIVOS ESTÁTICOS ---
 
-// 1. ROTAS DA API
+// 1. ROTAS DA API (prefixo /api)
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -54,8 +58,11 @@ app.use('/api/compras', compraRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendas', vendaRoutes);
 app.use('/api/relatorios', relatorioRoutes);
+// app.use('/api/user', userRoutes); // Descomente se usar
+// app.use('/api/managements', managementsRoutes); // Descomente se usar
 
-// 2. SERVIR ARQUIVOS DE UPLOAD
+
+// 2. SERVIR ARQUIVOS DE UPLOAD (prefixo /uploads)
 const publicPath = path.join(__dirname, '..', 'public');
 app.use('/uploads', express.static(path.join(publicPath, 'uploads')));
 
@@ -65,35 +72,42 @@ if (process.env.NODE_ENV === 'production') {
 
     // 3. SERVIR O FRONTEND (BACKOFFICE) a partir do caminho '/app'
     const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
-    app.use('/app', express.static(frontendBuildPath)); // Serve arquivos estáticos (JS, CSS)
+    // Serve os ficheiros estáticos (JS, CSS, etc.) sob o prefixo /app
+    app.use('/app', express.static(frontendBuildPath));
 
-    // Rota "catch-all" para o backoffice: /app ou /app/*
-    // A sua versão original `app.get(['/app', '/app/*'], ...)` está correta.
-    // Nenhuma alteração necessária aqui se ela funciona.
-    app.get(['/app', '/app/*'], (req, res) => {
+    // Rota "catch-all" para o backoffice: Qualquer pedido para /app ou /app/*
+    // deve servir o index.html do backoffice para permitir o roteamento do React.
+    app.get('/app/*', (req, res) => {
         res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
     });
 
     // 4. SERVIR O STOREFRONT a partir da raiz '/'
     const storefrontBuildPath = path.join(__dirname, '..', 'storefront', 'dist');
-    app.use(express.static(storefrontBuildPath)); // Serve arquivos estáticos (JS, CSS) na raiz
+    // Serve os ficheiros estáticos (JS, CSS, etc.) do storefront na raiz.
+    app.use(express.static(storefrontBuildPath));
 
-    // 5. ROTA "CATCH-ALL" PRINCIPAL para o STOREFRONT (Deve ser a ÚLTIMA rota)
-    app.get('*', (req, res) => {
-        // Verifica se a requisição não é para a API nem para uploads
-        if (!req.originalUrl.startsWith('/api') && !req.originalUrl.startsWith('/uploads')) {
+    // 5. ROTA "CATCH-ALL" PRINCIPAL para o STOREFRONT (Deve ser a ÚLTIMA rota de GET)
+    // Qualquer pedido GET que não corresponda a /api/*, /uploads/* ou /app/*
+    // deve servir o index.html do storefront.
+    app.get('*', (req, res, next) => { // Adicionado 'next'
+        // Verifica se a requisição NÃO é para API, uploads ou o backoffice (/app)
+        if (!req.originalUrl.startsWith('/api') &&
+            !req.originalUrl.startsWith('/uploads') &&
+            !req.originalUrl.startsWith('/app')) { // <<< CORREÇÃO APLICADA AQUI
              res.sendFile(path.resolve(storefrontBuildPath, 'index.html'));
         } else {
-             // Deixa outros middlewares (ou erro 404 padrão do Express) lidarem com API/uploads não encontrados
-             next();
+             // Deixa outros middlewares ou a rota /app/* tratar o pedido,
+             // ou eventualmente cair no 404 padrão do Express se não houver correspondência.
+             next(); // <<< Chamar next() é crucial aqui
         }
     });
 
 } else {
     // Modo de desenvolvimento
     console.log('Modo de desenvolvimento. Os frontends (Vite) devem estar a rodar separadamente.');
+    // Uma rota raiz simples para indicar que o backend está a funcionar
     app.get('/', (req, res) => {
-      res.send('Servidor backend em execução. Aceda aos frontends pelas portas do Vite.');
+      res.send('Servidor backend em execução. Aceda aos frontends pelas portas do Vite (ex: 5173 e 5174).');
     });
 }
 // --- FIM DA CONFIGURAÇÃO ESTÁTICA ---
@@ -102,15 +116,16 @@ if (process.env.NODE_ENV === 'production') {
 // Conectar ao banco de dados MongoDB
 conectarBanco();
 
-// Lógica de conexão do Socket.IO
+// Lógica de conexão do Socket.IO (já estava correta)
 io.on('connection', (socket) => {
   console.log('Um utilizador conectou-se via WebSocket:', socket.id);
+  // Adicionar lógica de autenticação do socket aqui, se necessário
   socket.on('disconnect', () => {
     console.log('O utilizador desconectou-se:', socket.id);
   });
 });
 
-// Middleware de tratamento de erros
+// Middleware de tratamento de erros (já estava correto)
 app.use((err, req, res, next) => {
   console.error("ERRO NÃO TRATADO:", err.stack || err.message);
   if (err instanceof multer.MulterError) {
@@ -119,10 +134,11 @@ app.use((err, req, res, next) => {
   if (err.message === 'Tipo de arquivo inválido.') {
     return res.status(422).json({ msg: err.message });
   }
+  // Adicionar tratamento para outros erros específicos se necessário
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
 });
 
-// Iniciar o servidor
+// Iniciar o servidor (já estava correto)
 server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
     if (process.env.NODE_ENV !== 'production') {
@@ -130,8 +146,7 @@ server.listen(PORT, () => {
   }
 });
 
-// --- Código para encerramento gracioso 
-
+// --- Código para encerramento gracioso (já estava correto) ---
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {

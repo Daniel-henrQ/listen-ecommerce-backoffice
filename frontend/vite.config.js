@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // --- GARANTA QUE A BASE TERMINA COM '/' ---
-  base: '/app/', // << CORREÇÃO APLICADA AQUI
-  // ------------------------------------------
+  // Em dev é mais seguro usar '/' como base. Se você realmente precisa que o app
+  // seja servido em /app/ (ex: deploy em subpath), altere para base: '/app/'.
+  base: '/',
   server: {
     port: 5174,
     proxy: {
@@ -14,8 +14,8 @@ export default defineConfig({
       '/uploads': 'http://localhost:3000',
       '/socket.io': {
         target: 'ws://localhost:3000',
-        ws: true,
-      },
-    },
-  },
+        ws: true
+      }
+    }
+  }
 })
