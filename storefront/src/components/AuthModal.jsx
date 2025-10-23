@@ -81,13 +81,14 @@ function AuthModal({ isOpen, onClose }) {
                 if (import.meta.env.DEV) {
                     // Desenvolvimento: Redireciona para a URL completa do servidor Vite do backoffice
                     console.log("DEV Mode: Redirecionando para http://localhost:5174/app/");
+                    // <<< Garante que a porta está correta (5174 para frontend) >>>
                     window.location.href = 'http://localhost:5174/app/';
                 } else {
                     // Produção: Redireciona para o caminho relativo /app
                     console.log("PROD Mode: Redirecionando para /app");
-                    window.location.href = '/app';
+                    window.location.href = '/app'; // <<< Caminho relativo correto >>>
                 }
-                // Não precisa de setTimeout, redirecionamento deve ser rápido
+                // Não precisa de setTimeout aqui
                 // --- FIM DO AJUSTE ---
             } else if (user?.role === 'cliente') {
                 // Cliente: Fecha o modal e recarrega a página atual do storefront (APÓS 1 SEGUNDO)
@@ -116,7 +117,7 @@ function AuthModal({ isOpen, onClose }) {
     };
 
 
-    // Função para lidar com o Cadastro (Apenas Clientes) - SEM ALTERAÇÕES
+    // Função para lidar com o Cadastro (Apenas Clientes)
     const handleRegister = async (e) => {
         e.preventDefault();
         setMessage({ text: '', type: '', target: null });
@@ -140,29 +141,32 @@ function AuthModal({ isOpen, onClose }) {
         }
 
         try {
+            // <<< Chama a rota /api/clientes para criar um novo cliente >>>
             const response = await axios.post('/api/clientes', {
                 email: registerEmail,
-                nome: registerUsername,
+                nome: registerUsername, // O backend espera 'nome' para Cliente
                 cpf: registerCpf,
                 password: registerPassword,
                 confirmpassword: registerConfirmPassword
             });
             setMessage({ text: response.data.msg || 'Cadastro realizado com sucesso!', type: 'success', target: 'register' });
             setTimeout(() => {
-                setView('welcome');
+                setView('welcome'); // Volta para a tela de login
+                // Pode adicionar uma mensagem na tela de login informando o sucesso
                 setMessage({ text: 'Cadastro realizado! Faça login para continuar.', type: 'success', target: 'login' });
-            }, 1500);
+            }, 1500); // Espera 1.5s antes de mudar a view
         } catch (error) {
+            // Exibe mensagem de erro da API ou genérica
             setMessage({ text: error.response?.data?.msg || 'Erro ao cadastrar. Verifique os dados.', type: 'error', target: 'register' });
         } finally {
-            setIsLoading(false);
+            setIsLoading(false); // Desativa o carregamento
         }
     };
 
     // Se o modal não estiver aberto, não renderiza nada
     if (!isOpen) return null;
 
-    // --- Renderização do Modal --- (O JSX permanece o mesmo da resposta anterior)
+    // --- Renderização do Modal ---
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={`${styles.modalContent} ${view === 'register' ? styles.showRegister : ''}`} onClick={(e) => e.stopPropagation()}>
@@ -183,6 +187,7 @@ function AuthModal({ isOpen, onClose }) {
                                 >
                                     Criar conta
                                 </button>
+                                {/* Mostra mensagem de sucesso do cadastro aqui se aplicável */}
                                 {message.target === 'login' && message.type === 'success' && !message.text.includes('Redirecionando') &&
                                     <p className={`${styles.message} ${styles.success}`} style={{marginTop: '15px'}}>{message.text}</p>
                                 }
@@ -225,8 +230,10 @@ function AuthModal({ isOpen, onClose }) {
                             </form>
                         )}
                     </div>
+
                     {/* --- LINHA DIVISÓRIA --- */}
                     <div className={styles.divider}></div>
+
                     {/* --- COLUNA DIREITA (Login Form) --- */}
                     <div className={styles.rightColumn}>
                         <form onSubmit={handleLogin} noValidate>
@@ -264,6 +271,7 @@ function AuthModal({ isOpen, onClose }) {
                             <button type="submit" className={styles.primaryButton} disabled={isLoading}>
                                 {isLoading ? 'ENTRANDO...' : 'Entrar'}
                             </button>
+                            {/* Mostra 'Criar conta' apenas se a view for 'welcome' */}
                             {view === 'welcome' && (
                                 <p className={styles.toggleText}>
                                     Não tem conta? <button type="button" onClick={() => { setView('register'); setMessage({ text: '', type: '', target: null }); }} className={styles.toggleLink}>Criar conta</button>

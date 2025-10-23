@@ -73,15 +73,15 @@ if (process.env.NODE_ENV === 'production') {
     // 3. SERVIR O FRONTEND (BACKOFFICE) a partir do caminho '/app'
     const frontendBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
     // Serve os ficheiros estáticos (JS, CSS, etc.) sob o prefixo /app
-    app.use('/app', express.static(frontendBuildPath));
+    app.use('/app', express.static(frontendBuildPath)); // <<< Importante: Prefixo /app aqui
 
-    // Rota "catch-all" para o backoffice: Qualquer pedido para /app ou /app/*
+    // Rota "catch-all" para o backoffice: Qualquer pedido para /app/*
     // deve servir o index.html do backoffice para permitir o roteamento do React.
-    app.get('/app/*', (req, res) => {
+    app.get('/app/*', (req, res) => { // <<< Rota específica para /app/*
         res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
     });
 
-    // 4. SERVIR O STOREFRONT a partir da raiz '/'
+    // 4. SERVIR O STOREFRONT a partir da raiz '/' (DEPOIS do backoffice)
     const storefrontBuildPath = path.join(__dirname, '..', 'storefront', 'dist');
     // Serve os ficheiros estáticos (JS, CSS, etc.) do storefront na raiz.
     app.use(express.static(storefrontBuildPath));
@@ -89,16 +89,15 @@ if (process.env.NODE_ENV === 'production') {
     // 5. ROTA "CATCH-ALL" PRINCIPAL para o STOREFRONT (Deve ser a ÚLTIMA rota de GET)
     // Qualquer pedido GET que não corresponda a /api/*, /uploads/* ou /app/*
     // deve servir o index.html do storefront.
-    app.get('*', (req, res, next) => { // Adicionado 'next'
-        // Verifica se a requisição NÃO é para API, uploads ou o backoffice (/app)
+    app.get('*', (req, res, next) => {
+        // Verifica se a requisição NÃO é para API, uploads ou o backoffice (/app ou /app/)
         if (!req.originalUrl.startsWith('/api') &&
             !req.originalUrl.startsWith('/uploads') &&
-            !req.originalUrl.startsWith('/app')) { // <<< CORREÇÃO APLICADA AQUI
+            !req.originalUrl.startsWith('/app')) { // <<< Verifica se NÃO começa com /app
              res.sendFile(path.resolve(storefrontBuildPath, 'index.html'));
         } else {
-             // Deixa outros middlewares ou a rota /app/* tratar o pedido,
-             // ou eventualmente cair no 404 padrão do Express se não houver correspondência.
-             next(); // <<< Chamar next() é crucial aqui
+             // Deixa outros middlewares ou a rota /app/* tratar o pedido
+             next();
         }
     });
 
@@ -116,7 +115,7 @@ if (process.env.NODE_ENV === 'production') {
 // Conectar ao banco de dados MongoDB
 conectarBanco();
 
-// Lógica de conexão do Socket.IO (já estava correta)
+// Lógica de conexão do Socket.IO
 io.on('connection', (socket) => {
   console.log('Um utilizador conectou-se via WebSocket:', socket.id);
   // Adicionar lógica de autenticação do socket aqui, se necessário
@@ -125,7 +124,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Middleware de tratamento de erros (já estava correto)
+// Middleware de tratamento de erros
 app.use((err, req, res, next) => {
   console.error("ERRO NÃO TRATADO:", err.stack || err.message);
   if (err instanceof multer.MulterError) {
@@ -138,7 +137,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
 });
 
-// Iniciar o servidor (já estava correto)
+// Iniciar o servidor
 server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
     if (process.env.NODE_ENV !== 'production') {
@@ -146,7 +145,7 @@ server.listen(PORT, () => {
   }
 });
 
-// --- Código para encerramento gracioso (já estava correto) ---
+// --- Código para encerramento gracioso ---
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {
