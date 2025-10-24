@@ -5,15 +5,19 @@ const clienteController = require('../controllers/clienteController');
 const checkToken = require('../middleware/checkToken');
 const checkRole = require('../middleware/checkRole');
 
-// Middleware para todas as rotas de clientes
-router.use(checkToken);
-// CORREÇÃO: Permite acesso para 'adm' E 'vendas'
-router.use(checkRole(['adm', 'vendas'])); // <<< ALTERAÇÃO AQUI
+// --- ROTA PÚBLICA ---
+// Rota para criar um novo cliente (não requer token)
+router.post('/', clienteController.criarCliente); //
 
-router.post('/', clienteController.criarCliente); // Nota: Vendas poderão criar clientes agora
-router.get('/', clienteController.listarClientes);
-router.get('/:id', clienteController.obterClientePorId);
-router.put('/:id', clienteController.atualizarCliente); // Nota: Vendas poderão atualizar clientes agora
-router.delete('/:id', clienteController.deletarCliente); // Nota: Vendas poderão deletar clientes agora
+// --- ROTAS PROTEGIDAS ---
+// Aplica middlewares checkToken e checkRole daqui em diante
+router.use(checkToken); //
+router.use(checkRole(['adm', 'vendas'])); // Permite acesso para 'adm' E 'vendas'
+
+// Rotas para listar, obter, atualizar e deletar clientes (requerem token e role 'adm' ou 'vendas')
+router.get('/', clienteController.listarClientes); //
+router.get('/:id', clienteController.obterClientePorId); //
+router.put('/:id', clienteController.atualizarCliente); //
+router.delete('/:id', clienteController.deletarCliente); //
 
 module.exports = router;

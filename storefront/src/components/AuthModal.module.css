@@ -288,3 +288,57 @@
        padding: 25px 15px; /* Menos padding lateral */
    }
 }
+.inputGroup.inputError {
+  border-color: #e74c3c; /* Red border for error */
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2); /* Optional: subtle red glow */
+  /* Add background icon for error */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23e74c3c' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px 16px;
+}
+
+/* Adjust padding for input when error icon is present */
+.inputGroup.inputError input[type="email"],
+.inputGroup.inputError input[type="text"],
+.inputGroup.inputError input[type="password"] {
+  padding-right: 40px; /* Make space for the icon */
+}
+
+/* Style for error message text below input */
+.errorMessageText {
+    color: #f8d7da; /* Lighter red for text */
+    font-size: 0.8rem;
+    padding-left: 5px; /* Align slightly with input text */
+    margin-top: -15px; /* Pull up below the input */
+    margin-bottom: 15px; /* Restore bottom margin */
+    text-align: left;
+}
+
+/* Style for terms error */
+.termsGroup.inputError label {
+    color: #f8d7da; /* Highlight terms label text on error */
+}
+.termsGroup.inputError input[type="checkbox"] {
+    border-color: #e74c3c; /* Red border for checkbox */
+}
+
+/* Make general message less prominent or remove */
+.message {
+  text-align: center;
+  margin-top: 10px; /* Adjusted margin */
+  margin-bottom: 10px; /* Adjusted margin */
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.85rem; /* Slightly smaller */
+  min-height: 20px; /* Keep some space */
+}
+/* Keep error/success colors for general message if needed */
+.error {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #f8d7da;
+}
+.success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #d4edda;
+}

@@ -11,7 +11,7 @@ body {
   font-family: 'Lato', sans-serif;
   line-height: 1.6;
   color: #333;
-  background-color: #ffffff; /* ← fundo branco fixo */
+  background-color: #ffffff; /* fundo branco fixo */
   transition: transform 0.3s ease-in-out;
 }
 
@@ -142,12 +142,25 @@ button {
   align-items: center;
   justify-self: center;
 }
+/* Container do logo para melhor controle se necessário */
+.logo-container {
+    line-height: 0; /* Ajuda a remover espaços extras */
+}
 
 .logo-svg {
-  height: 45px;
+  height: 25px; /* Ajuste a altura conforme necessário */
   width: auto;
   transition: filter 0.3s ease-in-out;
+  display: block; /* Garante que não haja espaço extra abaixo */
 }
+
+/* Alterar a cor do logo quando a nav fica sticky */
+.main-nav.nav-is-sticky .logo-svg {
+    /* O SVG em si deve ser alterado via JS/React, */
+    /* mas podemos aplicar um filtro se for um SVG inline ou como fallback */
+    /* filter: invert(1); */ /* Exemplo, pode não ser o ideal */
+}
+
 
 /* =========================================================
    2.3. BARRA DE PESQUISA
@@ -157,25 +170,25 @@ button {
   align-items: center;
   width: 250px;
   padding: 0.4rem 0.8rem;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Borda mais sutil no início */
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.15); /* Fundo translúcido */
   transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
 .nav-is-sticky .search-bar {
-  background-color: #f0f0f0;
+  background-color: #f0f0f0; /* Fundo opaco quando sticky */
   border-color: #e0e0e0;
 }
 
 .search-bar .material-symbols-outlined {
-  color: #555;
+  color: #eee; /* Cor do ícone no início */
   font-size: 1.3rem;
   transition: color 0.3s ease-in-out;
 }
 
 .nav-is-sticky .search-bar .material-symbols-outlined {
-  color: #777;
+  color: #777; /* Cor do ícone quando sticky */
 }
 
 .search-bar input {
@@ -186,31 +199,36 @@ button {
   font-size: 0.9rem;
   width: 100%;
   background: none;
-  color: #333;
+  color: #fff; /* Cor do texto no início */
   transition: color 0.3s ease-in-out;
 }
 
+.nav-is-sticky .search-bar input {
+  color: #333; /* Cor do texto quando sticky */
+}
+
 .search-bar input::placeholder {
-  color: #777;
+  color: #ccc; /* Cor do placeholder no início */
   transition: color 0.3s ease-in-out;
 }
 
 .nav-is-sticky .search-bar input::placeholder {
-  color: #999;
+  color: #999; /* Cor do placeholder quando sticky */
 }
 
 /* =========================================================
-   2.4. ÍCONES DIREITOS (CONTA, LOCAL, ETC.)
+   2.4. ÍCONES DIREITOS E MENU USUÁRIO
    ========================================================= */
 .nav-right {
   display: flex;
   align-items: center;
   justify-self: end;
-  gap: 1.5rem;
+  gap: 1.5rem; /* Espaço entre os ícones */
 }
 
-.nav-right a {
-  color: inherit;
+.nav-right a,
+.nav-right button.menu-btn { /* Inclui o botão do ícone do usuário */
+  color: inherit; /* Herda a cor da nav (branca ou preta) */
   position: relative;
   transition: color 0.3s ease-in-out;
 }
@@ -219,134 +237,101 @@ button {
   font-size: 1.6rem;
 }
 
-/* --- Dropdown da Conta --- */
-.user-account {
-  position: relative;
+/* Container para o ícone de usuário e dropdown */
+.user-account-container {
+    position: relative; /* Essencial para posicionar o dropdown */
+    display: inline-flex;
 }
 
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 150%;
-  right: -10px;
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  min-width: 160px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 20;
-  padding: 0.5rem 0;
+/* Estilo para botões que são apenas ícones na nav */
+.menu-btn.icon-only-btn {
+    padding: 5px;
+    gap: 0;
+}
+.menu-btn.icon-only-btn .material-symbols-outlined {
+    font-size: 1.6rem;
 }
 
-.user-account:hover .dropdown-menu,
-.user-account > a:focus + .dropdown-menu,
-.dropdown-menu:hover {
-  display: block;
+/* ===== DROPDOWN DO MENU DO USUÁRIO (POPUP) - ESTILO BRANCO ATUALIZADO ===== */
+.user-dropdown-menu {
+    display: block; /* Visibilidade controlada pelo React */
+    position: absolute; /* NÃO EMPURRA A NAV */
+    top: calc(100% + 10px); /* Posiciona abaixo do ícone com um pequeno espaço */
+    right: 0; /* Alinha à direita do container */
+    background-color: #ffffff; /* <<< FUNDO BRANCO >>> */
+    color: #333333; /* <<< TEXTO ESCURO PADRÃO >>> */
+    border: 1px solid #e0e0e0; /* Borda cinza clara */
+    border-radius: 6px; /* Bordas arredondadas */
+    min-width: 200px; /* Largura mínima */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    z-index: 1010; /* Garante que fique acima de outros elementos da nav */
+    padding: 0.5rem 0; /* Padding vertical interno */
+    list-style: none;
+    margin: 0;
+    animation: fadeInDropdown 0.2s ease-out; /* Animação suave */
 }
 
-.dropdown-menu li a {
-  display: block;
-  padding: 0.7rem 1.2rem;
-  font-family: 'Lato', sans-serif;
-  font-size: 0.9rem;
-  color: #555;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, color 0.2s ease;
+/* Animação de entrada */
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.dropdown-menu li a:hover {
-  background-color: #f8f8f8;
-  color: #111;
+.user-dropdown-menu ul {
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
 }
 
-/* =========================================================
-   3. MENU LATERAL
-   ========================================================= */
-.menu-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s linear;
+.user-dropdown-menu li {
+    margin: 0;
 }
 
-.menu-overlay.show {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease-in-out;
+/* Estilo para links e botões dentro do dropdown */
+.user-dropdown-menu li a,
+.user-dropdown-menu li button.user-dropdown-logout-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 0,80rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: #555555; /* <<< TEXTO CINZA ESCURO PARA ITENS >>> */
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
-.side-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 300px;
-  background-color: #fff;
-  z-index: 1000;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in-out;
-  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+.user-dropdown-menu li a:hover,
+.user-dropdown-menu li button.user-dropdown-logout-btn:hover {
+    background-color: #f5f5f5; /* <<< FUNDO CINZA CLARO NO HOVER >>> */
+    color: #111111; /* <<< TEXTO PRETO NO HOVER >>> */
 }
 
-.side-menu.open {
-  transform: translateX(0);
+/* Separador dentro do dropdown */
+.user-dropdown-menu li.user-dropdown-separator {
+    border-top: 1px solid #eeeeee; /* Linha separadora clara */
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
 }
 
-.side-menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+/* Estilo específico para o botão de logout */
+.user-dropdown-menu li button.user-dropdown-logout-btn {
+    color: #c82333; /* <<< VERMELHO ESCURO PARA SAIR >>> */
+    font-weight: 500;
 }
 
-.side-menu-header h2 {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.4rem;
-  color: #333;
+.user-dropdown-menu li button.user-dropdown-logout-btn:hover {
+    background-color: #fbecec; /* Fundo vermelho claro no hover */
+    color: #a31a27; /* Vermelho mais escuro no hover */
 }
+/* ===== FIM DO DROPDOWN DO MENU DO USUÁRIO ===== */
 
-.close-menu-btn {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  color: #555;
-  padding: 5px;
-  line-height: 1;
-}
-
-.close-menu-btn:hover {
-  color: #111;
-}
-
-.side-menu-nav ul li a {
-  display: block;
-  padding: 0.9rem 0;
-  font-family: 'Lato', sans-serif;
-  font-size: 1rem;
-  color: #555;
-  border-bottom: 1px solid #f0f0f0;
-  transition: color 0.2s ease;
-}
-
-.side-menu-nav ul li:last-child a {
-  border-bottom: none;
-}
-
-.side-menu-nav ul li a:hover {
-  color: #000;
-}
 
 /* =========================================================
-   4. SEÇÃO "SOBRE NÓS"
+   3. SEÇÃO "SOBRE NÓS"
    ========================================================= */
 .about-us {
   width: 90%;
@@ -357,26 +342,26 @@ button {
 
 .about-us h2 {
   font-family: 'Inter', sans-serif;
-  font-size: 4rem;
+  font-size: 2.5rem; /* Reduzido um pouco */
   margin-bottom: 2rem;
   color: #222;
   font-weight: 500;
 }
 
 .about-us p {
-  font-size: 1.05rem;
+  font-size: 1rem; /* Reduzido um pouco */
   color: #555;
   margin-bottom: 1rem;
-  line-height: 1.9;
+  line-height: 1.8; /* Aumentado um pouco */
   text-align: left;
 }
 
 /* =========================================================
-   RODAPÉ — estilo clean e alinhado
+   RODAPÉ
    ========================================================= */
 footer {
-  background-color: #ffffff;              /* fundo branco */
-  border-top: 1px solid #e9ecef;          /* linha superior suave */
+  background-color: #ffffff;
+  border-top: 1px solid #e9ecef;
   padding: 3rem 2rem 2rem;
   font-family: 'Lato', sans-serif;
   color: #333;
@@ -384,7 +369,7 @@ footer {
 
 .footer-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* colunas adaptáveis */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem 3rem;
   width: 90%;
   max-width: 1100px;
@@ -438,22 +423,26 @@ footer {
 .newsletter-form input::placeholder {
   color: #aaa;
 }
-
-/* --- Responsividade --- */
-@media (max-width: 768px) {
-  footer {
-    padding: 2rem 1.5rem;
-  }
-
-  .footer-container {
-    grid-template-columns: 1fr;  /* colunas empilhadas no mobile */
-    gap: 2rem;
-  }
+/* Estilo botão newsletter */
+.newsletter-button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+.newsletter-button:hover {
+    background: #555;
 }
 
 
 /* =========================================================
-   6. MEDIA QUERIES
+   MEDIA QUERIES (Responsividade)
    ========================================================= */
 @media (max-width: 1024px) {
   .main-nav,
@@ -471,13 +460,14 @@ footer {
   .main-nav,
   .main-nav.nav-is-sticky {
     padding: 1.2rem 1.5rem;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto; /* Ajuste para logo centralizar melhor */
   }
 
-  .nav-left .search-bar { display: none; }
+  .nav-left .search-bar { display: none; } /* Esconde busca em mobile */
   .nav-center { justify-self: center; padding: 0 1rem; }
   .logo-svg { height: 22px; }
 
+  /* Esconde alguns ícones em telas menores */
   .nav-right a[title="Localização"],
   .nav-right a[title="Favoritos"] { display: none; }
 
@@ -486,8 +476,13 @@ footer {
   .about-us h2 { font-size: 2rem; margin-bottom: 1.5rem; }
   .about-us p { font-size: 1rem; }
 
-  footer { padding: 3rem 1.5rem; }
+  footer { padding: 2rem 1.5rem; }
   .footer-container { grid-template-columns: 1fr; gap: 2.5rem; }
+
+  /* Ajuste no dropdown do usuário em mobile */
+  .user-dropdown-menu {
+      min-width: 170px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -497,8 +492,8 @@ footer {
   .logo-svg { height: 20px; }
   .nav-right { gap: 0.8rem; }
   .nav-right .material-symbols-outlined { font-size: 1.4rem; }
-
-  .side-menu { width: 85%; max-width: 280px; }
+  .menu-btn .material-symbols-outlined { font-size: 1.4rem;}
+  .menu-btn { font-size: 0.8rem;}
 
   .about-us h2 { font-size: 1.8rem; }
   .about-us p { font-size: 0.95rem; }

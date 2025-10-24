@@ -1,160 +1,178 @@
 // storefront/src/pages/HomePage.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import '../assets/css/HomePage.css';
-import { jwtDecode } from "jwt-decode"; 
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import '../assets/css/HomePage.css'; //
+import { AuthContext } from '../context/AuthContext.jsx'; //
 
-const logoWhitePath = '/listen-white.svg';
-const logoDarkPath = '/listen.svg';
+// Caminhos para os logos
+const logoWhitePath = '/listen-white.svg'; //
+const logoDarkPath = '/listen.svg'; //
 
-// Recebe as props: onOpenSidebar, onOpenAuthModal, isAuthenticated
-function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
+// A prop onOpenAuthModal é necessária para abrir o modal no clique do ícone
+function HomePage({ onOpenSidebar, onOpenAuthModal }) {
+    const { user, logout } = useContext(AuthContext); //
     const [isNavSticky, setIsNavSticky] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const mainNavRef = useRef(null);
+    const userMenuRef = useRef(null); // Ref para o menu dropdown
 
+    // Efeito para o scroll da nav
     useEffect(() => {
-        const handleScroll = () => {
-             setIsNavSticky(window.scrollY > 20);
-        };
+        const handleScroll = () => setIsNavSticky(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Função para renderizar os botões de autenticação ou perfil
-    const renderAuthSection = () => {
-        if (isAuthenticated) {
-            let userRole = null;
-            let userName = 'Utilizador';
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                try {
-                    // Usar jwt-decode para extrair informações do token
-                    const decoded = jwtDecode(token);
-                    userRole = decoded.role;
-                    userName = decoded.name; // Pega o nome do token
-                } catch (e) {
-                    console.error("Erro ao descodificar token:", e);
-                    // Opcional: Deslogar se o token for inválido?
-                    // localStorage.removeItem('authToken');
-                    // window.location.reload();
-                }
+    // Efeito para fechar o dropdown ao clicar fora
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Fecha o menu se clicar fora do userMenuRef
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setIsUserMenuOpen(false);
             }
-
-            // Ação de Logout
-            const handleLogout = () => {
-                localStorage.removeItem('authToken');
-                window.location.reload(); // Recarrega a página para atualizar o estado
-            };
-
-            if (userRole === 'adm' || userRole === 'vendas') {
-                // Funcionário: Link para o backoffice + botão Sair
-                return (
-                    <>
-                        <a href="/app" title="Acessar Backoffice" className="menu-btn" style={{ textDecoration: 'none' }}>
-                            <span className="material-symbols-outlined">admin_panel_settings</span>
-                            BACKOFFICE
-                        </a>
-                        <button className="menu-btn" onClick={handleLogout}>SAIR</button>
-                    </>
-                );
-            } else {
-                // Cliente: Ícone de conta + botão Sair
-                return (
-                    <>
-                        <a href="#" title={`Conta de ${userName}`} className="menu-btn" onClick={(e) => { e.preventDefault(); alert('Página Minha Conta (Cliente) - Não implementado.'); }}>
-                            <span className="material-symbols-outlined">account_circle</span>
-                            {/* Opcional: Mostrar nome do cliente */}
-                            {/* {userName.split(' ')[0]} */}
-                        </a>
-                        <button className="menu-btn" onClick={handleLogout}>SAIR</button>
-                    </>
-                );
-            }
+        };
+        // Adiciona o listener apenas se o menu estiver aberto
+        if (isUserMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
         } else {
-            // Não Autenticado: Botões Entrar/Criar Conta
-            return (
-                <>
-                    <button className="menu-btn" onClick={() => onOpenAuthModal('login')}>
-                        ENTRAR
-                    </button>
-                    <button className="menu-btn" onClick={() => onOpenAuthModal('register')}>
-                        CRIAR CONTA
-                    </button>
-                </>
-            );
+            document.removeEventListener("mousedown", handleClickOutside);
         }
+        // Limpeza: remove o listener quando o componente desmonta ou o menu fecha
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isUserMenuOpen]); // Re-executa quando isUserMenuOpen muda
+
+
+    // Função de Logout
+    const handleLogout = () => {
+        logout(); // Chama a função do contexto
+        setIsUserMenuOpen(false); // Fecha o menu dropdown
     };
 
+    // Função para renderizar o ícone de usuário e o dropdown/modal trigger
+    const renderUserSection = () => {
+        // Lógica do clique no ícone
+        const handleIconClick = (event) => {
+             event.stopPropagation(); // Impede que o clique feche o menu imediatamente
+            if (user.isAuthenticated) {
+                // Se autenticado, abre/fecha o dropdown
+                setIsUserMenuOpen(prev => !prev);
+            } else {
+                // Se NÃO autenticado, abre o modal de login
+                onOpenAuthModal('login');
+            }
+        };
+
+        return (
+            // Adiciona a ref ao container
+            <div className="user-account-container" ref={userMenuRef}> {/* */}
+                <button
+                    className="menu-btn icon-only-btn" //
+                    onClick={handleIconClick} // Chama a lógica correta
+                    title={user.isAuthenticated ? `Conta de ${user.name}` : "Entrar ou Criar Conta"}
+                    aria-haspopup={user.isAuthenticated ? "true" : "dialog"} // dialog se abre modal
+                    aria-expanded={isUserMenuOpen}
+                    aria-label={user.isAuthenticated ? "Abrir menu do usuário" : "Entrar ou Criar Conta"}
+                >
+                    {/* Ícone de Usuário */}
+                    <span className="material-symbols-outlined">account_circle</span>
+                </button>
+
+                {/* Dropdown do Usuário (Renderiza apenas se logado e o menu estiver aberto) */}
+                {user.isAuthenticated && isUserMenuOpen && (
+                    // Não precisa de stopPropagation aqui, pois está dentro do userMenuRef
+                    <div className="user-dropdown-menu"> {/* */}
+                        <ul>
+                            {/* Opções baseadas na imagem */}
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
+                            <li><a href="/termos" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Termos e Condições</a></li>
+                            <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Cancelamento'); setIsUserMenuOpen(false); }}>Cancelamento</a></li>
+
+                            {/* Link condicional para Backoffice (apenas para adm/vendas) */}
+                            {(user.role === 'adm' || user.role === 'vendas') && (
+                                <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li> //
+                            )}
+
+                            {/* Botão Sair com separador */}
+                            <li className="user-dropdown-separator"> {/* */}
+                                <button onClick={handleLogout} className="user-dropdown-logout-btn"> {/* */}
+                                    Sair
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // Estrutura JSX da página (header, nav, main, footer)
     return (
         <>
-            <header className="hero-section">
-                {/* ... Video Background ... */}
-                <div className="video-background">
+            <header className="hero-section"> {/* */}
+                 <div className="video-background"> {/* */}
                     <video src="/Minimalist_Vinyl_Record_Video_Generation.mp4" autoPlay muted loop playsInline></video>
-                    <div className="video-overlay"></div>
+                    <div className="video-overlay"></div> {/* */}
                 </div>
 
-                <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}>
-                    <div className="nav-left">
-                        <button className="menu-btn" onClick={onOpenSidebar}>
+                <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}> {/* */}
+                    <div className="nav-left"> {/* */}
+                        <button className="menu-btn" onClick={onOpenSidebar}> {/* */}
                             <span className="material-symbols-outlined">menu</span>
                             MENU
                         </button>
-                        <div className="search-bar">
+                        <div className="search-bar"> {/* */}
                              <span className="material-symbols-outlined">search</span>
                              <input type="search" placeholder="Search" />
                         </div>
                     </div>
 
-                    <div className="nav-center">
-                         <div className="logo-container">
-                            <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" />
+                    <div className="nav-center"> {/* */}
+                         <div className="logo-container"> {/* */}
+                            <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" /> {/* */}
                          </div>
                     </div>
 
-                    <div className="nav-right">
-                        {/* Ícones existentes */}
+                    <div className="nav-right"> {/* */}
                         <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
                         <a href="#" title="Favoritos"><span className="material-symbols-outlined">favorite</span></a>
                         <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
-
-                        {/* Seção de Autenticação/Perfil */}
-                        {renderAuthSection()}
-
+                        {/* Ícone de usuário (que abre dropdown ou modal) */}
+                        {renderUserSection()}
                     </div>
                 </nav>
             </header>
 
-             {/* ... Restante do conteúdo da HomePage (main, footer) ... */}
               <main>
-                <section className="about-us">
-                    <h2>A listen.</h2>
-                    <p>Ouvir um vinil é um ritual. É tirar o disco da capa com cuidado, colocar na vitrola, ouvir os estalos antes da primeira nota. É presença. É tempo. É arte que gira. A listen. nasceu desse sentimento.</p>
-                    <p>Não somos apenas uma loja. Somos um lugar que entende que a música tem textura, tem cheiro, tem peso. Que o design pode mudar de forma conforme o som muda de tom. Que o rock pede contraste, o jazz pede elegância, e a bossa nova dança em sutileza. Aqui, cada gênero tem espaço para ser o que é, sem se encaixar em moldes. Do clean ao punk, sem esforço.</p>
-                    <p>Criamos a listen. porque acreditamos que estética importa. Mas sentimento importa mais. Se você coleciona discos porque cada um carrega uma história, está no lugar certo. Se você enxerga beleza no que é imperfeito, analógico, real seja bem-vindo. A gente compartilha do mesmo som.</p>
-                </section>
-            </main>
-             <footer>
-                 {/* ... conteúdo do footer ... */}
-                 <div className="footer-container">
-                    <div className="footer-column">
+                  <section className="about-us"> {/* */}
+                      <h2>A listen.</h2>
+                       <p>Ouvir um vinil é um ritual. É tirar o disco da capa com cuidado, colocar na vitrola, ouvir os estalos antes da primeira nota. É presença. É tempo. É arte que gira. A listen. nasceu desse sentimento.</p>
+                       <p>Não somos apenas uma loja. Somos um lugar que entende que a música tem textura, tem cheiro, tem peso. Que o design pode mudar de forma conforme o som muda de tom. Que o rock pede contraste, o jazz pede elegância, e a bossa nova dança em sutileza. Aqui, cada gênero tem espaço para ser o que é, sem se encaixar em moldes. Do clean ao punk, sem esforço.</p>
+                       <p>Criamos a listen. porque acreditamos que estética importa. Mas sentimento importa mais. Se você coleciona discos porque cada um carrega uma história, está no lugar certo. Se você enxerga beleza no que é imperfeito, analógico, real seja bem-vindo. A gente compartilha do mesmo som.</p>
+                  </section>
+              </main>
+             <footer> {/* */}
+                 <div className="footer-container"> {/* */}
+                     <div className="footer-column"> {/* */}
                         <h3>Junte-se a nós</h3>
                         <p>Cadastre seu e-mail e receba 50% de desconto na primeira compra</p>
-                        <form className="newsletter-form">
+                        <form className="newsletter-form"> {/* */}
                             <input type="text" placeholder="Nome" />
                             <input type="email" placeholder="E-mail" />
-                            {/* Adicionar botão de submit ao formulário do newsletter */}
-                             <button type="submit" className="newsletter-button" style={{ /* Estilos básicos */ padding: '10px 15px', marginTop: '10px', cursor: 'pointer', background: '#333', color: '#fff', border: 'none', borderRadius: '4px' }}>Inscrever</button>
+                             <button type="submit" className="newsletter-button" style={{ padding: '10px 15px', marginTop: '10px', cursor: 'pointer', background: '#333', color: '#fff', border: 'none', borderRadius: '4px' }}>Inscrever</button>
                         </form>
                     </div>
-                    <div className="footer-column">
+                    <div className="footer-column"> {/* */}
                         <h3>Categorias</h3>
                         <ul>
                             <li><a href="#">Rock</a></li>
                             <li><a href="#">Bossa nova</a></li>
                             <li><a href="#">Jazz e Blues</a></li>
+                             <li><a href="#">Pop</a></li>
                         </ul>
                     </div>
-                    <div className="footer-column">
+                    <div className="footer-column"> {/* */}
                         <h3>Contato</h3>
                         <p>(19) 3590-000</p>
                         <p>E-mail: faleconosco@listen.com.br</p>
@@ -164,5 +182,4 @@ function HomePage({ onOpenSidebar, onOpenAuthModal, isAuthenticated }) {
         </>
     );
 }
-
 export default HomePage;

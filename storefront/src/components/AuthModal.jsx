@@ -1,21 +1,20 @@
 // storefront/src/components/AuthModal.jsx
-import React, { useState, useEffect, useContext } from 'react'; // Adicionar useContext
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext.jsx'; // Importar AuthContext
+import { AuthContext } from '../context/AuthContext.jsx';
 import styles from './AuthModal.module.css';
 
-// Ícones SVG (mantidos como no original - representados como comentários para brevidade)
-const EmailIcon = () => {/*...*/};
-const UserIcon = () => {/*...*/};
-const LockIcon = () => {/*...*/};
-const CloseIcon = () => {/*...*/};
-const CpfIcon = () => {/*...*/};
+// SVG Icons (assuming they are defined correctly)
+const EmailIcon = () => <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>;
+const UserIcon = () => <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>;
+const LockIcon = () => <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path></svg>;
+const CloseIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+const CpfIcon = () => <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fillRule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM10 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1V4zm2 2V5h1v1h-1zM10 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-3zm2 2v-1h1v1h-1z" clipRule="evenodd"></path></svg>;
 
 
 function AuthModal({ isOpen, onClose }) {
-    const { login } = useContext(AuthContext); // Obter função login do contexto
+    const { login } = useContext(AuthContext);
     const [view, setView] = useState('welcome');
-    // ... (outros states como estavam) ...
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
@@ -25,36 +24,46 @@ function AuthModal({ isOpen, onClose }) {
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
     const [registerTermsAccepted, setRegisterTermsAccepted] = useState(false);
     const [registerCpf, setRegisterCpf] = useState('');
-    const [message, setMessage] = useState({ text: '', type: '', target: null });
+    const [message, setMessage] = useState({ text: '', type: '', target: null }); // General messages
+    const [fieldErrors, setFieldErrors] = useState({}); // Field-specific errors
     const [isLoading, setIsLoading] = useState(false);
 
+    // Helper to clear form states
+    const clearForms = () => {
+        setLoginEmail('');
+        setLoginPassword('');
+        setRememberMe(false);
+        setRegisterEmail('');
+        setRegisterUsername('');
+        setRegisterPassword('');
+        setRegisterConfirmPassword('');
+        setRegisterTermsAccepted(false);
+        setRegisterCpf('');
+        setMessage({ text: '', type: '', target: null });
+        setFieldErrors({}); // Clear field errors too
+        setIsLoading(false);
+    };
 
-    // useEffect para resetar o estado (como estava)
     useEffect(() => {
-         if (isOpen) {
-             setView('welcome');
-             setLoginEmail('');
-             setLoginPassword('');
-             setRememberMe(false);
-             setRegisterEmail('');
-             setRegisterUsername('');
-             setRegisterPassword('');
-             setRegisterConfirmPassword('');
-             setRegisterTermsAccepted(false);
-             setRegisterCpf('');
-             setMessage({ text: '', type: '', target: null });
-             setIsLoading(false);
-         }
-     }, [isOpen]);
+        if (isOpen) {
+            setView('welcome'); // Start at welcome screen
+            clearForms(); // Reset all fields and errors
+        }
+    }, [isOpen]);
 
-    // --- Função de Login ATUALIZADA ---
+    // --- LOGIN ---
     const handleLogin = async (e) => {
         e.preventDefault();
-        setMessage({ text: '', type: '', target: null });
+        setMessage({ text: '', type: '', target: null }); // Clear general message
+        setFieldErrors({}); // Clear field errors
         setIsLoading(true);
 
-        if (!loginEmail || !loginPassword) {
-            setMessage({ text: 'Email e Senha são obrigatórios.', type: 'error', target: 'login' });
+        let errors = {};
+        if (!loginEmail) errors.loginEmail = 'Email é obrigatório.';
+        if (!loginPassword) errors.loginPassword = 'Senha é obrigatória.';
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
             setIsLoading(false);
             return;
         }
@@ -63,100 +72,217 @@ function AuthModal({ isOpen, onClose }) {
             const response = await axios.post('/api/auth/login', { email: loginEmail, password: loginPassword });
             const { token, user } = response.data;
 
-            // Chama a função login do contexto para guardar o token e atualizar o estado
-            login(token); // Mantém isto para o estado do storefront
+            login(token); // Update AuthContext
 
-            setMessage({ text: 'Login bem-sucedido!', type: 'success', target: 'login' });
+            // Brief success indication maybe on button, or just proceed
+            // setMessage({ text: '✓', type: 'success', target: 'login' }); // Example
 
-            // Redireciona APENAS se for adm ou vendas
             if (user?.role === 'adm' || user?.role === 'vendas') {
-                setMessage({ text: 'Login bem-sucedido! A redirecionar para o backoffice...', type: 'success', target: 'login' });
-
-                // *** MODIFICAÇÃO AQUI: Adiciona o token como parâmetro ***
-                const backofficeUrlBase = import.meta.env.DEV
-                    ? 'http://localhost:5174/app/' // URL base do backoffice em DEV
-                    : '/app'; // URL base do backoffice em PROD
-                const redirectUrl = `${backofficeUrlBase}?token=${encodeURIComponent(token)}`; // Adiciona o token
-                // *** FIM DA MODIFICAÇÃO ***
-
-                if (import.meta.env.DEV) {
-                    console.log(`DEV Mode: Redirecionando para ${redirectUrl}`);
-                    window.location.href = redirectUrl; // Redireciona com o token na URL
-                } else {
-                    console.log(`PROD Mode: Redirecionando para ${redirectUrl}`);
-                    window.location.href = redirectUrl; // Redireciona com o token na URL
-                }
-                // Não precisa mais setIsLoading(false) aqui, pois a página vai mudar
+                // Redirect with token in URL (handled by AuthProvider in backoffice)
+                const backofficeUrlBase = import.meta.env.DEV ? 'http://localhost:5174/app/' : '/app';
+                const redirectUrl = `${backofficeUrlBase}?token=${encodeURIComponent(token)}`;
+                window.location.href = redirectUrl;
+                // No need to setIsLoading(false) due to redirect
             } else {
-                // Para Cliente, apenas fecha o modal após um delay
-                setTimeout(() => {
-                    onClose(); // Fecha o modal
-                }, 1000);
-                setIsLoading(false); // Garante que o loading para no caso do cliente
+                // For Client, just close modal after short delay
+                setTimeout(() => onClose(), 500); // Shorter delay
+                 setIsLoading(false); // Make sure loading stops for client
             }
 
         } catch (error) {
-            setMessage({ text: error.response?.data?.msg || 'Erro no login. Verifique as suas credenciais.', type: 'error', target: 'login' });
-             setIsLoading(false); // Para o loading em caso de erro
+            const errorMsg = error.response?.data?.msg || 'Erro no login. Verifique as suas credenciais.';
+            setMessage({ text: errorMsg, type: 'error', target: 'login' }); // General message for credential errors
+            // Highlight both fields as potentially wrong
+            setFieldErrors({ loginEmail: ' ', loginPassword: ' ' }); // Use space to trigger error class without text
+            setIsLoading(false);
         }
-        // Não precisa de finally aqui, setIsLoading é tratado nos branches
     };
 
-    // --- Função handleRegister (permanece como estava) ---
-     const handleRegister = async (e) => {
-         e.preventDefault();
-         setMessage({ text: '', type: '', target: null });
-         setIsLoading(true);
+    // --- REGISTER ---
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        setMessage({ text: '', type: '', target: null }); // Clear general message
+        setFieldErrors({}); // Clear field errors
+        setIsLoading(true);
 
-         // ... (validações como estavam) ...
-         if (!registerEmail || !registerUsername || !registerCpf || !registerPassword || !registerConfirmPassword) { setMessage({ text: 'Todos os campos são obrigatórios.', type: 'error', target: 'register' }); setIsLoading(false); return; }
-         if (registerPassword !== registerConfirmPassword) { setMessage({ text: 'As senhas não conferem.', type: 'error', target: 'register' }); setIsLoading(false); return; }
-         if (registerPassword.length < 6) { setMessage({ text: 'A senha deve ter no mínimo 6 caracteres.', type: 'error', target: 'register' }); setIsLoading(false); return; }
-         if (!registerTermsAccepted) { setMessage({ text: 'Você deve aceitar os termos.', type: 'error', target: 'register' }); setIsLoading(false); return; }
+        let errors = {};
+        if (!registerUsername.trim()) errors.registerUsername = 'Nome é obrigatório.';
+        if (!registerEmail.trim() || !/\S+@\S+\.\S+/.test(registerEmail)) errors.registerEmail = 'Email inválido.';
+        if (!registerCpf.trim() /* || add CPF validation regex */) errors.registerCpf = 'CPF inválido.';
+        if (!registerPassword) errors.registerPassword = 'Senha é obrigatória.';
+        else if (registerPassword.length < 6) errors.registerPassword = 'Senha deve ter no mínimo 6 caracteres.';
+        if (registerPassword !== registerConfirmPassword) {
+            errors.registerConfirmPassword = 'As senhas não conferem.';
+            // Optionally mark the first password field too if they mismatch
+            if (!errors.registerPassword) errors.registerPassword = ' '; // Trigger error style
+        }
+        if (!registerTermsAccepted) errors.registerTermsAccepted = 'Você deve aceitar os termos.';
 
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setIsLoading(false);
+            return;
+        }
 
-         try {
-             // A rota para registo de clientes pode ser diferente (ex: /api/clientes)
-             const response = await axios.post('/api/clientes', { // Assumindo rota /api/clientes
-                 email: registerEmail,
-                 nome: registerUsername, // Atenção ao nome do campo esperado pelo backend (nome vs name)
-                 cpf: registerCpf,
-                 password: registerPassword,
-                 confirmpassword: registerConfirmPassword
-             });
-             setMessage({ text: response.data.msg || 'Cadastro realizado com sucesso!', type: 'success', target: 'register' });
+        try {
+            const response = await axios.post('/api/clientes', {
+                email: registerEmail,
+                nome: registerUsername, // Use 'nome' here for the backend
+                cpf: registerCpf,
+                password: registerPassword,
+                confirmpassword: registerConfirmPassword
+            });
+            setMessage({ text: 'Cadastro realizado! Faça login.', type: 'success', target: 'register' }); // Update general message
              setTimeout(() => {
-                 setView('welcome');
-                 setMessage({ text: 'Cadastro realizado! Faça login para continuar.', type: 'success', target: 'login' });
+                 setView('welcome'); // Switch back to login view
+                 // Optionally clear register fields or keep them
+                 setMessage({ text: '', type: '', target: null }); // Clear message after switching
              }, 1500);
-         } catch (error) {
-             setMessage({ text: error.response?.data?.msg || 'Erro ao cadastrar. Verifique os dados.', type: 'error', target: 'register' });
-         } finally {
-             setIsLoading(false);
-         }
-     };
+
+        } catch (error) {
+            const errorMsg = error.response?.data?.msg || 'Erro ao cadastrar. Verifique os dados.';
+            setMessage({ text: errorMsg, type: 'error', target: 'register' }); // Show general error
+            // Highlight specific fields based on common API errors
+            if (errorMsg.toLowerCase().includes('e-mail')) {
+                setFieldErrors(prev => ({ ...prev, registerEmail: 'Email já em uso.' }));
+            }
+            if (errorMsg.toLowerCase().includes('cpf')) {
+                setFieldErrors(prev => ({ ...prev, registerCpf: 'CPF já em uso.' }));
+            }
+             setIsLoading(false); // Stop loading on error
+        }
+        // No finally needed if we set isLoading false inside catch and success timeout
+    };
 
     if (!isOpen) return null;
 
-    // --- Renderização do Modal (JSX como estava) ---
-    // (O JSX extenso foi omitido aqui para clareza, mas permanece igual ao original)
     return (
         <div className={styles.overlay} onClick={onClose}>
-             <div className={`${styles.modalContent} ${view === 'register' ? styles.showRegister : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`${styles.modalContent} ${view === 'register' ? styles.showRegister : ''}`} onClick={(e) => e.stopPropagation()}>
                 <button className={styles.closeButton} onClick={onClose} aria-label="Fechar"> <CloseIcon /> </button>
                 <div className={styles.splitLayout}>
-                    {/* --- COLUNA ESQUERDA --- */}
+
+                    {/* --- COLUNA ESQUERDA (Cadastro / Boas-vindas) --- */}
                     <div className={styles.leftColumn}>
-                        {view === 'welcome' && ( <div className={styles.welcomeContent}> <h2 className={styles.columnTitle}>BEM-VINDO!</h2> <p className={styles.welcomeText}>Cadastre-se e ganhe 10% off na primeira compra!</p> <button onClick={() => { setView('register'); setMessage({ text: '', type: '', target: null }); }} className={styles.primaryButton} disabled={isLoading} > Criar conta </button> {message.target === 'login' && message.type === 'success' && !message.text.includes('Redirecionando') && <p className={`${styles.message} ${styles.success}`} style={{marginTop: '15px'}}>{message.text}</p> } </div> )}
-                        {view === 'register' && ( <form onSubmit={handleRegister} noValidate> <h2 className={styles.columnTitle}>CADASTRE-SE</h2> <div className={styles.inputGroup}> <span className={styles.icon}><UserIcon /></span> <input type="text" placeholder="NOME" value={registerUsername} onChange={(e) => setRegisterUsername(e.target.value)} required /> </div> <div className={styles.inputGroup}> <span className={styles.icon}><EmailIcon /></span> <input type="email" placeholder="EMAIL" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} required /> </div> <div className={styles.inputGroup}> <span className={styles.icon}><CpfIcon /></span> <input type="text" placeholder="CPF" value={registerCpf} onChange={(e) => setRegisterCpf(e.target.value)} required /> </div> <div className={styles.inputGroup}> <span className={styles.icon}><LockIcon /></span> <input type="password" placeholder="SENHA (mín. 6 caracteres)" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required /> </div> <div className={styles.inputGroup}> <span className={styles.icon}><LockIcon /></span> <input type="password" placeholder="CONFIRMAR SENHA" value={registerConfirmPassword} onChange={(e) => setRegisterConfirmPassword(e.target.value)} required /> </div> <div className={styles.termsGroup}> <input type="checkbox" id="termsReg" checked={registerTermsAccepted} onChange={(e) => setRegisterTermsAccepted(e.target.checked)} /> <label htmlFor="termsReg">Li e aceito os <a href="/termos" target="_blank" className={styles.termsLink}>TERMOS</a></label> </div> {message.target === 'register' && message.text && <p className={`${styles.message} ${message.type === 'error' ? styles.error : styles.success}`}>{message.text}</p>} <button type="submit" className={styles.primaryButton} disabled={isLoading || !registerTermsAccepted} > {isLoading ? 'CADASTRANDO...' : 'CADASTRAR'} </button> <p className={styles.toggleText}> Já tem conta? <button type="button" onClick={() => { setView('welcome'); setMessage({ text: '', type: '', target: null }); }} className={styles.toggleLink}>Fazer Login</button> </p> </form> )}
+                        {view === 'welcome' && (
+                            <div className={styles.welcomeContent}>
+                                <h2 className={styles.columnTitle}>BEM-VINDO!</h2>
+                                <p className={styles.welcomeText}>Cadastre-se e ganhe 10% off na primeira compra!</p>
+                                <button
+                                    onClick={() => { setView('register'); clearForms(); }}
+                                    className={styles.primaryButton}
+                                    disabled={isLoading}
+                                >
+                                    Criar conta
+                                </button>
+                                {/* Removed success message display from here */}
+                            </div>
+                        )}
+                        {view === 'register' && (
+                            <form onSubmit={handleRegister} noValidate>
+                                <h2 className={styles.columnTitle}>CADASTRE-SE</h2>
+
+                                {/* Input Nome */}
+                                <div className={`${styles.inputGroup} ${fieldErrors.registerUsername ? styles.inputError : ''}`}>
+                                    <span className={styles.icon}><UserIcon /></span>
+                                    <input type="text" placeholder="NOME" value={registerUsername} onChange={(e) => {setRegisterUsername(e.target.value); setFieldErrors(p=>({...p, registerUsername:''}))}} required />
+                                </div>
+                                {fieldErrors.registerUsername && <p className={styles.errorMessageText}>{fieldErrors.registerUsername}</p>}
+
+                                {/* Input Email */}
+                                <div className={`${styles.inputGroup} ${fieldErrors.registerEmail ? styles.inputError : ''}`}>
+                                    <span className={styles.icon}><EmailIcon /></span>
+                                    <input type="email" placeholder="EMAIL" value={registerEmail} onChange={(e) => {setRegisterEmail(e.target.value); setFieldErrors(p=>({...p, registerEmail:''}))}} required />
+                                </div>
+                                {fieldErrors.registerEmail && <p className={styles.errorMessageText}>{fieldErrors.registerEmail}</p>}
+
+                                {/* Input CPF */}
+                                <div className={`${styles.inputGroup} ${fieldErrors.registerCpf ? styles.inputError : ''}`}>
+                                    <span className={styles.icon}><CpfIcon /></span>
+                                    <input type="text" placeholder="CPF" value={registerCpf} onChange={(e) => {setRegisterCpf(e.target.value); setFieldErrors(p=>({...p, registerCpf:''}))}} required />
+                                </div>
+                                {fieldErrors.registerCpf && <p className={styles.errorMessageText}>{fieldErrors.registerCpf}</p>}
+
+                                {/* Input Senha */}
+                                <div className={`${styles.inputGroup} ${fieldErrors.registerPassword ? styles.inputError : ''}`}>
+                                    <span className={styles.icon}><LockIcon /></span>
+                                    <input type="password" placeholder="SENHA (mín. 6 caracteres)" value={registerPassword} onChange={(e) => {setRegisterPassword(e.target.value); setFieldErrors(p=>({...p, registerPassword:''}))}} required />
+                                </div>
+                                {fieldErrors.registerPassword && <p className={styles.errorMessageText}>{fieldErrors.registerPassword}</p>}
+
+                                {/* Input Confirmar Senha */}
+                                <div className={`${styles.inputGroup} ${fieldErrors.registerConfirmPassword ? styles.inputError : ''}`}>
+                                    <span className={styles.icon}><LockIcon /></span>
+                                    <input type="password" placeholder="CONFIRMAR SENHA" value={registerConfirmPassword} onChange={(e) => {setRegisterConfirmPassword(e.target.value); setFieldErrors(p=>({...p, registerConfirmPassword:''}))}} required />
+                                </div>
+                                {fieldErrors.registerConfirmPassword && <p className={styles.errorMessageText}>{fieldErrors.registerConfirmPassword}</p>}
+
+                                {/* Checkbox Termos */}
+                                <div className={`${styles.termsGroup} ${fieldErrors.registerTermsAccepted ? styles.inputError : ''}`}>
+                                    <input type="checkbox" id="termsReg" checked={registerTermsAccepted} onChange={(e) => {setRegisterTermsAccepted(e.target.checked); setFieldErrors(p=>({...p, registerTermsAccepted:''}))}} />
+                                    <label htmlFor="termsReg">Li e aceito os <a href="/termos" target="_blank" className={styles.termsLink}>TERMOS</a></label>
+                                </div>
+                                {fieldErrors.registerTermsAccepted && <p className={styles.errorMessageText} style={{ marginTop: '-15px', marginBottom: '15px'}}>{fieldErrors.registerTermsAccepted}</p>}
+
+                                {/* General Register Message */}
+                                {message.target === 'register' && message.text && <p className={`${styles.message} ${message.type === 'error' ? styles.error : styles.success}`}>{message.text}</p>}
+
+                                <button type="submit" className={styles.primaryButton} disabled={isLoading /* Keep terms check? || !registerTermsAccepted */} >
+                                    {isLoading ? 'CADASTRANDO...' : 'CADASTRAR'}
+                                </button>
+                                <p className={styles.toggleText}>
+                                    Já tem conta?
+                                    <button type="button" onClick={() => { setView('welcome'); clearForms(); }} className={styles.toggleLink}>Fazer Login</button>
+                                </p>
+                            </form>
+                        )}
                     </div>
 
                     {/* --- LINHA DIVISÓRIA --- */}
                     <div className={styles.divider}></div>
 
-                    {/* --- COLUNA DIREITA --- */}
+                    {/* --- COLUNA DIREITA (Login) --- */}
                     <div className={styles.rightColumn}>
-                        <form onSubmit={handleLogin} noValidate> <h2 className={styles.columnTitle}>FAÇA LOGIN</h2> <div className={styles.inputGroup}> <span className={styles.icon}><EmailIcon /></span> <input type="email" placeholder="EMAIL" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required /> </div> <div className={styles.inputGroup}> <span className={styles.icon}><LockIcon /></span> <input type="password" placeholder="SENHA" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required /> </div> <div className={styles.rememberGroup}> <input type="checkbox" id="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} /> <label htmlFor="remember">Lembrar senha?</label> </div> {message.target === 'login' && message.text && <p className={`${styles.message} ${message.type === 'error' ? styles.error : styles.success}`}>{message.text}</p>} <button type="submit" className={styles.primaryButton} disabled={isLoading}> {isLoading ? 'ENTRANDO...' : 'Entrar'} </button> {view === 'welcome' && ( <p className={styles.toggleText}> Não tem conta? <button type="button" onClick={() => { setView('register'); setMessage({ text: '', type: '', target: null }); }} className={styles.toggleLink}>Criar conta</button> </p> )} </form>
+                        <form onSubmit={handleLogin} noValidate>
+                            <h2 className={styles.columnTitle}>FAÇA LOGIN</h2>
+
+                            {/* Input Email Login */}
+                            <div className={`${styles.inputGroup} ${fieldErrors.loginEmail ? styles.inputError : ''}`}>
+                                <span className={styles.icon}><EmailIcon /></span>
+                                <input type="email" placeholder="EMAIL" value={loginEmail} onChange={(e) => {setLoginEmail(e.target.value); setFieldErrors(p=>({...p, loginEmail:''}))}} required />
+                            </div>
+                            {fieldErrors.loginEmail && <p className={styles.errorMessageText}>{fieldErrors.loginEmail}</p>}
+
+                            {/* Input Senha Login */}
+                            <div className={`${styles.inputGroup} ${fieldErrors.loginPassword ? styles.inputError : ''}`}>
+                                <span className={styles.icon}><LockIcon /></span>
+                                <input type="password" placeholder="SENHA" value={loginPassword} onChange={(e) => {setLoginPassword(e.target.value); setFieldErrors(p=>({...p, loginPassword:''}))}} required />
+                            </div>
+                            {fieldErrors.loginPassword && <p className={styles.errorMessageText}>{fieldErrors.loginPassword}</p>}
+
+                            {/* Remember Me */}
+                            <div className={styles.rememberGroup}>
+                                <input type="checkbox" id="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+                                <label htmlFor="remember">Lembrar senha?</label>
+                            </div>
+
+                            {/* General Login Message */}
+                            {message.target === 'login' && message.text && <p className={`${styles.message} ${message.type === 'error' ? styles.error : styles.success}`}>{message.text}</p>}
+
+                            <button type="submit" className={styles.primaryButton} disabled={isLoading}>
+                                {isLoading ? 'ENTRANDO...' : 'Entrar'}
+                            </button>
+
+                            {/* REMOVED Redundant Create Account Link from here */}
+                            {/*
+                            {view === 'welcome' && (
+                                <p className={styles.toggleText}>
+                                    Não tem conta?
+                                    <button type="button" onClick={() => { setView('register'); clearForms(); }} className={styles.toggleLink}>Criar conta</button>
+                                </p>
+                            )}
+                             */}
+                        </form>
                     </div>
                 </div>
             </div>
