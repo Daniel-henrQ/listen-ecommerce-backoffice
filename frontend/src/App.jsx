@@ -1,77 +1,59 @@
 // frontend/src/App.jsx
-import React from 'react';
+import React, { useContext } from 'react';
+// REMOVA a prop 'basename' do BrowserRouter
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from './context/AuthContext';
 
 // Layout principal do backoffice
 import DashboardLayout from './layouts/DashboardLayout';
 
-// Páginas do backoffice -- <<< ADICIONAR ESTAS LINHAS >>> ---
+// Páginas... (imports existentes)
 import ProductsView from './pages/ProductsView';
 import AdminView from './pages/AdminView';
 import FornecedoresView from './pages/FornecedoresView';
 import ComprasView from './pages/ComprasView';
 import ClientesView from './pages/ClientesView';
 import VendasView from './pages/VendasView';
-// --- <<< FIM DAS ADIÇÕES >>> ---
 
-// --- Componente de rota protegida ---
+// --- Componente de rota protegida (mantido como antes) ---
 const PrivateRoute = ({ children }) => {
-  // Verificar se está em modo de desenvolvimento
-  const isDevelopment = import.meta.env.DEV;
+  const { user } = useContext(AuthContext);
 
-  // Se estiver em desenvolvimento, permite o acesso direto
-  if (isDevelopment) {
-    console.warn("MODO DEV: Verificação de token no PrivateRoute desativada.");
+   if (user.isLoading) {
+       return <div>A verificar autenticação...</div>;
+   }
+
+  if (user.isAuthenticated && (user.role === 'adm' || user.role === 'vendas')) {
     return children;
-  }
-
-  // Lógica original para produção (ou se quiser testar auth em dev)
-  const token = localStorage.getItem('authToken');
-  if (!token) return <Navigate to="/" replace />; // Redireciona para storefront se não houver token
-
-  try {
-    const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    // Verifica expiração E se a role é válida para o backoffice
-    if (decoded.exp > currentTime && (decoded.role === 'adm' || decoded.role === 'vendas')) {
-      return children;
-    } else {
-      console.error("Token expirado ou role inválida:", decoded.role);
-      localStorage.removeItem('authToken');
-      return <Navigate to="/" replace />; // Redireciona para storefront
-    }
-  } catch (error) {
-    console.error('Token inválido:', error);
-    localStorage.removeItem('authToken');
-    return <Navigate to="/" replace />; // Redireciona para storefront
+  } else {
+    console.log("PrivateRoute (Frontend): Acesso negado. Redirecionando para storefront.", "Autenticado:", user.isAuthenticated, "Role:", user.role);
+    window.location.href = '/';
+    return null;
   }
 };
 
 // --- Aplicação principal ---
 function App() {
   return (
-    // Define o prefixo das rotas do backoffice COM BARRA NO FINAL
-    <BrowserRouter basename="/app/"> {/* << CORREÇÃO APLICADA AQUI */}
+    // <<< CORREÇÃO APLICADA AQUI: Remover basename >>>
+    <BrowserRouter>
       <Routes>
         <Route
-          path="/"
+          path="/" // A rota pai agora é a raiz "/"
           element={
             <PrivateRoute>
               <DashboardLayout />
             </PrivateRoute>
           }
         >
-          {/* Rota inicial redireciona para 'produtos' */}
+          {/* As rotas filhas continuam relativas ao pai */}
           <Route index element={<Navigate to="produtos" replace />} />
-          {/* Rotas das páginas */}
           <Route path="produtos" element={<ProductsView />} />
           <Route path="admin" element={<AdminView />} />
           <Route path="fornecedor" element={<FornecedoresView />} />
           <Route path="compras" element={<ComprasView />} />
           <Route path="clientes" element={<ClientesView />} />
           <Route path="vendas" element={<VendasView />} />
-          {/* Rota "catch-all" redireciona para 'produtos' */}
           <Route path="*" element={<Navigate to="produtos" replace />} />
         </Route>
       </Routes>

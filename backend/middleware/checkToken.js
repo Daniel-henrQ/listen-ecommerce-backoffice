@@ -3,45 +3,27 @@ const jwt = require("jsonwebtoken");
 
 /**
  * Middleware para verificar a validade de um token JWT.
- * MODIFICADO: Em ambiente de desenvolvimento (NODE_ENV !== 'production'),
- * bypassa a verificação do token e adiciona um usuário 'dev' mockado.
  */
 const checkToken = (req, res, next) => {
-
-  // --- INÍCIO DA MODIFICAÇÃO PARA DESENVOLVIMENTO ---
-  // Verifica se a variável de ambiente NODE_ENV NÃO é 'production'
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn("MODO DEV (BACKEND): Verificação de token DESABILITADA.");
-    // Simula um usuário logado (ex: admin) para permitir o acesso às rotas
-    // Ajuste 'id', 'name' e 'role' conforme necessário para seus testes
-    req.user = {
-      id: 'dev-user-id', // ID de usuário mockado
-      name: 'Desenvolvedor', // Nome mockado
-      role: 'adm' // Papel mockado (pode ser 'adm' ou 'vendas')
-    };
-    return next(); // Pula toda a verificação de token e continua
-  }
-  // --- FIM DA MODIFICAÇÃO PARA DESENVOLVIMENTO ---
-
-  // --- LÓGICA ORIGINAL PARA PRODUÇÃO ---
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  // Remove o 'Bearer ' se existir, caso contrário usa o header diretamente
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(" ")[1] : authHeader;
+
 
   if (!token) {
-    // Em produção, continua negando se não houver token
     return res.status(401).json({ msg: "Acesso negado! Token não fornecido." });
   }
 
   try {
     const secret = process.env.SECRET;
-    // Validação da SECRET ainda é importante para produção
     if (!secret) {
-        console.error("Erro Crítico (PROD): Variável de ambiente SECRET não definida para JWT.");
+        console.error("Erro Crítico: Variável de ambiente SECRET não definida para JWT.");
+        // Retorna 500 Internal Server Error em caso de falha de configuração
         return res.status(500).json({ msg: "Erro de configuração no servidor." });
     }
     const decoded = jwt.verify(token, secret);
 
-    // Anexa as informações do usuário real (decodificadas do token)
+    // Anexa as informações do usuário decodificadas do token
     req.user = {
         id: decoded.id,
         name: decoded.name,
@@ -50,9 +32,16 @@ const checkToken = (req, res, next) => {
 
     next(); // Continua para a próxima rota/middleware
   } catch (error) {
-    // Em produção, retorna erro se o token for inválido
-    console.error("Erro de token em produção:", error.message); // Log mais detalhado em prod
-    res.status(400).json({ msg: "Token inválido!" });
+    // Loga o erro específico no servidor
+    console.error("Erro na verificação do token:", error.message);
+
+    // Retorna 400 Bad Request se o token for inválido ou malformado
+    // Retorna 401 Unauthorized se o token expirou (embora jwt.verify lance erro genérico às vezes)
+    // Uma resposta 401 é mais semanticamente correta para problemas de autenticação/autorização
+    if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ msg: "Token expirado!" });
+    }
+    return res.status(401).json({ msg: "Token inválido!" });
   }
 };
 

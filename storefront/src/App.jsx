@@ -1,106 +1,79 @@
 // storefront/src/App.jsx
-import React, { useState, useEffect } from 'react';
-// <<< GARANTIR que é BrowserRouter e NÃO HashRouter >>>
-import { BrowserRouter as Router, Routes, Route /* ... */ } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'; // Adicionar useContext
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LiquidGlassSidebar from './components/LiquidGlassSidebar';
 import AuthModal from './components/AuthModal';
-import { jwtDecode } from "jwt-decode"; // Importar jwt-decode
+import { AuthContext } from './context/AuthContext.jsx'; // Importar AuthContext
+// Remover jwtDecode se não for mais usado aqui
+// import { jwtDecode } from "jwt-decode";
 
 function App() {
+  const { user } = useContext(AuthContext); // Obter user do contexto
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState(''); // Estado para o nome do utilizador
+  // Remover os estados locais: isAuthenticated, userName
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [userName, setUserName] = useState('');
 
-  // Função para verificar autenticação e buscar nome do utilizador
-  const checkAuth = () => {
-    console.log("App.jsx (Storefront): Verificando token...");
-    const token = localStorage.getItem('authToken');
-    if (token) {
-        try {
-            const decoded = jwtDecode(token);
-            const currentTime = Date.now() / 1000;
-            if (decoded.exp > currentTime) {
-                setIsAuthenticated(true);
-                setUserName(decoded.name || 'Utilizador'); // Define o nome do utilizador
-                console.log("App.jsx (Storefront): Token válido encontrado. Utilizador:", decoded.name);
-                return true; // Token válido
-            } else {
-                console.log("App.jsx (Storefront): Token expirado.");
-                localStorage.removeItem('authToken'); // Limpa token expirado
-            }
-        } catch (e) {
-            console.error("App.jsx (Storefront): Erro ao decodificar token:", e);
-            localStorage.removeItem('authToken'); // Limpa token inválido
-        }
-    }
-    // Se chegou aqui, não está autenticado
-    setIsAuthenticated(false);
-    setUserName('');
-    console.log("App.jsx (Storefront): Token não encontrado ou inválido.");
-    return false; // Não autenticado
-  };
-
-
-  useEffect(() => {
-    const authenticated = checkAuth(); // Verifica ao carregar
-    if (!authenticated) {
-      // Decide se abre o modal automaticamente SÓ se não estiver autenticado
-      // openAuthModal(); // Comente ou remova esta linha se não quiser abrir automaticamente
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Executa apenas uma vez ao montar
+  // Remover a função checkAuth e o useEffect que a chamava
+  /* const checkAuth = () => { ... }; */
+  /* useEffect(() => { ... }, []); */
 
   const handleCloseSidebar = () => setIsSidebarOpen(false);
 
-  // Função para abrir o modal de autenticação
-  const openAuthModal = (view) => {
-    console.log(`App.jsx (Storefront): Abrindo AuthModal (view: ${view || 'welcome'})`);
+  const openAuthModal = () => {
+    console.log("App.jsx (Storefront): Abrindo AuthModal...");
     setIsAuthModalOpen(true);
     document.body.classList.add('modal-open');
   };
 
-  // Função para fechar o modal e re-verificar autenticação
   const closeAuthModal = () => {
     console.log("App.jsx (Storefront): Fechando AuthModal");
     setIsAuthModalOpen(false);
     document.body.classList.remove('modal-open');
-    checkAuth(); // Re-verifica o estado de autenticação após fechar (login/logout pode ter ocorrido)
+    // Não precisa chamar checkAuth() aqui, o estado do contexto já foi atualizado pelo AuthModal/login
   };
 
-  console.log("App.jsx (Storefront): Renderizando. isAuthModalOpen:", isAuthModalOpen, "isAuthenticated:", isAuthenticated);
+  console.log("App.jsx (Storefront): Renderizando. AuthContext user:", user);
+
+   // Mostrar loading enquanto o contexto verifica o token inicial
+   if (user.isLoading) {
+       return <div>A carregar aplicação...</div>; // Ou um spinner/layout básico
+   }
+
 
   return (
-    // <<< GARANTIR que NÃO HÁ basename aqui >>>
     <Router>
       <div>
-        {/* Passa o nome do utilizador para a Sidebar */}
+        {/* Passa o nome do utilizador do contexto para a Sidebar */}
         <LiquidGlassSidebar
           isOpen={isSidebarOpen}
           onClose={handleCloseSidebar}
-          userName={userName} // Passa o nome do utilizador
+          userName={user.name || 'Visitante'} // Usa o nome do contexto
         />
 
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeAuthModal}
+          // Não precisa passar `loginSuccess` se o modal usar o contexto diretamente
         />
 
         <main>
           <Routes>
             <Route
-              path="/" // Rota raiz
+              path="/"
               element={
                 <HomePage
                   onOpenSidebar={() => setIsSidebarOpen(true)}
                   onOpenAuthModal={openAuthModal}
-                  isAuthenticated={isAuthenticated}
-                  // userName={userName} // Pode passar o nome para HomePage também se necessário
+                  // Passa isAuthenticated e userName do contexto
+                  isAuthenticated={user.isAuthenticated}
+                  userName={user.name}
                 />
               }
             />
-            {/* Outras rotas do storefront aqui */}
+            {/* Outras rotas */}
           </Routes>
         </main>
       </div>
