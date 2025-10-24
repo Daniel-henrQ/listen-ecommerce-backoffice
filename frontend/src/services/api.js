@@ -1,3 +1,4 @@
+// frontend/src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
@@ -10,20 +11,22 @@ api.interceptors.request.use(
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log("Token adicionado ao header Authorization."); // Log para depuração
+      // Log 1: Confirma que o token está a ser lido E anexado
+      console.log("[Request Interceptor] Token encontrado e anexado ao header para:", config.url);
     } else {
-        console.warn("Token não encontrado para adicionar ao header.");
+      // Log 2: Indica se não encontrou token para anexar
+      console.warn("[Request Interceptor] Token NÃO encontrado no localStorage para:", config.url);
     }
     return config;
   },
   (error) => {
     // Trata erros potenciais ao configurar a requisição
-     console.error("Erro no interceptor de requisição:", error);
+     console.error("[Request Interceptor] Erro:", error);
     return Promise.reject(error);
   }
 );
 
-// --- NOVO: Interceptor de Resposta para tratar erros 401/403 ---
+// --- MODIFICADO: Interceptor de Resposta com mais logging ---
 api.interceptors.response.use(
   (response) => {
     // Se a resposta for bem-sucedida (status 2xx), apenas a retorna
@@ -32,18 +35,28 @@ api.interceptors.response.use(
   (error) => {
     // Verifica se o erro é de resposta e se o status é 401 (Não Autorizado) ou 403 (Proibido)
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.error(`Erro ${error.response.status}:`, error.response.data.msg || 'Acesso negado ou token inválido/expirado.');
+      // **** ADICIONADO LOGGING DETALHADO ****
+      console.error(
+          `[Response Interceptor] ERRO ${error.response.status} DETETADO para URL: ${error.config.url}`, // Log 3: URL que falhou
+          '\nMensagem do Backend:', error.response.data?.msg || '(Sem mensagem específica)', // Log 4: Mensagem da API
+          '\nToken no localStorage NESTE MOMENTO:', localStorage.getItem('authToken'), // Log 5: O token ainda existe?
+          '\nCabeçalho Authorization enviado:', error.config.headers?.Authorization ? 'SIM' : 'NÃO' // Log 6: O header foi enviado neste pedido específico?
+      );
+      // **** FIM DO LOGGING ADICIONADO ****
+
       // Remove o token inválido/expirado
       localStorage.removeItem('authToken');
+      console.log("[Response Interceptor] Token removido do localStorage."); // Log 7
+
       // Redireciona o utilizador para a página inicial (storefront)
-      // Usar window.location.href garante um redirecionamento completo fora do React Router do backoffice
+      console.log("[Response Interceptor] A redirecionar para '/'..."); // Log 8
       window.location.href = '/'; // Redireciona para a raiz do storefront
     }
     // Para outros erros, apenas rejeita a promise para que possam ser tratados localmente
     return Promise.reject(error);
   }
 );
-// --- FIM NOVO ---
+// --- FIM MODIFICADO ---
 
 
 export default api;

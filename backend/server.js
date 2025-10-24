@@ -27,7 +27,7 @@ const io = new Server(server, {
 // Inicializa o serviço de notificação com a instância do Socket.IO
 initNotificacaoService(io);
 
-// Importação das rotas da API
+// Importação das rotas da API (mantido como antes)
 const produtoRoutes = require('./routes/produtoRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -37,10 +37,6 @@ const compraRoutes = require('./routes/compraRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 const vendaRoutes = require('./routes/vendaRoutes');
 const relatorioRoutes = require('./routes/relatorioRoutes');
-// Remova ou comente rotas não utilizadas se houver (ex: userRoutes, managementsRoutes)
-// const userRoutes = require('./routes/userRoutes');
-// const managementsRoutes = require('./routes/managementsRoutes');
-
 
 // Middlewares essenciais
 app.use(cors()); // Considere configurar origens específicas para produção
@@ -58,9 +54,6 @@ app.use('/api/compras', compraRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/vendas', vendaRoutes);
 app.use('/api/relatorios', relatorioRoutes);
-// app.use('/api/user', userRoutes); // Descomente se usar
-// app.use('/api/managements', managementsRoutes); // Descomente se usar
-
 
 // 2. SERVIR ARQUIVOS DE UPLOAD (prefixo /uploads)
 const publicPath = path.join(__dirname, '..', 'public');
@@ -104,7 +97,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     // Modo de desenvolvimento
     console.log('Modo de desenvolvimento. Os frontends (Vite) devem estar a rodar separadamente.');
-    // Uma rota raiz simples para indicar que o backend está a funcionar
     app.get('/', (req, res) => {
       res.send('Servidor backend em execução. Aceda aos frontends pelas portas do Vite (ex: 5173 e 5174).');
     });
@@ -115,16 +107,15 @@ if (process.env.NODE_ENV === 'production') {
 // Conectar ao banco de dados MongoDB
 conectarBanco();
 
-// Lógica de conexão do Socket.IO
+// Lógica de conexão do Socket.IO (mantida como antes)
 io.on('connection', (socket) => {
   console.log('Um utilizador conectou-se via WebSocket:', socket.id);
-  // Adicionar lógica de autenticação do socket aqui, se necessário
   socket.on('disconnect', () => {
     console.log('O utilizador desconectou-se:', socket.id);
   });
 });
 
-// Middleware de tratamento de erros
+// Middleware de tratamento de erros (mantido como antes)
 app.use((err, req, res, next) => {
   console.error("ERRO NÃO TRATADO:", err.stack || err.message);
   if (err instanceof multer.MulterError) {
@@ -133,11 +124,10 @@ app.use((err, req, res, next) => {
   if (err.message === 'Tipo de arquivo inválido.') {
     return res.status(422).json({ msg: err.message });
   }
-  // Adicionar tratamento para outros erros específicos se necessário
   res.status(500).json({ msg: 'Ocorreu um erro interno no servidor.' });
 });
 
-// Iniciar o servidor
+// Iniciar o servidor (mantido como antes)
 server.listen(PORT, () => {
   console.log(` Servidor rodando em http://localhost:${PORT}`);
     if (process.env.NODE_ENV !== 'production') {
@@ -145,29 +135,24 @@ server.listen(PORT, () => {
   }
 });
 
-// --- Código para encerramento gracioso ---
+// Código para encerramento gracioso (mantido como antes)
 const gracefulShutdown = (signal) => {
   console.log(`\nSinal ${signal} recebido. A encerrar a aplicação...`);
   server.close(() => {
     console.log('Servidor HTTP encerrado.');
     mongoose.connection.close(false).then(() => {
         console.log('Conexão com o MongoDB encerrada.');
-        process.exit(0); // Sai do processo Node.js com sucesso
+        process.exit(0);
     }).catch(err => {
         console.error('Erro ao fechar conexão MongoDB:', err);
-        process.exit(1); // Sai com código de erro
+        process.exit(1);
     });
   });
-
-  // Força o encerramento após um tempo limite se o servidor não fechar
   setTimeout(() => {
     console.error('Encerramento forçado após timeout.');
     process.exit(1);
-  }, 10000); // 10 segundos de timeout
+  }, 10000);
 };
-
-// Captura sinais de encerramento
-process.once('SIGUSR2', () => gracefulShutdown('SIGUSR2')); // Usado pelo nodemon
-process.on('SIGINT', () => gracefulShutdown('SIGINT')); // Ctrl+C
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); // Comando 'kill'
-// --- Fim do encerramento gracioso ---
+process.once('SIGUSR2', () => gracefulShutdown('SIGUSR2'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
