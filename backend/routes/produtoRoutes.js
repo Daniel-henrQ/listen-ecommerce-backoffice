@@ -12,8 +12,9 @@ router.post('/', checkToken, upload.single('imagem'), produtoController.criarPro
 // Esta linha garante que a nova função seja chamada corretamente
 router.post('/aprovar-compra', checkToken, produtoController.aprovarCompraEAtualizarEstoque);
 
-router.get('/', checkToken, produtoController.listarProdutos);
-router.put('/:id', checkToken, upload.single('imagem'), produtoController.atualizarProduto);
+// DEVE FICAR APENAS ESTA LINHA (SEM checkToken)
+router.get('/', produtoController.listarProdutos);
+
 router.delete('/:id', checkToken, produtoController.deletarProduto);
 
 module.exports = router;

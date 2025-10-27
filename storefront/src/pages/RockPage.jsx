@@ -4,17 +4,22 @@ import styles from '../assets/css/RockPage.module.css';
 import { AuthContext } from '../context/AuthContext.jsx';
 import LiquidGlassSidebar from '../components/LiquidGlassSidebar';
 import AuthModal from '../components/AuthModal';
-import { Link } from 'react-router-dom'; // <<< IMPORTADO CORRETAMENTE
+import { Link } from 'react-router-dom';
 
 // --- Caminhos para os logos ---
-const logoWhitePath = '/listen-white.svg'; // Assuming in public folder
+const logoWhitePath = '/listen-white.svg';
 
 function RockPage() {
     // --- State for Page Content ---
-    const [products, setProducts] = useState([]);
+    // AJUSTE: Dividido em duas linhas de produtos
+    const [productsRow1, setProductsRow1] = useState([]);
+    const [productsRow2, setProductsRow2] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentSlide, setCurrentSlide] = useState(0);
+
+    // AJUSTE: Estado de slide individual para cada linha
+    const [currentSlideRow1, setCurrentSlideRow1] = useState(0);
+    const [currentSlideRow2, setCurrentSlideRow2] = useState(0);
 
     // --- State and Logic for Layout ---
     const { user, logout } = useContext(AuthContext);
@@ -31,10 +36,14 @@ function RockPage() {
             setLoading(true);
             setError(null);
             try {
-                // Simulação de API
-                // const response = await api.get('/produtos?categoria=Rock');
-                // setProducts(response.data);
-                console.log("Buscando produtos de Rock...");
+                const response = await api.get('/produtos?categoria=Rock');
+                const allProducts = response.data;
+
+                // AJUSTE: Divide os produtos em duas linhas
+                const midpoint = Math.ceil(allProducts.length / 2);
+                setProductsRow1(allProducts.slice(0, midpoint));
+                setProductsRow2(allProducts.slice(midpoint));
+
             } catch (err) {
                 console.error("Error fetching rock products:", err);
                 setError("Não foi possível carregar os produtos de Rock.");
@@ -48,7 +57,6 @@ function RockPage() {
     // --- Sticky Nav Logic ---
     useEffect(() => {
         const handleScroll = () => {
-             // Ajuste o valor (ex: 10) se a nav for maior
             setIsNavSticky(window.scrollY > 10);
         };
         window.addEventListener('scroll', handleScroll);
@@ -103,10 +111,9 @@ function RockPage() {
                     <span className="material-symbols-outlined">account_circle</span>
                 </button>
                 {user.isAuthenticated && isUserMenuOpen && (
-                     <div className="user-dropdown-menu"> {/* Use global style from HomePage.css */}
+                     <div className="user-dropdown-menu"> 
                         <ul>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
-                            {/* ... other items ... */}
                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
                             {(user.role === 'adm' || user.role === 'vendas') && (
                                 <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
@@ -121,17 +128,37 @@ function RockPage() {
         );
     };
 
-    // --- Basic Carousel Logic ---
-    const productsPerSlide = 3;
-    const totalSlides = Math.ceil(products.length / productsPerSlide);
-    const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
-    const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-    const getPaginatedProducts = () => {
-        const startIndex = currentSlide * productsPerSlide;
-        const endIndex = startIndex + productsPerSlide;
-        return products.slice(startIndex, endIndex);
-    };
-    const displayedProducts = getPaginatedProducts();
+    // --- AJUSTE: Lógica de Carrossel para CADA LINHA ---
+    const productsPerSlide = 3; // 3 produtos por slide (em cada linha)
+
+    // Lógica para Linha 1
+    const totalSlidesRow1 = Math.ceil(productsRow1.length / productsPerSlide);
+    const nextSlideRow1 = () => setCurrentSlideRow1((prev) => (prev + 1) % totalSlidesRow1);
+    const prevSlideRow1 = () => setCurrentSlideRow1((prev) => (prev - 1 + totalSlidesRow1) % totalSlidesRow1);
+
+    // Lógica para Linha 2
+    const totalSlidesRow2 = Math.ceil(productsRow2.length / productsPerSlide);
+    const nextSlideRow2 = () => setCurrentSlideRow2((prev) => (prev + 1) % totalSlidesRow2);
+    const prevSlideRow2 = () => setCurrentSlideRow2((prev) => (prev - 1 + totalSlidesRow2) % totalSlidesRow2);
+
+    // Função Helper para renderizar um card de produto (Sem descrição, como na imagem)
+    const renderProductCard = (product) => (
+        <div key={product._id} className={styles.productCard}>
+            <img
+                src={`/uploads/${product.imagem}`}
+                alt={`${product.nome} - ${product.artista}`}
+                className={styles.productImage}
+                onError={(e) => { e.target.style.display='none'; }}
+            />
+            <div className={styles.productInfo}>
+                <h3 className={styles.productTitle}>{product.nome}</h3>
+                <p className={styles.productArtist}>{product.artista}</p>
+                <p className={styles.productPrice}>
+                    R$ {product.preco?.toFixed(2) ?? '0.00'}
+                </p>
+            </div>
+        </div>
+    );
 
     return (
         <>
@@ -171,7 +198,6 @@ function RockPage() {
             {/* --- Header Section (Apenas Breadcrumbs) --- */}
             <header className={styles.rockHeroSection}>
                  <div className={styles.heroContent}>
-                     {/* Breadcrumbs com Link funcional */}
                      <p className={styles.breadcrumbs}>
                          <Link to="/">Home</Link> / Rock
                      </p>
@@ -182,52 +208,67 @@ function RockPage() {
             <main className={styles.pageContent}>
                 {loading && <p className={styles.loadingMessage}>Carregando produtos...</p>}
                 {error && <p className={styles.errorMessage}>{error}</p>}
-                {!loading && !error && products.length === 0 && (
+                {!loading && !error && productsRow1.length === 0 && (
                     <p className={styles.noProductsMessage}>Nenhum produto de Rock encontrado.</p>
                 )}
-                {!loading && !error && products.length > 0 && (
+
+                {/* --- CARROSSEL LINHA 1 --- */}
+                {!loading && !error && productsRow1.length > 0 && (
                     <div className={styles.carouselContainer}>
-                        <div className={styles.carouselTrack} style={{ transform: `translateX(-${currentSlide * 100}%)` }}> {/* Add basic slide transition */}
-                            {/* Renderizar todos os slides, CSS cuidará da exibição */}
-                            {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                        <div className={styles.carouselTrack} style={{ transform: `translateX(-${currentSlideRow1 * 100}%)` }}> 
+                            {Array.from({ length: totalSlidesRow1 }).map((_, slideIndex) => (
                                 <div key={slideIndex} className={styles.carouselSlide}>
-                                    {products.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).map(product => (
-                                        <div key={product._id} className={styles.productCard}>
-                                            <img
-                                                src={`/uploads/${product.imagem}`}
-                                                alt={`${product.nome} - ${product.artista}`}
-                                                className={styles.productImage}
-                                                onError={(e) => { e.target.style.display='none'; }}
-                                            />
-                                            <div className={styles.productInfo}>
-                                                <h3 className={styles.productTitle}>{product.nome}</h3>
-                                                <p className={styles.productArtist}>{product.artista}</p>
-                                                <p className={styles.productDescription}>
-                                                    {product.descricao ? `${product.descricao.substring(0, 100)}...` : 'Um disco essencial para sua coleção.'}
-                                                </p>
-                                                <p className={styles.productPrice}>
-                                                    R$ {product.preco?.toFixed(2) ?? '0.00'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {/* Adicionar placeholders se o último slide não estiver completo */}
-                                    {slideIndex === totalSlides - 1 && products.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length < productsPerSlide && (
-                                        Array.from({ length: productsPerSlide - products.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length }).map((_, placeholderIndex) => (
-                                            <div key={`placeholder-${placeholderIndex}`} className={styles.productCardPlaceholder}></div> // Placeholder para manter o layout
+                                    {productsRow1.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).map(renderProductCard)}
+                                    
+                                    {/* Placeholders para Linha 1 */}
+                                    {slideIndex === totalSlidesRow1 - 1 && productsRow1.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length < productsPerSlide && (
+                                        Array.from({ length: productsPerSlide - productsRow1.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length }).map((_, placeholderIndex) => (
+                                            <div key={`placeholder-1-${placeholderIndex}`} className={styles.productCardPlaceholder}></div>
                                         ))
                                     )}
                                 </div>
                              ))}
                         </div>
 
-                         {/* Navigation Buttons */}
-                         {totalSlides > 1 && (
+                         {/* Botões Linha 1 */}
+                         {totalSlidesRow1 > 1 && (
                             <>
-                                <button onClick={prevSlide} className={`${styles.carouselButton} ${styles.prev}`}>
+                                <button onClick={prevSlideRow1} className={`${styles.carouselButton} ${styles.prev}`}>
                                     <span className="material-symbols-outlined">chevron_left</span>
                                 </button>
-                                <button onClick={nextSlide} className={`${styles.carouselButton} ${styles.next}`}>
+                                <button onClick={nextSlideRow1} className={`${styles.carouselButton} ${styles.next}`}>
+                                    <span className="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </>
+                         )}
+                    </div>
+                )}
+
+                {/* --- CARROSSEL LINHA 2 --- */}
+                {!loading && !error && productsRow2.length > 0 && (
+                    <div className={styles.carouselContainer}>
+                        <div className={styles.carouselTrack} style={{ transform: `translateX(-${currentSlideRow2 * 100}%)` }}> 
+                            {Array.from({ length: totalSlidesRow2 }).map((_, slideIndex) => (
+                                <div key={slideIndex} className={styles.carouselSlide}>
+                                    {productsRow2.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).map(renderProductCard)}
+                                    
+                                    {/* Placeholders para Linha 2 */}
+                                    {slideIndex === totalSlidesRow2 - 1 && productsRow2.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length < productsPerSlide && (
+                                        Array.from({ length: productsPerSlide - productsRow2.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide).length }).map((_, placeholderIndex) => (
+                                            <div key={`placeholder-2-${placeholderIndex}`} className={styles.productCardPlaceholder}></div>
+                                        ))
+                                    )}
+                                </div>
+                             ))}
+                        </div>
+
+                         {/* Botões Linha 2 */}
+                         {totalSlidesRow2 > 1 && (
+                            <>
+                                <button onClick={prevSlideRow2} className={`${styles.carouselButton} ${styles.prev}`}>
+                                    <span className="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <button onClick={nextSlideRow2} className={`${styles.carouselButton} ${styles.next}`}>
                                     <span className="material-symbols-outlined">chevron_right</span>
                                 </button>
                             </>
@@ -239,17 +280,15 @@ function RockPage() {
             {/* --- Footer (Menor e com fundo) --- */}
             <footer className={styles.rockFooter}>
                 <div className={styles.footerContainer}>
-                    {/* Column 1: Newsletter */}
+                    {/* ... (colunas do footer) ... */}
                     <div className={styles.footerColumn}>
                         <h3>Junte-se a nós</h3>
                         <p>Cadastre seu e-mail e receba 10% de desconto na primeira compra</p>
                          <form className={styles.newsletterForm}>
                             <input type="text" placeholder="Nome" required />
                             <input type="email" placeholder="E-mail" required />
-                        
                         </form>
                     </div>
-                    {/* Column 2: Categories */}
                     <div className={styles.footerColumn}>
                         <h3>Categorias</h3>
                         <ul>
@@ -258,17 +297,15 @@ function RockPage() {
                             <li><Link to="/jazz-blues">Jazz e Blues</Link></li>
                         </ul>
                     </div>
-                    {/* Column 3: Contact */}
                     <div className={styles.footerColumn}>
                         <h3>Contato</h3>
                         <p>(19) 3590-000</p>
                         <p>E-mail: faleconosco@listen.com.br</p>
                     </div>
-                     {/* Column 4: Logo */}
                      <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
-                        <Link to="/"> {/* <<< ADICIONE ESTA LINHA */}
+                        <Link to="/"> 
                             <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
-                         </Link> {/* <<< ADICIONE ESTA LINHA */}
+                         </Link> 
                      </div>
                 </div>
             </footer>

@@ -104,64 +104,152 @@
 }
 .breadcrumbs a:hover { color: var(--text-light); text-decoration: underline; }
 
-/* --- Page Content & Carousel --- */
-.pageContent {
-  /* Propriedades mantidas: */
-  padding: 3rem 2rem;
-  max-width: 1200px; /* <<< DE VOLTA PARA CENTRALIZAR */
-  margin: 0 auto; /* <<< DE VOLTA PARA CENTRALIZAR */
-  position: relative;
-  z-index: 0;
-  min-height: 60vh; /* Ou outra altura mínima desejada */
-  /* Sem background-color, para ser transparente */
+.carouselContainer {
+    position: relative; 
+    width: 90%;       
+    max-width: 1200px; 
+    margin: 40px auto; /* Espaço entre as linhas */
+    overflow: hidden;  
 }
-.loadingMessage, .errorMessage, .noProductsMessage {
-  text-align: center; padding: 4rem 1rem; font-size: 1.1rem; color: #ccc;
-  background-color: rgba(30, 30, 30, 0.7);
-  border-radius: 8px; margin: 2rem auto; max-width: 600px;
-}
-.errorMessage { color: #ff8a8a; }
 
-.carouselContainer { 
-  position: relative; 
-  width: 100%; 
-  overflow: hidden; 
-  margin-bottom: 2rem;
-  /* max-width e margin removidos, pois o .pageContent já faz isso */
+/* 1. Transição SUAVE para o slide */
+.carouselTrack {
+    display: flex;
+    /* Transição para o 'transform' que move o slide */
+    transition: transform 0.5s ease-in-out; 
 }
-.carouselTrack { display: flex; transition: transform 0.5s ease-in-out; }
+
+/* O slide individual (uma linha com 3 produtos) */
 .carouselSlide {
-  min-width: 100%; box-sizing: border-box; display: grid;
-  grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-  padding: 0 40px;
+    display: flex;         
+    /* justify-content: space-between; (Usar 'gap' é melhor para centralizar) */
+    justify-content: center; /* Centraliza os cards se houver menos de 3 */
+    gap: 2%; /* Espaço entre os cards */
+    flex-shrink: 0;
+    width: 100%;
 }
-.productCardPlaceholder { visibility: hidden; }
-.carouselButton {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5); color: white; border: none;
-  padding: 10px; cursor: pointer; border-radius: 50%; z-index: 5;
-  display: flex; align-items: center; justify-content: center;
-}
-.carouselButton.prev { left: 10px; }
-.carouselButton.next { right: 10px; }
-.carouselButton:hover { background-color: rgba(0, 0, 0, 0.8); }
-.carouselButton .material-symbols-outlined { font-size: 2rem; }
 
+/*
+========================================
+ESTILOS DOS PRODUTOS (CARDS)
+========================================
+*/
+
+/* 2. Efeito GROW SUTIL no Produto Individual */
 .productCard {
-  background-color: var(--background-dark); color: var(--text-light);
-  border-radius: 0; overflow: hidden; display: flex; flex-direction: column;
-  transition: transform 0.2s ease-in-out; border: 1px solid #444;
+    /* Define a largura para 3 colunas */
+    flex-basis: 32%; 
+    max-width: 320px; 
+    padding: 10px;
+    box-sizing: border-box;
+
+    /* Visual "Sem Borda" */
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+    
+    /* Animação de hover */
+    transition: transform 0.3s ease-in-out;
 }
-.productImage { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
-.productInfo { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; }
-.productTitle { font-size: 1rem; font-weight: bold; margin: 0 0 0.2rem; color: #fff; }
-.productArtist { font-size: 0.9rem; color: var(--text-medium); margin: 0 0 0.8rem; }
+
+.productCard:hover {
+    transform: scale(1.05); /* "Cresce" sutilmente 5% */
+    z-index: 2; /* Fica por cima dos vizinhos */
+    cursor: pointer;
+}
+
+/* Placeholder para manter o layout (se o slide não tiver 3) */
+.productCardPlaceholder {
+    flex-basis: 32%;
+    max-width: 320px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.productImage {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1; /* Garante que a imagem seja quadrada */
+    object-fit: cover;
+    border-radius: 8px; /* Pequeno arredondamento como na imagem de referência */
+}
+
+.productInfo {
+    padding: 10px 5px;
+}
+
+.productTitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.productArtist {
+    font-size: 1rem;
+    color: #ccc; /* Cinza claro */
+    margin-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Oculta a descrição (como na imagem de referência) */
 .productDescription {
-  font-size: 0.8rem; color: var(--text-medium); margin-bottom: 1rem; line-height: 1.4;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-  overflow: hidden; flex-grow: 1; min-height: calc(1.4em * 3);
+    display: none; 
 }
-.productPrice { font-size: 1rem; font-weight: bold; color: #fff; margin-top: auto; }
+
+.productPrice {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+/*
+========================================
+BOTÕES DO CARROSSEL (SETAS)
+========================================
+*/
+
+/* 3. Botões de Navegação com Efeito SUTIL (sem cor feia) */
+.carouselButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(217, 182, 11, 0.5); /* Dourado da imagem */
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: white;
+    
+    /* Transição sutil para o hover */
+    transition: transform 0.2s ease-in-out;
+}
+
+.carouselButton:hover {
+    /* Efeito sutil de "scale" (Mantém o translateY) */
+    transform: translateY(-50%) scale(1.1); 
+}
+
+.prev {
+    left: -25px; /* Metade para fora da caixa */
+}
+.next {
+    right: -25px; /* Metade para fora da caixa */
+}
+
+
+/*
 
 /* --- Footer Specific Styles --- */
 .rockFooter {
