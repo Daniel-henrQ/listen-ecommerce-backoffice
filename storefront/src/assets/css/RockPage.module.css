@@ -91,7 +91,8 @@
 .rockHeroSection {
   padding-top: 140px; /* Espaço abaixo da nav inicial */
   padding-left: 3rem; padding-right: 3rem; padding-bottom: 2rem;
-  background-color: transparent; background-image: none;
+  background-color: transparent; /* <<< FUNDO TRANSPARENTE */
+  background-image: none;
   position: relative; z-index: 1;
   color: var(--text-light); /* Texto claro para breadcrumbs */
 }
@@ -108,11 +109,12 @@
 .pageContent {
   /* Propriedades mantidas: */
   padding: 3rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto; /* Mantém o conteúdo centrado */
+  max-width: 1200px; /* <<< DE VOLTA PARA CENTRALIZAR */
+  margin: 0 auto; /* <<< DE VOLTA PARA CENTRALIZAR */
   position: relative;
   z-index: 0;
   min-height: 60vh; /* Ou outra altura mínima desejada */
+  /* Sem background-color, para ser transparente */
 }
 .loadingMessage, .errorMessage, .noProductsMessage {
   text-align: center; padding: 4rem 1rem; font-size: 1.1rem; color: #ccc;
@@ -121,7 +123,13 @@
 }
 .errorMessage { color: #ff8a8a; }
 
-.carouselContainer { position: relative; width: 100%; overflow: hidden; margin-bottom: 2rem; }
+.carouselContainer { 
+  position: relative; 
+  width: 100%; 
+  overflow: hidden; 
+  margin-bottom: 2rem;
+  /* max-width e margin removidos, pois o .pageContent já faz isso */
+}
 .carouselTrack { display: flex; transition: transform 0.5s ease-in-out; }
 .carouselSlide {
   min-width: 100%; box-sizing: border-box; display: grid;
@@ -166,17 +174,17 @@
 }
 .footerContainer {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem 2rem; width: 90%; max-width: 1100px; margin: 0 auto;
+  gap: 2rem 4rem; width: 90%; max-width: 1100px; margin: 0 auto; 
 }
 .footerColumn h3 { font-size: 1rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.8rem; }
 .footerColumn p, .footerColumn li, .footerColumn li a {
-  font-size: 0.9rem; color: var(--text-medium); line-height: 1.6; margin-bottom: 0.3rem; transition: color 0.2s ease; text-decoration: none;
+  font-size: 0.9rem; color: var(--text-medium); line-height: 1.6; margin-bottom: 0.7rem; transition: color 0.2s ease; text-decoration: none;
 }
 .footerColumn li a:hover { color: #fff; }
 .newsletterForm input {
   width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #555; border-radius: 4px;
   background-color: rgba(255, 255, 255, 0.1); color: var(--text-light);
-  font-size: 0.9rem; margin-bottom: 0.5rem;
+  font-size: 0.9rem; margin-bottom: 0.7rem;
 }
 .newsletterForm input::placeholder { color: #888; }
 .newsletterButton {

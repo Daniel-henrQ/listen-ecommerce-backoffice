@@ -1,4 +1,3 @@
-// storefront/src/pages/HomePage.jsx
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../assets/css/HomePage.css'; //
 import { AuthContext } from '../context/AuthContext.jsx'; //
@@ -15,6 +14,19 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const mainNavRef = useRef(null);
     const userMenuRef = useRef(null); // Ref para o menu dropdown
+
+    // <<< CÓDIGO INCORPORADO >>>
+    // Este hook gerencia a cor de fundo global
+    useEffect(() => {
+        // Adiciona a classe 'bg-light' ao body quando a HomePage carregar
+        document.body.classList.add('bg-light');
+
+        // Função de "limpeza": remove a classe quando a HomePage for "desmontada"
+        return () => {
+            document.body.classList.remove('bg-light');
+        };
+    }, []); // O array vazio [] garante que isso rode apenas na montagem e desmontagem
+    // <<< FIM DO CÓDIGO INCORPORADO >>>
 
     // Efeito para o scroll da nav
     useEffect(() => {
@@ -114,7 +126,7 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                  <div className="video-background"> {/* */}
                     <video src="/Minimalist_Vinyl_Record_Video_Generation.mp4" autoPlay muted loop playsInline></video>
                     <div className="video-overlay"></div> {/* */}
-                </div>
+                 </div>
 
                 <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}> {/* */}
                     <div className="nav-left"> {/* */}
@@ -147,38 +159,38 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
               <main>
                   <section className="about-us"> {/* */}
                       <h2>A listen.</h2>
-                       <p>Ouvir um vinil é um ritual. É tirar o disco da capa com cuidado, colocar na vitrola, ouvir os estalos antes da primeira nota. É presença. É tempo. É arte que gira. A listen. nasceu desse sentimento.</p>
-                       <p>Não somos apenas uma loja. Somos um lugar que entende que a música tem textura, tem cheiro, tem peso. Que o design pode mudar de forma conforme o som muda de tom. Que o rock pede contraste, o jazz pede elegância, e a bossa nova dança em sutileza. Aqui, cada gênero tem espaço para ser o que é, sem se encaixar em moldes. Do clean ao punk, sem esforço.</p>
-                       <p>Criamos a listen. porque acreditamos que estética importa. Mas sentimento importa mais. Se você coleciona discos porque cada um carrega uma história, está no lugar certo. Se você enxerga beleza no que é imperfeito, analógico, real seja bem-vindo. A gente compartilha do mesmo som.</p>
+                        <p>Ouvir um vinil é um ritual. É tirar o disco da capa com cuidado, colocar na vitrola, ouvir os estalos antes da primeira nota. É presença. É tempo. É arte que gira. A listen. nasceu desse sentimento.</p>
+                        <p>Não somos apenas uma loja. Somos um lugar que entende que a música tem textura, tem cheiro, tem peso. Que o design pode mudar de forma conforme o som muda de tom. Que o rock pede contraste, o jazz pede elegância, e a bossa nova dança em sutileza. Aqui, cada gênero tem espaço para ser o que é, sem se encaixar em moldes. Do clean ao punk, sem esforço.</p>
+                        <p>Criamos a listen. porque acreditamos que estética importa. Mas sentimento importa mais. Se você coleciona discos porque cada um carrega uma história, está no lugar certo. Se você enxerga beleza no que é imperfeito, analógico, real seja bem-vindo. A gente compartilha do mesmo som.</p>
                   </section>
               </main>
-             <footer> {/* */}
-                 <div className="footer-container"> {/* */}
-                     <div className="footer-column"> {/* */}
-                        <h3>Junte-se a nós</h3>
-                        <p>Cadastre seu e-mail e receba 50% de desconto na primeira compra</p>
-                        <form className="newsletter-form"> {/* */}
-                            <input type="text" placeholder="Nome" required/>
-                            <input type="email" placeholder="E-mail" required/>
-                             <button type="submit" className="newsletter-button" style={{ padding: '10px 15px', marginTop: '10px', cursor: 'pointer', background: '#333', color: '#fff', border: 'none', borderRadius: '4px' }}>Inscrever</button>
-                        </form>
-                    </div>
-                    <div className="footer-column"> {/* */}
-                        <h3>Categorias</h3>
-                        <ul>
-                          <li><Link to="/rock">Rock</Link></li>
-                            <li><Link to="/bossa-nova">Bossa nova</Link></li> {/* Atualizar links depois */}
-                            <li><Link to="/jazz-blues">Jazz e Blues</Link></li> {/* Atualizar links depois */}
-                             <li><Link to="/pop">Pop</Link></li> {/* Atualizar links depois */}
-                        </ul>
-                    </div>
-                    <div className="footer-column"> {/* */}
-                        <h3>Contato</h3>
-                        <p>(19) 3590-000</p>
-                        <p>E-mail: faleconosco@listen.com.br</p>
-                    </div>
-                </div>
-             </footer>
+              <footer> {/* */}
+                  <div className="footer-container"> {/* */}
+                      <div className="footer-column"> {/* */}
+                          <h3>Junte-se a nós</h3>
+                          <p>Cadastre seu e-mail e receba 50% de desconto na primeira compra</p>
+                          <form className="newsletter-form"> {/* */}
+                              <input type="text" placeholder="Nome" required/>
+                              <input type="email" placeholder="E-mail" required/>
+                               
+                          </form>
+                      </div>
+                      <div className="footer-column"> {/* */}
+                          <h3>Categorias</h3>
+                          <ul>
+                            <li><Link to="/rock">Rock</Link></li>
+                             <li><Link to="/bossa-nova">Bossa nova</Link></li> {/* Atualizar links depois */}
+                             <li><Link to="/jazz-blues">Jazz e Blues</Link></li> {/* Atualizar links depois */}
+                              <li><Link to="/pop">Pop</Link></li> {/* Atualizar links depois */}
+                          </ul>
+                      </div>
+                      <div className="footer-column"> {/* */}
+                          <h3>Contato</h3>
+                          <p>(19) 3590-000</p>
+                          <p>E-mail: faleconosco@listen.com.br</p>
+                      </div>
+                  </div>
+              </footer>
         </>
     );
 }

@@ -31,8 +31,10 @@ function RockPage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await api.get('/produtos?categoria=Rock');
-                setProducts(response.data);
+                // Simulação de API
+                // const response = await api.get('/produtos?categoria=Rock');
+                // setProducts(response.data);
+                console.log("Buscando produtos de Rock...");
             } catch (err) {
                 console.error("Error fetching rock products:", err);
                 setError("Não foi possível carregar os produtos de Rock.");
@@ -244,7 +246,7 @@ function RockPage() {
                          <form className={styles.newsletterForm}>
                             <input type="text" placeholder="Nome" required />
                             <input type="email" placeholder="E-mail" required />
-                            <button type="submit" className={styles.newsletterButton}>Inscrever</button>
+                        
                         </form>
                     </div>
                     {/* Column 2: Categories */}
@@ -264,7 +266,9 @@ function RockPage() {
                     </div>
                      {/* Column 4: Logo */}
                      <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
-                         <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
+                        <Link to="/"> {/* <<< ADICIONE ESTA LINHA */}
+                            <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
+                         </Link> {/* <<< ADICIONE ESTA LINHA */}
                      </div>
                 </div>
             </footer>
