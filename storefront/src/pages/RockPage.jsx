@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-//import api from '../services/api';
+import api from '../services/api';
 import styles from '../assets/css/RockPage.module.css';
 import { AuthContext } from '../context/AuthContext.jsx';
 import LiquidGlassSidebar from '../components/LiquidGlassSidebar';

@@ -3,8 +3,7 @@
 /* --- Font --- */
 @font-face {
   font-family: 'Forgotten Junk';
-  src: url('../fonts/ForgottenJunkDemo.woff2') format('woff2'),
-       url('../fonts/ForgottenJunkDemo.woff') format('woff');
+  src: url('../fonts/Forgotten Junk.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
