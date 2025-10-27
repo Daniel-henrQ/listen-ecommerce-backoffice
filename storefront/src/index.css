@@ -1,12 +1,14 @@
+/* storefront/src/index.css */
+
+/* Estilos fornecidos pelo utilizador */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  /* Remova a cor de fundo e texto padrão daqui se HomePage definir */
-  /* color: rgba(255, 255, 255, 0.87); */
-  /* background-color: #242424; */
+  color-scheme: light dark; /* Permite temas claro/escuro baseados no sistema */
+  /* color: rgba(255, 255, 255, 0.87); */ /* Comentado conforme solicitado */
+  /* background-color: #242424; */ /* Comentado conforme solicitado */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -16,36 +18,26 @@
 
 a {
   font-weight: 500;
-  color: #646cff; /* Pode ajustar ou remover se não for o padrão desejado */
+  /* color: #646cff; */ /* Comentado - Provavelmente não desejado no tema escuro */
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2; /* Pode ajustar ou remover */
+  /* color: #535bf2; */ /* Comentado - Provavelmente não desejado no tema escuro */
+}
+
+/* Regra de fundo preto para o body (fora da media query) */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #000000; /* <<< FUNDO PRETO PADRÃO */
+  color: #e0e0e0; /* <<< TEXTO CLARO PADRÃO */
+  /* display: flex; */ /* Comentado conforme solicitado */
+  /* place-items: center; */ /* Comentado conforme solicitado */
 }
 
 body.modal-open {
   overflow: hidden; /* Impede scroll da página principal quando modal está aberto */
 }
-body {
-  margin: 0;
-  /* As regras abaixo foram removidas pois conflitavam com HomePage.css */
-  /* display: flex; */
-  /* place-items: center; */
-  min-width: 320px;
-  min-height: 100vh;
-}
 
-/* h1, button e outros estilos padrões podem ser mantidos ou removidos
-   se forem completamente definidos em HomePage.css ou outros CSS */
 
-/* Mantenha a media query de prefers-color-scheme se precisar de tema claro/escuro */
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  /* Ajuste button se necessário */
-}

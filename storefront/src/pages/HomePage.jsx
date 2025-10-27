@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../assets/css/HomePage.css'; //
 import { AuthContext } from '../context/AuthContext.jsx'; //
+import { Link } from 'react-router-dom'; // <<< CORREÇÃO: Importa o Link
 
 // Caminhos para os logos
 const logoWhitePath = '/listen-white.svg'; //
@@ -86,7 +87,7 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
-                            
+
 
                             {/* Link condicional para Backoffice (apenas para adm/vendas) */}
                             {(user.role === 'adm' || user.role === 'vendas') && (
@@ -157,8 +158,8 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                         <h3>Junte-se a nós</h3>
                         <p>Cadastre seu e-mail e receba 50% de desconto na primeira compra</p>
                         <form className="newsletter-form"> {/* */}
-                            <input type="text" placeholder="Nome" />
-                            <input type="email" placeholder="E-mail" />
+                            <input type="text" placeholder="Nome" required/>
+                            <input type="email" placeholder="E-mail" required/>
                              <button type="submit" className="newsletter-button" style={{ padding: '10px 15px', marginTop: '10px', cursor: 'pointer', background: '#333', color: '#fff', border: 'none', borderRadius: '4px' }}>Inscrever</button>
                         </form>
                     </div>
@@ -166,9 +167,9 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                         <h3>Categorias</h3>
                         <ul>
                           <li><Link to="/rock">Rock</Link></li>
-                            <li><a href="#">Bossa nova</a></li>
-                            <li><a href="#">Jazz e Blues</a></li>
-                             <li><a href="#">Pop</a></li>
+                            <li><Link to="/bossa-nova">Bossa nova</Link></li> {/* Atualizar links depois */}
+                            <li><Link to="/jazz-blues">Jazz e Blues</Link></li> {/* Atualizar links depois */}
+                             <li><Link to="/pop">Pop</Link></li> {/* Atualizar links depois */}
                         </ul>
                     </div>
                     <div className="footer-column"> {/* */}
