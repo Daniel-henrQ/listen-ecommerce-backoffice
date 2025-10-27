@@ -1,0 +1,166 @@
+/* RockPage.module.css */
+
+/* --- Custom Font Loading --- */
+/* IMPORTANT: You need to download the "Forgotten Junk" font */
+/* and place the font files (e.g., .woff, .woff2) in your public folder */
+/* or src/assets folder, then adjust the src url() path accordingly. */
+@font-face {
+  font-family: 'Forgotten Junk';
+  /* Example: If font is in public/fonts/ */
+  src: url('/fonts/ForgottenJunkDemo.woff2') format('woff2'),
+       url('/fonts/ForgottenJunkDemo.woff') format('woff');
+  /* Adjust weight and style if needed */
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Improves perceived performance */
+}
+
+
+/* --- Rock Hero Section --- */
+.rockHeroSection {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* Stack breadcrumbs and title */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  min-height: 50vh; /* Adjust height as needed */
+  padding: 80px 20px 40px; /* Top padding for nav, bottom padding */
+  text-align: center;
+  color: #333; /* Darker text for contrast on likely lighter bg */
+  /* Use the background image from reference */
+  /* background-image: url('PASTE_URL_OR_PATH_TO_YOUR_BACKGROUND_IMAGE'); */
+  /* Example using the reference image name (needs to be accessible) */
+   background-image: url('/backgrounds/rock_page_background.jpg'); /* Adjust path as needed */
+  background-color: #1a1a1a; /* Fallback color */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin-top: 0; /* Ensure no gap below nav */
+  position: relative; /* For overlay */
+}
+
+/* Optional overlay if needed */
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Adjust opacity */
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative; /* To stay above overlay */
+  z-index: 2;
+  color: #fff; /* Ensure text is visible over dark bg/overlay */
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Add shadow for readability */
+}
+
+.breadcrumbs {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+}
+
+.heroTitle {
+  font-family: 'Forgotten Junk', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; /* Apply custom font with fallbacks */
+  font-size: clamp(4rem, 10vw, 8rem); /* Responsive font size */
+  font-weight: normal; /* Font might have its own weight */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+/* --- Page Content & Product Grid --- */
+.pageContent {
+  padding: 3rem 2rem; /* Spacing around the grid */
+  max-width: 1200px; /* Limit content width */
+  margin: 0 auto; /* Center content */
+}
+
+.loadingMessage,
+.errorMessage,
+.noProductsMessage {
+  text-align: center;
+  padding: 4rem 1rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.productGrid {
+  display: grid;
+  /* Adjust columns for responsiveness */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem; /* Space between cards */
+}
+
+.productCard {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden; /* Ensure image corners are rounded */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  text-align: left; /* Align text left */
+  padding-bottom: 1rem; /* Space below button */
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.productCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1; /* Make images square */
+  object-fit: cover; /* Cover the area, cropping if needed */
+  display: block; /* Remove extra space below image */
+  border-bottom: 1px solid #eee;
+}
+
+.productTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.8rem 1rem 0.2rem; /* top left/right bottom */
+}
+
+.productArtist {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 1rem 0.5rem;
+}
+
+.productPrice {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #111;
+  margin: auto 1rem 1rem; /* Pushes button down */
+}
+
+.addToCartButton {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 1rem; /* Consistent margin */
+  align-self: flex-start; /* Align button left */
+  transition: background-color 0.2s ease;
+}
+
+.addToCartButton:hover {
+  background-color: #555;
+}
+
+/* Ensure footer styles from HomePage.css or index.css apply */
+/* (Assuming footer structure is copied into RockPage.jsx) */

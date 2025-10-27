@@ -1,3 +1,4 @@
+// backend/models/produtoModel.js
 const mongoose = require('mongoose');
 
 const produtoSchema = new mongoose.Schema({
@@ -35,10 +36,16 @@ const produtoSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  subgeneros: [{ // Novo campo para subgêneros
+  subgeneros: [{ // Campo para subgêneros
     type: String,
     trim: true
-  }]
+  }],
+  // NOVO CAMPO ADICIONADO ABAIXO
+  descricao: {
+    type: String,
+    trim: true,
+    default: '' // Valor padrão como string vazia
+  }
 }, {
   timestamps: true
 });

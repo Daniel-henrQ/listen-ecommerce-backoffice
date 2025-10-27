@@ -51,6 +51,8 @@ const ProductForm = ({ product, fornecedores, onSubmit, onCancel }) => {
         if (dataEntries.preco === null || dataEntries.preco === '' || Number(dataEntries.preco) < 0) errors.preco = "Preço inválido.";
         // Validação de imagem: obrigatória na criação, opcional na edição
         if (!product && !dataEntries.imagem?.name) errors.imagem = "Imagem é obrigatória.";
+        // Validação da descrição (opcional, exemplo: limite de caracteres)
+        // if (dataEntries.descricao && dataEntries.descricao.length > 500) errors.descricao = "Descrição muito longa (máx 500 caracteres).";
 
 
         setFieldErrors(errors);
@@ -66,13 +68,16 @@ const ProductForm = ({ product, fornecedores, onSubmit, onCancel }) => {
              formData.delete('imagem');
         }
 
+        // Adiciona a descrição ao formData que será enviado
+        formData.set('descricao', dataEntries.descricao || ''); // Garante que envia string vazia se nulo/undefined
+
 
         try {
             await onSubmit(formData, product?._id); // Chama a função do pai com formData e ID
              setFormMessage({ text: product ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!', type: 'success' });
              // Lógica de fechar modal fica no pai
         } catch (err) {
-            const apiErrorMessage = err.response?.data?.msg || err.message || `Erro ao salvar produto.`;
+            const apiErrorMessage = err.response?.data?.error || err.message || `Erro ao salvar produto.`; // Mudado para .error baseado no controller
              setFormMessage({ text: apiErrorMessage, type: 'error' });
              // Mapeamento simples (pode ser mais complexo se a API retornar erros específicos)
              if (apiErrorMessage.includes('obrigatórios')) { // Exemplo genérico
@@ -143,6 +148,22 @@ const ProductForm = ({ product, fornecedores, onSubmit, onCancel }) => {
                     </div>
                 </div>
             </div>
+
+             {/* CAMPO DE DESCRIÇÃO ADICIONADO AQUI */}
+             <div className="input-group" style={{ gridColumn: '1 / -1' }}> {/* Ocupa toda a largura do grid */}
+                 <label htmlFor={`descricao-${product?._id || 'add'}`}>Descrição do Produto</label>
+                 <textarea
+                     id={`descricao-${product?._id || 'add'}`}
+                     name="descricao"
+                     defaultValue={product?.descricao}
+                     rows="4" // Altura inicial
+                     style={{ minHeight: '80px', resize: 'vertical' }} // Estilo básico
+                     placeholder="Detalhes sobre o álbum, edição, estado, etc."
+                     className={fieldErrors.descricao ? 'input-error' : ''} // Adiciona classe de erro se houver
+                 ></textarea>
+                 {fieldErrors.descricao && <span className="error-message-text">{fieldErrors.descricao}</span>}
+             </div>
+
              {/* Mensagem Geral */}
              {formMessage.text && <p className={`form-message ${formMessage.type}`}>{formMessage.text}</p>}
              {/* Ações */}
@@ -157,6 +178,7 @@ const ProductForm = ({ product, fornecedores, onSubmit, onCancel }) => {
 
 // --- Componente Principal ProductsView ---
 function ProductsView() {
+    // ... (states existentes: products, fornecedores, loading, etc.)
     const [products, setProducts] = useState([]);
     const [fornecedores, setFornecedores] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -173,7 +195,7 @@ function ProductsView() {
     const [imagePopupUrl, setImagePopupUrl] = useState('');
 
 
-    const fetchProducts = useCallback(async () => {
+    const fetchProducts = useCallback(async () => { // Usar React.useCallback
         setLoading(true);
         setViewMessage('');
         try {
@@ -213,17 +235,27 @@ function ProductsView() {
 
      // Função onSubmit para passar ao ProductForm
      const handleFormSubmit = async (formData, id) => {
-         // A lógica de try/catch é feita dentro do ProductForm
-         if (id) {
-             // Edição
-             await api.put(`/produtos/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-             setTimeout(() => setEditModalVisible(false), 1500); // Fecha modal
-         } else {
-             // Adição
-             await api.post('/produtos', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-             setTimeout(() => setAddModalVisible(false), 1500); // Fecha modal
+         try { // Envolve a chamada em try/catch para lidar com erros da API aqui
+             if (id) {
+                 // Edição
+                 await api.put(`/produtos/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                 // A mensagem de sucesso é mostrada dentro do form, mas fechamos o modal aqui
+                 setTimeout(() => setEditModalVisible(false), 1500); // Fecha modal após sucesso
+             } else {
+                 // Adição
+                 await api.post('/produtos', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                 setTimeout(() => setAddModalVisible(false), 1500); // Fecha modal após sucesso
+             }
+             fetchProducts(); // Recarrega a lista
+         } catch(err) {
+             // O erro já foi tratado e exibido dentro do ProductForm
+             console.error("Erro no submit (ProductsView):", err.response?.data?.error || err.message); // Log adicional
+             // Não fecha o modal em caso de erro, o form interno já mostrou a msg
+             // Importante: A função onSubmit no ProductForm precisa rejeitar a Promise em caso de erro
+             // para que este catch seja ativado. Se onSubmit já trata o erro e resolve a Promise,
+             // este catch não será executado. Vamos assumir que onSubmit propaga o erro.
+             // Para garantir, podemos adicionar `throw err;` no catch do ProductForm.
          }
-         fetchProducts(); // Recarrega a lista
      };
 
     // Funções handleDeleteProduct e handleDeleteSelected permanecem as mesmas
@@ -245,11 +277,13 @@ function ProductsView() {
         const ids = Array.from(selectedProducts);
         if (ids.length > 0 && window.confirm(`Excluir ${ids.length} produto(s) selecionado(s)?`)) {
             try {
-                await api.delete('/produtos/varios', { data: { ids } }); // Envia IDs no corpo da requisição DELETE
+                // A rota '/produtos/varios' espera os IDs no corpo da requisição DELETE
+                await api.delete('/produtos/varios', { data: { ids } });
                 fetchProducts();
                 setSelectedProducts(new Set()); // Limpa seleção
             } catch (err) {
                  console.error("Erro ao excluir selecionados:", err.response || err);
+                 // Tenta mostrar a mensagem de erro da API, se disponível
                  alert(err.response?.data?.error || "Falha ao apagar produtos selecionados.");
             }
         }
@@ -302,7 +336,6 @@ function ProductsView() {
         <div>
             <div className="view-header">
                 <h2>Produtos</h2>
-                {/* Botão Excluir Selecionados aparece se houver seleção */}
                 {selectedProducts.size > 0 && (
                     <button id="btn-excluir-selecionados" onClick={handleDeleteSelected} className="delete-button">
                         Excluir Selecionado(s) ({selectedProducts.size})
@@ -312,7 +345,7 @@ function ProductsView() {
             <div className="action-bar">
                 <div className="filter-tabs">
                      {/* Categorias - mantido */}
-                     {['all', 'Rock', 'Jazz & Blues', 'Bossa Nova'].map(cat => (
+                     {['all', 'Rock', 'Jazz & Blues', 'Bossa Nova'].map(cat => ( // Categorias como antes
                          <a href="#" key={cat}
                             className={`filter-tab ${categoryFilter === cat ? 'active' : ''}`}
                             onClick={(e) => { e.preventDefault(); setCategoryFilter(cat); }}>
@@ -335,7 +368,6 @@ function ProductsView() {
                 <table>
                     <thead>
                         <tr>
-                            {/* Checkbox Selecionar Todos */}
                             <th><input type="checkbox" onChange={handleSelectAll} checked={isAllSelected} title="Selecionar Todos" /></th>
                             <th>Produto</th>
                             <th>Artista</th>
@@ -362,7 +394,7 @@ function ProductsView() {
                                             alt={product.nome}
                                             className="product-cover"
                                             onClick={() => openImagePopup(`/uploads/${product.imagem}`)}
-                                            onError={(e) => { e.target.style.display='none'; /* Opcional: esconder imagem quebrada */ }} // Fallback simples
+                                            onError={(e) => { e.target.onerror = null; e.target.style.display='none'; /* Opcional: ou mostrar placeholder */ }}
                                         />
                                         <span>{product.nome}</span>
                                     </td>

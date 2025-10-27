@@ -85,9 +85,8 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
-                            <li><a href="/termos" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Termos e Condições</a></li>
                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
-                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Cancelamento'); setIsUserMenuOpen(false); }}>Cancelamento</a></li>
+                            
 
                             {/* Link condicional para Backoffice (apenas para adm/vendas) */}
                             {(user.role === 'adm' || user.role === 'vendas') && (
@@ -166,7 +165,7 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                     <div className="footer-column"> {/* */}
                         <h3>Categorias</h3>
                         <ul>
-                            <li><a href="#">Rock</a></li>
+                          <li><Link to="/rock">Rock</Link></li>
                             <li><a href="#">Bossa nova</a></li>
                             <li><a href="#">Jazz e Blues</a></li>
                              <li><a href="#">Pop</a></li>

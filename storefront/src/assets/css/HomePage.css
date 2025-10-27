@@ -154,12 +154,6 @@ button {
   display: block; /* Garante que não haja espaço extra abaixo */
 }
 
-/* Alterar a cor do logo quando a nav fica sticky */
-.main-nav.nav-is-sticky .logo-svg {
-    /* O SVG em si deve ser alterado via JS/React, */
-    /* mas podemos aplicar um filtro se for um SVG inline ou como fallback */
-    /* filter: invert(1); */ /* Exemplo, pode não ser o ideal */
-}
 
 
 /* =========================================================

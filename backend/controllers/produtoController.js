@@ -1,3 +1,4 @@
+// backend/controllers/produtoController.js
 const Produto = require('../models/produtoModel');
 const Compra = require('../models/compraModel'); // Importar o modelo de Compra
 const { notificacaoService } = require('./notificacaoService');
@@ -16,7 +17,8 @@ const processarSubgeneros = (subgeneros) => {
 // Criar novo produto
 exports.criarProduto = async (req, res, next) => {
   try {
-    const { nome, artista, categoria, preco, quantidade, fornecedor } = req.body;
+    // Adicionado 'descricao' aqui
+    const { nome, artista, categoria, preco, quantidade, fornecedor, descricao } = req.body;
 
     // Validação básica de campos obrigatórios
     if (!nome || !artista || !categoria || preco == null || quantidade == null || !fornecedor) {
@@ -29,7 +31,8 @@ exports.criarProduto = async (req, res, next) => {
         categoria,
         preco: Number(preco), // Garante que é número
         quantidade: Number(quantidade), // Garante que é número
-        fornecedor
+        fornecedor,
+        descricao // Adicionado aqui
     };
 
     // Processa subgêneros se enviados
@@ -56,11 +59,12 @@ exports.criarProduto = async (req, res, next) => {
   }
 };
 
-// Listar produtos (com filtro por nome e categoria)
+// Listar produtos (com filtro por nome, categoria e subgênero)
 exports.listarProdutos = async (req, res, next) => {
   try {
     const filtro = {};
-    const { nome, categoria } = req.query;
+    // Adicionado 'subgenero' aqui
+    const { nome, categoria, subgenero } = req.query;
 
     if (nome) {
       // Busca por nome (case-insensitive)
@@ -68,6 +72,10 @@ exports.listarProdutos = async (req, res, next) => {
     }
     if (categoria && categoria !== 'all') { // Ignora 'all' se enviado
       filtro.categoria = categoria;
+    }
+    // Adicionado filtro para subgenero (case-insensitive)
+    if (subgenero) {
+        filtro.subgeneros = { $regex: subgenero, $options: 'i' };
     }
 
     // Popula o campo 'fornecedor' buscando apenas o 'nomeFantasia'
@@ -90,6 +98,9 @@ exports.atualizarProduto = async (req, res, next) => {
         // Se não foi enviado, não altera (remove do objeto de update)
         delete updateData.subgeneros;
     }
+
+    // A descrição será atualizada se estiver presente em req.body
+    // Se não estiver, Mongoose não a alterará.
 
     // Se uma nova imagem foi enviada, atualiza o nome e remove a antiga (se existir)
     if (req.file) {
