@@ -112,17 +112,17 @@ function RockPage() {
                 </button>
                 {user.isAuthenticated && isUserMenuOpen && (
                      <div className="user-dropdown-menu"> 
-                        <ul>
-                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
-                            <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
-                            {(user.role === 'adm' || user.role === 'vendas') && (
-                                <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
-                            )}
-                            <li className="user-dropdown-separator">
-                                <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
-                            </li>
-                        </ul>
-                    </div>
+                         <ul>
+                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
+                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
+                             {(user.role === 'adm' || user.role === 'vendas') && (
+                                 <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
+                             )}
+                             <li className="user-dropdown-separator">
+                                 <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
+                             </li>
+                         </ul>
+                     </div>
                 )}
             </div>
         );
@@ -141,7 +141,7 @@ function RockPage() {
     const nextSlideRow2 = () => setCurrentSlideRow2((prev) => (prev + 1) % totalSlidesRow2);
     const prevSlideRow2 = () => setCurrentSlideRow2((prev) => (prev - 1 + totalSlidesRow2) % totalSlidesRow2);
 
-    // Função Helper para renderizar um card de produto (Sem descrição, como na imagem)
+    // --- MODIFICADO: Função Helper para renderizar card (COM coração) ---
     const renderProductCard = (product) => (
         <div key={product._id} className={styles.productCard}>
             <img
@@ -153,9 +153,19 @@ function RockPage() {
             <div className={styles.productInfo}>
                 <h3 className={styles.productTitle}>{product.nome}</h3>
                 <p className={styles.productArtist}>{product.artista}</p>
-                <p className={styles.productPrice}>
-                    R$ {product.preco?.toFixed(2) ?? '0.00'}
-                </p>
+                <p className={styles.productDescription}>{product.descricao}</p>
+                
+                {/* --- CONTAINER DO PREÇO E CORAÇÃO (NOVO) --- */}
+                <div className={styles.productPriceContainer}>
+                    <p className={styles.productPrice}>
+                        R$ {product.preco?.toFixed(2) ?? '0.00'}
+                    </p>
+                    {/* --- BOTÃO DE CORAÇÃO (NOVO) --- */}
+                    <button className={styles.favoriteButton} aria-label="Adicionar aos Favoritos">
+                        <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
+                        <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -163,13 +173,13 @@ function RockPage() {
     return (
         <>
             <LiquidGlassSidebar
-              isOpen={isSidebarOpen}
-              onClose={handleCloseSidebar}
-              userName={user.name || 'Visitante'}
+             isOpen={isSidebarOpen}
+             onClose={handleCloseSidebar}
+             userName={user.name || 'Visitante'}
             />
             <AuthModal
-              isOpen={isAuthModalOpen}
-              onClose={closeAuthModal}
+             isOpen={isAuthModalOpen}
+             onClose={closeAuthModal}
             />
 
             {/* --- Navigation Bar (Fora do Header) --- */}
@@ -180,12 +190,12 @@ function RockPage() {
                          MENU
                      </button>
                      <div className={styles.searchBar}>
-                          <span className="material-symbols-outlined">search</span>
-                          <input type="search" placeholder="Search" />
+                         <span className="material-symbols-outlined">search</span>
+                         <input type="search" placeholder="Search" />
                      </div>
                  </div>
                  <div className={styles.navCenter}>
-                      <h1 className={styles.navRockTitle}>ROCK</h1>
+                     <h1 className={styles.navRockTitle}>ROCK</h1>
                  </div>
                  <div className={styles.navRight}>
                     <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
@@ -287,7 +297,7 @@ function RockPage() {
                          <form className={styles.newsletterForm}>
                             <input type="text" placeholder="Nome" required />
                             <input type="email" placeholder="E-mail" required />
-                        </form>
+                         </form>
                     </div>
                     <div className={styles.footerColumn}>
                         <h3>Categorias</h3>
@@ -303,9 +313,9 @@ function RockPage() {
                         <p>E-mail: faleconosco@listen.com.br</p>
                     </div>
                      <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
-                        <Link to="/"> 
-                            <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
-                         </Link> 
+                         <Link to="/"> 
+                             <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
+                          </Link> 
                      </div>
                 </div>
             </footer>
