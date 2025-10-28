@@ -111,17 +111,14 @@
     overflow: hidden;  
 }
 
-/* 1. Transição SUAVE para o slide */
 .carouselTrack {
     display: flex;
-    /* Transição para o 'transform' que move o slide */
     transition: transform 0.5s ease-in-out; 
 }
 
-/* O slide individual (uma linha com 3 produtos) */
 .carouselSlide {
     display: flex;         
-    justify-content: center; /* Centraliza os cards se houver menos de 3 */
+    justify-content: center; 
     gap: 2%; /* Espaço entre os cards */
     flex-shrink: 0;
     width: 100%;
@@ -133,45 +130,50 @@ ESTILOS DOS PRODUTOS (CARDS)
 ========================================
 */
 
-/* 2. Efeito GROW SUTIL no Produto Individual */
+/* Card não tem mais 'transition' */
 .productCard {
     flex-basis: 32%; 
     max-width: 320px; 
-    /* Padding removido para .productInfo "grudar" na imagem */
     box-sizing: border-box;
     background: none;
     border: none;
     color: #fff;
     text-align: left;
-    transition: transform 0.3s ease-in-out;
 }
 
+/* Hover do Card não tem mais 'transform' */
 .productCard:hover {
-    transform: scale(1.05); /* "Cresce" sutilmente 5% */
-    z-index: 2; /* Fica por cima dos vizinhos */
+    z-index: 2; 
     cursor: pointer;
 }
 
-/* Placeholder para manter o layout (se o slide não tiver 3) */
+/* Placeholder */
 .productCardPlaceholder {
     flex-basis: 32%;
     max-width: 320px;
     box-sizing: border-box;
 }
 
+/* Imagem agora tem a 'transition' */
 .productImage {
     width: 100%;
     height: auto;
     aspect-ratio: 1 / 1; 
     object-fit: cover;
     border-radius: 8px; 
-    margin-bottom: 0; /* Garante que não haja espaço abaixo da imagem */
-    display: block; /* Remove espaço extra que <img> inline pode ter */
+    margin-bottom: 0;
+    display: block;
+    transition: transform 0.3s ease-in-out; /* Movido para cá */
 }
 
-/* AJUSTE: Grudando o texto na imagem e espaçamento interno */
+/* Efeito de zoom movido para a imagem */
+.productCard:hover .productImage {
+    transform: scale(1.05);
+}
+
+/* AJUSTE 1: Texto "GRUDADO" (padding-top: 0) */
 .productInfo {
-    padding: 8px 10px 10px; /* (8px topo, 10px horizontal, 10px base) - Topo reduzido */
+    padding: 0px 10px 10px; 
 }
 
 .productTitle {
@@ -193,27 +195,24 @@ ESTILOS DOS PRODUTOS (CARDS)
     text-overflow: ellipsis;
 }
 
-/* AJUSTE: Descrição com 3 linhas */
 .productDescription {
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Alterado para 3 linhas */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal; /* Garante a quebra de linha */
+    white-space: normal;
     font-size: 0.9rem;
     color: var(--text-medium, #bbb);
     line-height: 1.4; 
-    height: calc(0.9rem * 1.4 * 3); /* Altura para 3 linhas */
-    margin-bottom: 10px; /* Espaço antes do preço */
+    height: calc(0.9rem * 1.4 * 3); 
+    margin-bottom: 10px; 
 }
 
-/* AJUSTE: Container para Preço + Coração */
 .productPriceContainer {
     display: flex;
     justify-content: space-between; 
     align-items: center;
-    /* Removido padding extra, alinhamento será pelo conteúdo */
     margin-top: 5px; 
 }
 
@@ -224,46 +223,67 @@ ESTILOS DOS PRODUTOS (CARDS)
     margin: 0;
 }
 
-/* AJUSTE: Coração estático, sem grow/glow, só preenche */
+
+/* ========================================
+AJUSTE FINAL: CORAÇÃO (COM GRID)
+========================================
+*/
+
+/* 1. O Botão (Pai) 
+ * Força um tamanho fixo e usa GRID para centralizar e empilhar.
+*/
 .favoriteButton {
-  position: relative;
+  /* Cria um "box" de 24x24 */
+  width: 24px;  
+  height: 24px; 
+  
+  /* Usa Grid para centralizar e empilhar os ícones */
+  display: grid;
+  place-items: center; 
+  
+  /* Reseta o resto */
+  position: relative; 
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
   margin: 0;
-  width: 24px;  
-  height: 24px; 
-  /* Removidos quaisquer transforms ou transitions de escala */
+  transform: none; /* Garante que o botão não cresça */
 }
 
+/* 2. Os Ícones (Filhos) 
+ * Coloca AMBOS na mesma célula da grid.
+*/
 .favoriteButton .material-symbols-outlined {
-  font-size: 1.5rem; 
-  font-weight: 300;  
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* Transição apenas para opacidade e cor */
-  transition: opacity 0.2s ease, color 0.2s ease;
-  /* Removido text-shadow */
+  /* Coloca AMBOS no mesmo lugar da grid (célula 1,1) */
+  grid-area: 1 / 1; 
+
+  /* Força o tamanho e peso para evitar "jiggle" */
+  font-size: 1.5rem; /* 24px */
+  font-weight: 300;  /* Força o mesmo peso */
+  line-height: 1;    /* Força a mesma altura de linha */
+  
+  /* Remove qualquer 'position' que possa estar vindo de outro lugar */
+  position: static; 
+
+  /* Transição de opacidade */
+  transition: opacity 0.2s ease;
+  text-shadow: none; 
 }
 
-/* Ícone Preenchido (fica escondido por padrão) */
+/* 3. Lógica de Opacidade (Igual a antes) */
 .iconFilled {
   opacity: 0;
   color: #E74C3C; /* Vermelho */
 }
 
-/* Ícone Vazado (fica visível por padrão) */
 .iconOutline {
   opacity: 1;
   color: white; /* Cor padrão */
 }
 
-/* Efeito Hover: Apenas preenche de vermelho */
 .favoriteButton:hover .iconFilled {
   opacity: 1;
-  /* Removido text-shadow */
 }
 .favoriteButton:hover .iconOutline {
   opacity: 0;
@@ -272,11 +292,10 @@ ESTILOS DOS PRODUTOS (CARDS)
 
 /*
 ========================================
-BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
+BOTÕES DO CARROSSEL (SETAS)
 ========================================
 */
 
-/* O BOTÃO FICA INVISÍVEL, MAS ELE CONTROLA O "GROW" (ESCALA) */
 .carouselButton {
     position: absolute;
     top: 50%;
@@ -294,12 +313,10 @@ BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
     transition: transform 0.2s ease; 
 }
 
-/* EFEITO "GROW" NO BOTÃO INTEIRO (que é invisível) */
 .carouselButton:hover {
     transform: translateY(-50%) scale(1.15); 
 }
 
-/* O ÍCONE CONTROLA O "GLOW" (BRILHO) */
 .carouselButton .material-symbols-outlined {
     color: white;
     font-size: 2.5rem; 
@@ -308,12 +325,10 @@ BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
     transition: text-shadow 0.2s ease;
 }
 
-/* EFEITO "GLOW" NO ÍCONE (ativado pelo hover do botão) */
 .carouselButton:hover .material-symbols-outlined {
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
 }
 
-/* Posição DENTRO do container */
 .prev {
     left: 10px; 
 }
@@ -361,7 +376,6 @@ BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
     .rockHeroSection { padding-top: 120px; }
     .rockFooter { padding: 2rem 1.5rem 1rem; }
     .carouselSlide { 
-        grid-template-columns: repeat(2, 1fr); 
         gap: 3%;
     }
     .productCard {
@@ -383,9 +397,7 @@ BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
     .navRight a[title="Localização"], .navRight a[title="Favoritos"] { display: none; }
     .rockHeroSection { padding-top: 100px; padding-left: 1.5rem; padding-right: 1.5rem; }
     .breadcrumbs { font-size: 0.8rem; }
-    .pageContent { padding: 2rem 1rem; }
     .carouselSlide { 
-        grid-template-columns: 1fr; 
         padding: 0 30px; 
         gap: 0;
     }
@@ -420,12 +432,11 @@ BOTÕES DO CARROSSEL (SETAS) - (Versão estável)
      .menuBtn { font-size: 0.8rem;}
      .productTitle { font-size: 0.9rem; }
      .productArtist, .productDescription, .productPrice { font-size: 0.8rem; }
-     .productInfo { padding: 0.8rem; }
-     .productDescription { height: 3.36rem; } /* Altura para 3 linhas (0.8rem * 1.4 * 3) */
+     .productInfo { padding: 0px 8px 8px; } /* padding-top: 0 mantido */
+     .productDescription { height: calc(0.8rem * 1.4 * 3); } 
 }
 
-/* Estilos para o user dropdown (copiados de HomePage.css) */
-/* Necessário aqui se não estiverem globais */
+/* Estilos para o user dropdown */
 .user-account-container { position: relative; display: inline-flex; }
 .icon-only-btn { padding: 5px; gap: 0; background: none; border: none; color: inherit; cursor: pointer; }
 .icon-only-btn .material-symbols-outlined { font-size: 1.6rem; }
