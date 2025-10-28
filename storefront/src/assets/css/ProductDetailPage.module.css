@@ -1,141 +1,145 @@
-/* Importa a fonte personalizada, se ainda não estiver global */
-@font-face {
-  font-family: 'Forgotten Junk';
-  src: url('../fonts/Forgotten Junk.ttf') format('truetype');
+/* storefront/src/assets/css/ProductDetailPage.module.css */
+
+.productDetailPage {
+  display: flex;
+  flex-wrap: wrap; /* Permite que as colunas quebrem em telas menores */
+  justify-content: center; /* Centraliza o conteúdo */
+  gap: 3rem; /* Espaço entre a imagem e as infos */
+  padding: 4rem 2rem;
+  max-width: 1200px; /* Limita a largura máxima da página */
+  margin: 2rem auto; /* Centraliza o container da página */
+  background-color: #000; /* Fundo preto como na imagem */
+  color: white;
+  border-radius: 8px; /* Bordas levemente arredondadas */
+  border: 1px solid #222; /* Borda sutil para destacar o container */
 }
 
-/* Container principal da página (fundo) */
-.pageContainer {
-  /* Usa os mesmos fundos da RockPage */
-  background-image: url('../images/couro.png'), url('../images/fundorock.png');
-  background-size: auto, cover;
-  background-position: center, center;
-  background-repeat: repeat, no-repeat;
-  min-height: 100vh;
-  width: 100%;
-  padding-left: 100px; /* Espaço para a sidebar */
-  box-sizing: border-box;
-}
-
-.contentWrapper {
+/* Coluna da Imagem */
+.productImage {
+  flex: 1 1 400px; /* A imagem pode crescer, mas tem base de 400px */
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 40px;
+  align-items: flex-start;
+  max-width: 500px; /* Tamanho máximo para a coluna da imagem */
 }
 
-/* Container que segura as duas colunas */
-.productDetailContainer {
-  display: flex;
-  flex-direction: row;
+.productImage img {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: 40px;
-  color: #fff; /* Texto branco como na imagem */
-}
-
-/* Coluna da Esquerda: Imagem */
-.imageContainer {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.imageContainer img {
-  max-width: 100%;
   height: auto;
-  max-height: 500px;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
-/* Coluna da Direita: Informações */
-.infoContainer {
-  flex: 1.2; /* Um pouco maior que a imagem */
+/* Coluna de Informações */
+.productInfo {
+  flex: 1 1 500px; /* As infos ocupam o espaço restante, base de 500px */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  gap: 1.2rem; /* Espaçamento entre os itens de info (preço, título, etc) */
 }
 
-.artistName {
-  font-family: 'Forgotten Junk', sans-serif;
-  font-size: 4rem; /* 64px */
-  font-weight: normal;
-  color: #fff;
+.productTitle {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 2.5rem; /* Título grande e legível */
+  font-weight: 700;
   margin: 0;
-  line-height: 1;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1.2;
 }
 
-.albumName {
-  font-family: 'Lato', sans-serif;
-  font-size: 2rem; /* 32px */
-  font-weight: 300; /* Light */
-  color: #eee;
-  margin-top: 10px;
-  margin-bottom: 20px;
+.productStock {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1DB954; /* Verde para "Disponível" */
+  margin: -0.5rem 0 0.5rem; /* Ajusta espaçamento */
 }
 
-.price {
-  font-family: 'Lato', sans-serif;
-  font-size: 2.5rem; /* 40px */
-  font-weight: 700; /* Bold */
-  color: #fff;
-  margin-bottom: 30px;
+.productPrice {
+  font-size: 2.2rem; /* Preço bem destacado */
+  font-weight: 600;
+  margin: 0.5rem 0;
 }
 
+/* Container dos botões */
+.buttonContainer {
+  display: flex;
+  flex-direction: column; /* Botões um em cima do outro */
+  gap: 1rem; /* Espaço entre os botões */
+  margin: 1rem 0;
+  max-width: 400px; /* Limita a largura dos botões */
+}
+
+/* Estilo base dos botões */
+.buyButton,
 .addToCartButton {
-  font-family: 'Lato', sans-serif;
-  font-size: 1.1rem;
+  padding: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #fff;
-  background-color: #d9480f; /* Tom de vermelho/laranja da imagem */
-  border: none;
-  padding: 15px 30px;
-  cursor: pointer;
+  border: 2px solid white;
   border-radius: 5px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  max-width: 300px; /* Largura do botão */
   text-align: center;
-  margin-bottom: 30px;
+}
+
+/* Botão COMPRAR (preto com borda branca) */
+.buyButton {
+  background-color: #000;
+  color: #fff;
+}
+
+.buyButton:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Botão ADICIONAR AO CARRINHO (branco) */
+.addToCartButton {
+  background-color: #fff;
+  color: #000;
+  border-color: #fff;
 }
 
 .addToCartButton:hover {
-  background-color: #f0652f;
-  transform: scale(1.03);
-  box-shadow: 0 4px 15px rgba(217, 72, 15, 0.4);
+  background-color: #ddd; /* Escurece um pouco no hover */
+  border-color: #ddd;
 }
 
-.description {
-  font-family: 'Lato', sans-serif;
+/* Seção de Descrição */
+.productDescription {
+  margin-top: 1rem;
+  border-top: 1px solid #333;
+  padding-top: 1.5rem;
 }
 
-.description h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  border-bottom: 1px solid #555;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
-
-.description p {
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.6;
-  color: #ddd;
-}
-
-/* Estilo de carregamento */
-.loadingContainer {
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+.productDescription h2 {
   font-size: 1.5rem;
-  padding-left: 100px;
-  background-color: #111; /* Fundo escuro simples */
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.productDescription p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #ccc; /* Texto da descrição um pouco mais claro que o título */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .productDetailPage {
+    padding: 2rem 1rem;
+    gap: 2rem;
+  }
+
+  .productTitle {
+    font-size: 2rem;
+  }
+
+  .productPrice {
+    font-size: 1.8rem;
+  }
+
+  .buttonContainer {
+    max-width: 100%;
+  }
 }

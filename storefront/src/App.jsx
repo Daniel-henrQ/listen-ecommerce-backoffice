@@ -13,8 +13,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/rock" element={<RockPage />} />
-          {/* 2. Adicione a nova rota dinâmica */}
-          <Route path="/product/:id" element={<ProductDetailPage />} />
+          {/* 2. Adicione a rota para a nova página */}
+          <Route path="/produto/:id" element={<ProductDetailPage />} />
         </Routes>
       </Router>
     </AuthProvider>
