@@ -96,7 +96,7 @@ function RockPage() {
         setIsUserMenuOpen(false);
     };
 
-    // --- Render Auth Section ---
+    // --- Render Auth Section (ATUALIZADO) ---
      const renderUserSection = () => {
         const handleIconClick = (event) => {
              event.stopPropagation();
@@ -115,25 +115,31 @@ function RockPage() {
                 >
                     <span className="material-symbols-outlined">account_circle</span>
                 </button>
+                {/* --- CONTEÚDO DO DROPDOWN ATUALIZADO --- */}
                 {user.isAuthenticated && isUserMenuOpen && (
                      <div className="user-dropdown-menu"> 
                          <ul>
                              <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
+                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
+                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
                              <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
+                             
                              {(user.role === 'adm' || user.role === 'vendas') && (
                                  <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
                              )}
+                             
                              <li className="user-dropdown-separator">
                                  <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
                              </li>
                          </ul>
                      </div>
                 )}
+                 {/* --- FIM DA ATUALIZAÇÃO --- */}
             </div>
         );
     };
 
-    // --- AJUSTE: Lógica de Carrossel DINÂMICA (Base) ---
+    // --- AJUSTE: Lógica de Carrossel DINÂMICA 
     const getProductsPerSlide = () => {
         if (window.innerWidth <= 1024) { // Telas menores (tablet e mobile)
             return 1;
@@ -440,7 +446,7 @@ function RockPage() {
                      <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
                          <Link to="/"> 
                              <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
-                          </Link> 
+                          </Link> D
                      </div>
                 </div>
             </footer>

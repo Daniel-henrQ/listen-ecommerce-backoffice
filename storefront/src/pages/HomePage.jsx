@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../assets/css/HomePage.css'; //
 import { AuthContext } from '../context/AuthContext.jsx'; //
-import { Link } from 'react-router-dom'; // <<< CORREÇÃO: Importa o Link
+import { Link } from 'react-router-dom'; // 
 
 // Caminhos para os logos
 const logoWhitePath = '/listen-white.svg'; //

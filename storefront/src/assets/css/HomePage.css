@@ -147,7 +147,7 @@ button {
 }
 
 .logo-svg {
-  height: 25px; /* Ajuste a altura conforme necessário */
+  height: 45px; /* Ajuste a altura conforme necessário */
   width: auto;
   transition: filter 0.3s ease-in-out;
   display: block; /* Garante que não haja espaço extra abaixo */
