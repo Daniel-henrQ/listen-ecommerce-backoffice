@@ -69,7 +69,7 @@ function RockPage() {
     }, []);
 
     // --- User Dropdown Logic ---
-     useEffect(() => {
+    useEffect(() => {
         const handleClickOutside = (event) => {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
                 setIsUserMenuOpen(false);
@@ -91,15 +91,15 @@ function RockPage() {
         setIsAuthModalOpen(false);
         document.body.classList.remove('modal-open');
     };
-     const handleLogout = () => {
+    const handleLogout = () => {
         logout();
         setIsUserMenuOpen(false);
     };
 
     // --- Render Auth Section (ATUALIZADO) ---
-     const renderUserSection = () => {
+    const renderUserSection = () => {
         const handleIconClick = (event) => {
-             event.stopPropagation();
+            event.stopPropagation();
             if (user.isAuthenticated) { setIsUserMenuOpen(prev => !prev); }
             else { openAuthModal('login'); }
         };
@@ -117,24 +117,24 @@ function RockPage() {
                 </button>
                 {/* --- CONTEÚDO DO DROPDOWN ATUALIZADO --- */}
                 {user.isAuthenticated && isUserMenuOpen && (
-                     <div className="user-dropdown-menu"> 
-                         <ul>
-                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
-                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
-                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
-                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
-                             
-                             {(user.role === 'adm' || user.role === 'vendas') && (
-                                 <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
-                             )}
-                             
-                             <li className="user-dropdown-separator">
-                                 <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
-                             </li>
-                         </ul>
-                     </div>
+                    <div className="user-dropdown-menu">
+                        <ul>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
+                            <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
+                            <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
+
+                            {(user.role === 'adm' || user.role === 'vendas') && (
+                                <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
+                            )}
+
+                            <li className="user-dropdown-separator">
+                                <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
+                            </li>
+                        </ul>
+                    </div>
                 )}
-                 {/* --- FIM DA ATUALIZAÇÃO --- */}
+                {/* --- FIM DA ATUALIZAÇÃO --- */}
             </div>
         );
     };
@@ -158,26 +158,26 @@ function RockPage() {
         const handleResize = () => {
             setProductsPerSlide(getProductsPerSlide());
         };
-        
+
         handleResize();
-        
+
         // AJUSTE: Resetar para o slide 1 (o primeiro slide real)
         setIsRow1Transitioning(false);
         setIsRow2Transitioning(false);
         setCurrentSlideRow1(1);
         setCurrentSlideRow2(1);
-        
+
         // Reativa transições após o salto (usando requestAnimationFrame para garantir)
         requestAnimationFrame(() => {
             setIsRow1Transitioning(true);
             setIsRow2Transitioning(true);
         });
-        
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []); // Array vazio para rodar apenas no mount e unmount
 
-    
+
     // --- AJUSTE: Lógica de Navegação (Loop Infinito) ---
 
     // Linha 1
@@ -203,7 +203,7 @@ function RockPage() {
             setCurrentSlideRow1(realTotalSlidesRow1); // Salta para o último slide real
         }
     };
-    
+
     // Linha 2 (repetir lógica)
     const nextSlideRow2 = () => {
         if (realTotalSlidesRow2 <= 1) return;
@@ -227,32 +227,54 @@ function RockPage() {
     };
 
 
-    // --- Render Product Card ---
+    // === INÍCIO DA MODIFICAÇÃO ===
+
+    // --- Render Product Card (Atualizado com Link) ---
     const renderProductCard = (product) => (
-        <div key={product._id} className={styles.productCard}>
-            <img
-                src={`/uploads/${product.imagem}`}
-                alt={`${product.nome} - ${product.artista}`}
-                className={styles.productImage}
-                onError={(e) => { e.target.style.display='none'; }}
-            />
-            <div className={styles.productInfo}>
-                <h3 className={styles.productTitle}>{product.nome}</h3>
-                <p className={styles.productArtist}>{product.artista}</p>
-                <p className={styles.productDescription}>{product.descricao}</p>
-                
-                <div className={styles.productPriceContainer}>
-                    <p className={styles.productPrice}>
-                        R$ {product.preco?.toFixed(2) ?? '0.00'}
-                    </p>
-                    <button className={styles.favoriteButton} aria-label="Adicionar aos Favoritos">
-                        <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
-                        <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
-                    </button>
+        <Link
+            to={`/produto/${product._id}`}
+            key={product._id}
+            className={styles.productCardLink} // Classe para estilizar o link
+        >
+            <div className={styles.productCard}>
+                <img
+                    // Caminho completo para a imagem (mais seguro)
+                    src={`http://localhost:3000/uploads/${product.imagem}`}
+                    alt={`${product.nome} - ${product.artista}`}
+                    className={styles.productImage}
+                    // Fallback visual caso a imagem não carregue
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <div className={styles.productInfo}>
+                    <h3 className={styles.productTitle}>{product.nome}</h3>
+                    <p className={styles.productArtist}>{product.artista}</p>
+                    <p className={styles.productDescription}>{product.descricao}</p>
+
+                    <div className={styles.productPriceContainer}>
+                        <p className={styles.productPrice}>
+                            {/* Preço formatado corretamente */}
+                            R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
+                        </p>
+                        <button
+                            className={styles.favoriteButton}
+                            aria-label="Adicionar aos Favoritos"
+                            // Previne que o clique no botão ative o Link do card
+                            onClick={(e) => {
+                                e.preventDefault();
+                                alert('Adicionado aos favoritos!'); // Ação placeholder
+                            }}
+                        >
+                            <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
+                            <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
+
+    // === FIM DA MODIFICAÇÃO ===
+
 
     // --- Função Helper de Placeholders ---
     const renderPlaceholders = (slideIndex, products, rowNum) => {
@@ -272,18 +294,18 @@ function RockPage() {
     // --- AJUSTE: Função Helper para renderizar um slide (necessário para os clones) ---
     const renderSlide = (products, slideIndex, keyPrefix, rowNum) => {
         const slideProducts = products.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide);
-        
+
         // Evita renderizar slides "clone" vazios se não houver produtos (acontece no 1º load)
-        if (slideProducts.length === 0) return null; 
+        if (slideProducts.length === 0) return null;
 
         return (
             <div key={`${keyPrefix}-${slideIndex}`} className={styles.carouselSlide}>
                 {slideProducts.map(renderProductCard)}
-                
+
                 {/* Renderiza placeholders APENAS se for o ÚLTIMO slide REAL */}
-                {slideIndex === Math.ceil(products.length / productsPerSlide) - 1 && 
-                 keyPrefix.includes('orig') && // Só no slide original, não no clone
-                 renderPlaceholders(slideIndex, products, rowNum)}
+                {slideIndex === Math.ceil(products.length / productsPerSlide) - 1 &&
+                    keyPrefix.includes('orig') && // Só no slide original, não no clone
+                    renderPlaceholders(slideIndex, products, rowNum)}
             </div>
         );
     };
@@ -292,45 +314,45 @@ function RockPage() {
     return (
         <>
             <LiquidGlassSidebar
-             isOpen={isSidebarOpen}
-             onClose={handleCloseSidebar}
-             userName={user.name || 'Visitante'}
+                isOpen={isSidebarOpen}
+                onClose={handleCloseSidebar}
+                userName={user.name || 'Visitante'}
             />
             <AuthModal
-             isOpen={isAuthModalOpen}
-             onClose={closeAuthModal}
+                isOpen={isAuthModalOpen}
+                onClose={closeAuthModal}
             />
 
             {/* --- Navigation Bar --- */}
-             <nav ref={mainNavRef} className={`${styles.mainNav} ${isNavSticky ? styles.navIsSticky : ''}`}>
-                 <div className={styles.navLeft}>
-                     <button className={styles.menuBtn} onClick={() => setIsSidebarOpen(true)}>
-                         <span className="material-symbols-outlined">menu</span>
-                         MENU
-                     </button>
-                     <div className={styles.searchBar}>
-                         <span className="material-symbols-outlined">search</span>
-                         <input type="search" placeholder="Search" />
-                     </div>
-                 </div>
-                 <div className={styles.navCenter}>
-                     <h1 className={styles.navRockTitle}>ROCK</h1>
-                 </div>
-                 <div className={styles.navRight}>
+            <nav ref={mainNavRef} className={`${styles.mainNav} ${isNavSticky ? styles.navIsSticky : ''}`}>
+                <div className={styles.navLeft}>
+                    <button className={styles.menuBtn} onClick={() => setIsSidebarOpen(true)}>
+                        <span className="material-symbols-outlined">menu</span>
+                        MENU
+                    </button>
+                    <div className={styles.searchBar}>
+                        <span className="material-symbols-outlined">search</span>
+                        <input type="search" placeholder="Search" />
+                    </div>
+                </div>
+                <div className={styles.navCenter}>
+                    <h1 className={styles.navRockTitle}>ROCK</h1>
+                </div>
+                <div className={styles.navRight}>
                     <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
                     <a href="#" title="Favoritos"><span className="material-symbols-outlined">favorite</span></a>
                     <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
                     {renderUserSection()}
-                 </div>
-             </nav>
+                </div>
+            </nav>
 
             {/* --- Header Section (Apenas Breadcrumbs) --- */}
             <header className={styles.rockHeroSection}>
-                 <div className={styles.heroContent}>
-                     <p className={styles.breadcrumbs}>
-                         <Link to="/">Home</Link> / Rock
-                     </p>
-                 </div>
+                <div className={styles.heroContent}>
+                    <p className={styles.breadcrumbs}>
+                        <Link to="/">Home</Link> / Rock
+                    </p>
+                </div>
             </header>
 
             {/* --- Main Content Area --- */}
@@ -360,13 +382,13 @@ function RockPage() {
                             {Array.from({ length: realTotalSlidesRow1 }).map((_, slideIndex) =>
                                 renderSlide(productsRow1, slideIndex, `r1-orig`, 1)
                             )}
-                            
+
                             {/* AJUSTE: Clone do PRIMEIRO slide (SÓ SE houver mais de 1 slide) */}
                             {realTotalSlidesRow1 > 1 && renderSlide(productsRow1, 0, 'r1-clone-first', 1)}
                         </div>
 
-                         {/* Botões Linha 1 */}
-                         {realTotalSlidesRow1 > 1 && (
+                        {/* Botões Linha 1 */}
+                        {realTotalSlidesRow1 > 1 && (
                             <>
                                 <button onClick={prevSlideRow1} className={`${styles.carouselButton} ${styles.prev}`}>
                                     <span className="material-symbols-outlined">chevron_left</span>
@@ -375,7 +397,7 @@ function RockPage() {
                                     <span className="material-symbols-outlined">chevron_right</span>
                                 </button>
                             </>
-                         )}
+                        )}
                     </div>
                 )}
 
@@ -398,13 +420,13 @@ function RockPage() {
                             {Array.from({ length: realTotalSlidesRow2 }).map((_, slideIndex) =>
                                 renderSlide(productsRow2, slideIndex, `r2-orig`, 2)
                             )}
-                            
+
                             {/* Clone do PRIMEIRO (Linha 2) */}
                             {realTotalSlidesRow2 > 1 && renderSlide(productsRow2, 0, 'r2-clone-first', 2)}
                         </div>
 
-                         {/* Botões Linha 2 */}
-                         {realTotalSlidesRow2 > 1 && (
+                        {/* Botões Linha 2 */}
+                        {realTotalSlidesRow2 > 1 && (
                             <>
                                 <button onClick={prevSlideRow2} className={`${styles.carouselButton} ${styles.prev}`}>
                                     <span className="material-symbols-outlined">chevron_left</span>
@@ -413,7 +435,7 @@ function RockPage() {
                                     <span className="material-symbols-outlined">chevron_right</span>
                                 </button>
                             </>
-                         )}
+                        )}
                     </div>
                 )}
             </main>
@@ -425,10 +447,10 @@ function RockPage() {
                     <div className={styles.footerColumn}>
                         <h3>Junte-se a nós</h3>
                         <p>Cadastre seu e-mail e receba 10% de desconto na primeira compra</p>
-                         <form className={styles.newsletterForm}>
+                        <form className={styles.newsletterForm}>
                             <input type="text" placeholder="Nome" required />
                             <input type="email" placeholder="E-mail" required />
-                         </form>
+                        </form>
                     </div>
                     <div className={styles.footerColumn}>
                         <h3>Categorias</h3>
@@ -443,11 +465,11 @@ function RockPage() {
                         <p>(19) 3590-000</p>
                         <p>E-mail: faleconosco@listen.com.br</p>
                     </div>
-                     <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
-                         <Link to="/"> 
-                             <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
-                          </Link> D
-                     </div>
+                    <div className={`${styles.footerColumn} ${styles.footerLogoColumn}`}>
+                        <Link to="/">
+                            <img src={logoWhitePath} alt="Listen." className={styles.footerLogo} />
+                        </Link>
+                    </div>
                 </div>
             </footer>
         </>
