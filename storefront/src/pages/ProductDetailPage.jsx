@@ -8,6 +8,7 @@ import styles from '../assets/css/ProductDetailPage.module.css'; // Usa o novo C
 import { AuthContext } from '../context/AuthContext.jsx';
 import LiquidGlassSidebar from '../components/LiquidGlassSidebar';
 import AuthModal from '../components/AuthModal';
+import FavoritesPopup from '../components/FavoritesPopup'; // <-- ADICIONADO
 
 // --- Caminho do logo ---
 const logoWhitePath = '/listen-white.svg';
@@ -20,11 +21,12 @@ const ProductDetailPage = () => {
   const { id } = useParams();
 
   // --- State e Lógica de Layout (da RockPage) ---
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, favoritos, addFavorito, removeFavorito } = useContext(AuthContext); // <-- ADICIONADO
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false); // <-- ADICIONADO
   const mainNavRef = useRef(null);
   const userMenuRef = useRef(null);
 
@@ -94,6 +96,25 @@ const ProductDetailPage = () => {
     setIsUserMenuOpen(false);
   };
 
+  // --- NOVO HANDLER DE FAVORITOS (GERAL) ---
+  const handleToggleFavorite = (e, produtoId) => {
+      e.preventDefault(); // Previne ação do link
+      e.stopPropagation(); // Previne ação do card
+      
+      if (!user.isAuthenticated) {
+          openAuthModal('login');
+          return;
+      }
+      
+      const isFavorito = favoritos.some(fav => fav._id === produtoId);
+      if (isFavorito) {
+          removeFavorito(produtoId);
+      } else {
+          addFavorito(produtoId);
+      }
+  };
+
+
   // ... (renderUserSection)
   const renderUserSection = () => {
     const handleIconClick = (event) => {
@@ -133,44 +154,47 @@ const ProductDetailPage = () => {
     );
   };
 
-  // ... (renderProductCard)
-  const renderProductCard = (product) => (
-    <Link
-      to={`/produto/${product._id}`}
-      key={product._id}
-      className={styles.productCardLink} 
-    >
-      <div className={styles.productCard}>
-        <img
-          src={`http://localhost:3000/uploads/${product.imagem}`} // Padronizado com RockPage (porta 3000)
-          alt={`${product.nome} - ${product.artista}`}
-          className={styles.productImage}
-          onError={(e) => { e.target.style.display = 'none'; }}
-        />
-        <div className={styles.productInfo}>
-          <h3 className={styles.productTitle}>{product.nome}</h3>
-          <p className={styles.productArtist}>{product.artista}</p>
-          <p className={styles.productDescription}>{product.descricao}</p>
-          <div className={styles.productPriceContainer}>
-            <p className={styles.productPrice}>
-              R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
-            </p>
-            <button
-              className={styles.favoriteButton}
-              aria-label="Adicionar aos Favoritos"
-              onClick={(e) => {
-                e.preventDefault();
-                alert('Adicionado aos favoritos!'); 
-              }}
-            >
-              <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
-              <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
-            </button>
+  // ... (renderProductCard ATUALIZADO)
+  const renderProductCard = (product) => {
+    // Verifica se este card específico é favorito
+    const isFavorito = favoritos.some(fav => fav._id === product._id);
+
+    return (
+        <Link
+          to={`/produto/${product._id}`}
+          key={product._id}
+          className={styles.productCardLink} 
+        >
+          <div className={styles.productCard}>
+            <img
+              src={`http://localhost:3000/uploads/${product.imagem}`} // Padronizado com RockPage (porta 3000)
+              alt={`${product.nome} - ${product.artista}`}
+              className={styles.productImage}
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+            <div className={styles.productInfo}>
+              <h3 className={styles.productTitle}>{product.nome}</h3>
+              <p className={styles.productArtist}>{product.artista}</p>
+              <p className={styles.productDescription}>{product.descricao}</p>
+              <div className={styles.productPriceContainer}>
+                <p className={styles.productPrice}>
+                  R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
+                </p>
+                {/* BOTÃO ATUALIZADO */}
+                <button
+                  className={`${styles.favoriteButton} ${isFavorito ? styles.isFavorite : ''}`}
+                  aria-label={isFavorito ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+                  onClick={(e) => handleToggleFavorite(e, product._id)}
+                >
+                  <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
+                  <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </Link>
-  );
+        </Link>
+    );
+  };
 
   // --- Renderização ---
 
@@ -188,6 +212,9 @@ const ProductDetailPage = () => {
   // URL da imagem (apontando para 3000)
   const imageUrl = `http://localhost:3000/uploads/${product.imagem}`;
 
+  // Verifica se o produto principal é favorito
+  const isMainFavorite = favoritos.some(fav => fav._id === product._id);
+
   return (
     <>
       <LiquidGlassSidebar
@@ -198,6 +225,11 @@ const ProductDetailPage = () => {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={closeAuthModal}
+      />
+      {/* --- POPUP DE FAVORITOS --- */}
+      <FavoritesPopup
+        isOpen={isFavoritesOpen}
+        onClose={() => setIsFavoritesOpen(false)}
       />
 
       {/* --- Navigation Bar (Base RockPage) --- */}
@@ -222,7 +254,14 @@ const ProductDetailPage = () => {
 
         <div className={styles.navRight}>
           <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
-          <a href="#" title="Favoritos"><span className="material-symbols-outlined">favorite</span></a>
+          
+          {/* --- BOTÃO DE FAVORITOS DA NAV (ATUALIZADO) --- */}
+          {user.isAuthenticated && (
+            <button title="Favoritos" className={styles.menuBtn} onClick={() => setIsFavoritesOpen(true)}>
+                <span className="material-symbols-outlined">favorite</span>
+            </button>
+          )}
+
           <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
           {renderUserSection()}
         </div>
@@ -272,11 +311,11 @@ const ProductDetailPage = () => {
               <h1 className={styles.detailTitle}>
                 {product.artista} - {product.nome}
               </h1>
-              {/* Botão de Favoritar */}
+              {/* Botão de Favoritar (ATUALIZADO) */}
               <button 
-                className={styles.detailFavoriteButton} 
-                aria-label="Adicionar aos Favoritos"
-                onClick={(e) => { e.preventDefault(); alert('Adicionado aos favoritos!'); }}
+                className={`${styles.detailFavoriteButton} ${isMainFavorite ? styles.isFavorite : ''}`}
+                aria-label={isMainFavorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+                onClick={(e) => handleToggleFavorite(e, product._id)}
               >
                 <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
                 <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>

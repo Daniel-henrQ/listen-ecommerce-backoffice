@@ -1,3 +1,4 @@
+// backend/models/clienteModel.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -27,7 +28,10 @@ const clienteSchema = new mongoose.Schema({
         cidade: { type: String, trim: true },
         estado: { type: String, trim: true },
     },
-    metodosPagamento: [metodoPagamentoSchema] // Garante que é um array
+    metodosPagamento: [metodoPagamentoSchema], // Garante que é um array
+
+    // --- ADICIONADO ---
+    favoritos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Produto' }]
 
 }, { timestamps: true });
 

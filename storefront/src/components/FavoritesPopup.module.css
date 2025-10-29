@@ -1,0 +1,162 @@
+/* storefront/src/components/FavoritesPopup.module.css */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Alto z-index para ficar sobre tudo */
+}
+
+.popup {
+    background: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.25rem;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #888;
+    padding: 0.25rem;
+    line-height: 1;
+}
+.closeButton:hover {
+    color: #000;
+}
+
+.content {
+    padding: 0.5rem 1.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.emptyText {
+    text-align: center;
+    color: #777;
+    padding: 2rem 0;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.item:last-child {
+    border-bottom: none;
+}
+
+.itemImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.itemDetails {
+    flex-grow: 1;
+}
+
+.itemDetails h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    color: #222;
+    font-weight: 600;
+}
+
+.itemDetails p {
+    margin: 0;
+    font-weight: bold;
+    color: #000; /* Cor primária */
+}
+
+.itemActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.removeButton, .viewButton {
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.removeButton {
+    background-color: #fce8e6;
+    color: #c93434;
+}
+.removeButton:hover {
+    background-color: #f9d6d2;
+}
+
+.viewButton {
+    background-color: #e6f4ea;
+    color: #2e7d32;
+    display: block;
+}
+.viewButton:hover {
+    background-color: #d4f0db;
+}
+
+.footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    background-color: #f9f9f9;
+}
+
+.clearButton {
+    background-color: #c93434;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.clearButton:hover {
+    background-color: #a52a2a;
+}

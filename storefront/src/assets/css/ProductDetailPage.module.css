@@ -638,3 +638,69 @@
   flex-direction: column;
   justify-content: center; /* Garante alinhamento vertical uniforme */
 }
+/* Adicione isto em:
+  - storefront/src/assets/css/RockPage.module.css 
+  - storefront/src/assets/css/ProductDetailPage.module.css 
+*/
+
+/* Seu código existente já tem .iconOutline e .iconFilled.
+  Esta classe .isFavorite vai usá-los para inverter o ícone.
+*/
+
+.favoriteButton .iconFilled,
+.detailFavoriteButton .iconFilled {
+  display: none; /* Esconde o preenchido por padrão */
+}
+
+.favoriteButton .iconOutline,
+.detailFavoriteButton .iconOutline {
+  display: inline-block; /* Mostra o contorno por padrão */
+}
+
+/* Quando o botão tiver a classe .isFavorite (adicionada via React) */
+.favoriteButton.isFavorite .iconFilled,
+.detailFavoriteButton.isFavorite .iconFilled {
+  display: inline-block; /* Mostra o preenchido */
+  color: red; /* Opcional: força a cor vermelha */
+}
+
+.favoriteButton.isFavorite .iconOutline,
+.detailFavoriteButton.isFavorite .iconOutline {
+  display: none; /* Esconde o contorno */
+}
+
+/* Adicione isso ao ProductDetailPage.module.css para o botão da nav */
+.mainNav .menuBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.mainNav .menuBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Adicione isso ao RockPage.module.css para o botão da nav */
+.mainNav .menuBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.mainNav .menuBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
