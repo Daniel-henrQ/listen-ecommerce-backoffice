@@ -7,6 +7,7 @@ import { useAuth } from './context/AuthContext.jsx';
 import HomePage from './pages/HomePage.jsx';
 import RockPage from './pages/RockPage.jsx';
 import ProductDetailPage from './pages/ProductDetailPage.jsx';
+import BossaNovaPage from './pages/BossaNovaPage.jsx';
 
 // Import Components
 import LiquidGlassSidebar from './components/LiquidGlassSidebar.jsx';
@@ -71,7 +72,7 @@ function App() {
         <Route path="/produto/:id" element={<ProductDetailPage />} />
         
         {/* Adicione as outras rotas aqui */}
-        {/* <Route path="/bossa-nova" element={<BossaNovaPage />} /> */}
+         <Route path="/bossa-nova" element={<BossaNovaPage />} />
         {/* <Route path="/jazz-blues" element={<JazzBluesPage />} /> */}
         {/* <Route path="/pop" element={<PopPage />} /> */}
       </Routes>
