@@ -58,7 +58,7 @@ function RockPage() {
             setError(null);
             try {
                 // --- CORRIGIDO: Usando a rota correta de api.js ---
-                const response = await api.get('/produtos/genero/Rock'); 
+               const response = await api.get('/produtos?categoria=Rock'); 
                 // --- FIM DA CORREÇÃO ---
                 const allProducts = response.data;
 
@@ -276,7 +276,7 @@ function RockPage() {
             <div className={styles.productCard}>
                 <img
                     // --- CORRIGIDO: URL do backend (porta 5000) ---
-                    src={`http://localhost:5000/uploads/${product.imagem}`}
+                    src={`http://localhost:3000/uploads/${product.imagem}`}
                     // --- FIM DA CORREÇÃO ---
                     alt={`${product.nome} - ${product.artista}`}
                     className={styles.productImage}
