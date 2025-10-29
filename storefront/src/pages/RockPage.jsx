@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Removido useContext
 import api from '../services/api';
 import styles from '../assets/css/RockPage.module.css';
-import { AuthContext } from '../context/AuthContext.jsx';
+// import { AuthContext } from '../context/AuthContext.jsx'; // Removido
+import { useAuth } from '../context/AuthContext.jsx'; // --- ADICIONADO ---
 import LiquidGlassSidebar from '../components/LiquidGlassSidebar';
 import AuthModal from '../components/AuthModal';
 import { Link } from 'react-router-dom';
+import FavoritesPopup from '../components/FavoritesPopup'; // --- ADICIONADO ---
 
 // --- Caminhos para os logos ---
 const logoWhitePath = '/listen-white.svg';
@@ -28,9 +30,22 @@ function RockPage() {
 
 
     // --- State and Logic for Layout ---
-    const { user, logout } = useContext(AuthContext);
+    // --- CORRIGIDO: Usando o hook useAuth() ---
+    const { 
+        user, 
+        logout, 
+        favorites, // <-- MUDADO: 'favoritos' para 'favorites' (conforme AuthContext)
+        addFavorite, // <-- MUDADO: 'addFavorito' para 'addFavorite' (conforme AuthContext)
+        removeFavorite, // <-- MUDADO: 'removeFavorito' para 'removeFavorite' (conforme AuthContext)
+        isAuthenticated, // <-- ADICIONADO 
+        showAuthModal, // <-- ADICIONADO (Estado global)
+        setShowAuthModal // <-- ADICIONADO (Estado global)
+    } = useAuth();
+    // --- FIM DA CORREÇÃO ---
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    // const [isAuthModalOpen, setIsAuthModalOpen] = useState(false); // --- REMOVIDO (usará estado global) ---
+    const [showFavorites, setShowFavorites] = useState(false); // --- ADICIONADO ---
     const [isNavSticky, setIsNavSticky] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const mainNavRef = useRef(null);
@@ -42,7 +57,9 @@ function RockPage() {
             setLoading(true);
             setError(null);
             try {
-                const response = await api.get('/produtos?categoria=Rock');
+                // --- CORRIGIDO: Usando a rota correta de api.js ---
+                const response = await api.get('/produtos/genero/Rock'); 
+                // --- FIM DA CORREÇÃO ---
                 const allProducts = response.data;
 
                 const midpoint = Math.ceil(allProducts.length / 2);
@@ -83,14 +100,10 @@ function RockPage() {
 
     // --- Handlers ---
     const handleCloseSidebar = () => setIsSidebarOpen(false);
-    const openAuthModal = (view = 'login') => {
-        setIsAuthModalOpen(true);
-        document.body.classList.add('modal-open');
-    };
-    const closeAuthModal = () => {
-        setIsAuthModalOpen(false);
-        document.body.classList.remove('modal-open');
-    };
+    // --- REMOVIDO: Funções de modal local ---
+    // const openAuthModal = (view = 'login') => { ... };
+    // const closeAuthModal = () => { ... };
+    // --- FIM DA REMOÇÃO ---
     const handleLogout = () => {
         logout();
         setIsUserMenuOpen(false);
@@ -100,23 +113,27 @@ function RockPage() {
     const renderUserSection = () => {
         const handleIconClick = (event) => {
             event.stopPropagation();
-            if (user.isAuthenticated) { setIsUserMenuOpen(prev => !prev); }
-            else { openAuthModal('login'); }
+            // --- CORRIGIDO: usa 'isAuthenticated' e 'setShowAuthModal' ---
+            if (isAuthenticated) { setIsUserMenuOpen(prev => !prev); } 
+            else { setShowAuthModal(true); } 
+            // --- FIM DA CORREÇÃO ---
         };
         return (
             <div className="user-account-container" ref={userMenuRef}>
                 <button
                     className="menu-btn icon-only-btn"
                     onClick={handleIconClick}
-                    title={user.isAuthenticated ? `Conta de ${user.name}` : "Entrar ou Criar Conta"}
-                    aria-haspopup={user.isAuthenticated ? "true" : "dialog"}
+                    // --- CORRIGIDO: usa 'isAuthenticated' ---
+                    title={isAuthenticated ? `Conta de ${user?.nome}` : "Entrar ou Criar Conta"}
+                    aria-haspopup={isAuthenticated ? "true" : "dialog"}
+                    // --- FIM DA CORREÇÃO ---
                     aria-expanded={isUserMenuOpen}
-                    aria-label={user.isAuthenticated ? "Abrir menu do usuário" : "Entrar ou Criar Conta"}
+                    aria-label={isAuthenticated ? "Abrir menu do usuário" : "Entrar ou Criar Conta"}
                 >
                     <span className="material-symbols-outlined">account_circle</span>
                 </button>
                 {/* --- CONTEÚDO DO DROPDOWN ATUALIZADO --- */}
-                {user.isAuthenticated && isUserMenuOpen && (
+                {isAuthenticated && isUserMenuOpen && ( // --- CORRIGIDO ---
                     <div className="user-dropdown-menu">
                         <ul>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
@@ -124,7 +141,7 @@ function RockPage() {
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Fale conosco'); setIsUserMenuOpen(false); }}>Fale conosco</a></li>
                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
 
-                            {(user.role === 'adm' || user.role === 'vendas') && (
+                            {(user?.role === 'adm' || user?.role === 'vendas') && ( // Adicionado '?'
                                 <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
                             )}
 
@@ -139,7 +156,7 @@ function RockPage() {
         );
     };
 
-    // --- AJUSTE: Lógica de Carrossel DINÂMICA 
+    // --- AJUSTE: Lógica de Carrossel DINÂMICA (sem alterações) ---
     const getProductsPerSlide = () => {
         if (window.innerWidth <= 1024) { // Telas menores (tablet e mobile)
             return 1;
@@ -153,7 +170,7 @@ function RockPage() {
     const realTotalSlidesRow2 = Math.ceil(productsRow2.length / productsPerSlide);
 
 
-    // --- Atualiza ao Redimensionar ---
+    // --- Atualiza ao Redimensionar (sem alterações) ---
     useEffect(() => {
         const handleResize = () => {
             setProductsPerSlide(getProductsPerSlide());
@@ -178,8 +195,7 @@ function RockPage() {
     }, []); // Array vazio para rodar apenas no mount e unmount
 
 
-    // --- AJUSTE: Lógica de Navegação (Loop Infinito) ---
-
+    // --- AJUSTE: Lógica de Navegação (Loop Infinito) (sem alterações) ---
     // Linha 1
     const nextSlideRow1 = () => {
         if (realTotalSlidesRow1 <= 1) return; // Não fazer nada se só houver 1 slide
@@ -203,7 +219,6 @@ function RockPage() {
             setCurrentSlideRow1(realTotalSlidesRow1); // Salta para o último slide real
         }
     };
-
     // Linha 2 (repetir lógica)
     const nextSlideRow2 = () => {
         if (realTotalSlidesRow2 <= 1) return;
@@ -229,20 +244,42 @@ function RockPage() {
 
     // === INÍCIO DA MODIFICAÇÃO ===
 
-    // --- Render Product Card (Atualizado com Link) ---
-    const renderProductCard = (product) => (
+    // --- Render Product Card (Atualizado com Lógica de Favoritos) ---
+    const renderProductCard = (product) => {
+    
+    // --- CORRIGIDO: Usa 'isAuthenticated' e 'favorites' do useAuth ---
+    const isFavorito = isAuthenticated && favorites?.some(fav => fav._id === product._id);
+
+    const handleToggleFavorite = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isAuthenticated) {
+            setShowAuthModal(true); // --- CORRIGIDO ---
+            return;
+        }
+
+        if (isFavorito) {
+            removeFavorite(product._id); // --- CORRIGIDO: 'removeFavorite' (com 'e') ---
+        } else {
+            addFavorite(product._id); // --- CORRIGIDO: 'addFavorite' (com 'e') ---
+        }
+    };
+    // --- FIM DA CORREÇÃO ---
+
+    return (
         <Link
             to={`/produto/${product._id}`}
             key={product._id}
-            className={styles.productCardLink} // Classe para estilizar o link
+            className={styles.productCardLink}
         >
             <div className={styles.productCard}>
                 <img
-                    // Caminho completo para a imagem (mais seguro)
-                    src={`http://localhost:3000/uploads/${product.imagem}`}
+                    // --- CORRIGIDO: URL do backend (porta 5000) ---
+                    src={`http://localhost:5000/uploads/${product.imagem}`}
+                    // --- FIM DA CORREÇÃO ---
                     alt={`${product.nome} - ${product.artista}`}
                     className={styles.productImage}
-                    // Fallback visual caso a imagem não carregue
                     onError={(e) => { e.target.style.display = 'none'; }}
                 />
                 <div className={styles.productInfo}>
@@ -252,17 +289,12 @@ function RockPage() {
 
                     <div className={styles.productPriceContainer}>
                         <p className={styles.productPrice}>
-                            {/* Preço formatado corretamente */}
                             R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
                         </p>
                         <button
-                            className={styles.favoriteButton}
-                            aria-label="Adicionar aos Favoritos"
-                            // Previne que o clique no botão ative o Link do card
-                            onClick={(e) => {
-                                e.preventDefault();
-                                alert('Adicionado aos favoritos!'); // Ação placeholder
-                            }}
+                            className={`${styles.favoriteButton} ${isFavorito ? styles.isFavorite : ''}`}
+                            aria-label={isFavorito ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+                            onClick={handleToggleFavorite} // --- Lógica de clique corrigida ---
                         >
                             <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
                             <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
@@ -272,11 +304,12 @@ function RockPage() {
             </div>
         </Link>
     );
+};
 
     // === FIM DA MODIFICAÇÃO ===
 
 
-    // --- Função Helper de Placeholders ---
+    // --- Função Helper de Placeholders (sem alterações) ---
     const renderPlaceholders = (slideIndex, products, rowNum) => {
         if (productsPerSlide === 1) return null; // Não renderiza placeholders se for 1 por slide
 
@@ -291,7 +324,7 @@ function RockPage() {
         return null;
     };
 
-    // --- AJUSTE: Função Helper para renderizar um slide (necessário para os clones) ---
+    // --- AJUSTE: Função Helper para renderizar um slide (sem alterações) ---
     const renderSlide = (products, slideIndex, keyPrefix, rowNum) => {
         const slideProducts = products.slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide);
 
@@ -316,12 +349,18 @@ function RockPage() {
             <LiquidGlassSidebar
                 isOpen={isSidebarOpen}
                 onClose={handleCloseSidebar}
-                userName={user.name || 'Visitante'}
+                userName={user?.name || 'Visitante'} // Adicionado '?'
             />
             <AuthModal
-                isOpen={isAuthModalOpen}
-                onClose={closeAuthModal}
+                // --- CORRIGIDO: Usa estado global do context ---
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                // --- FIM DA CORREÇÃO ---
             />
+            {/* --- ADICIONADO: Pop-up de favoritos --- */}
+            {showFavorites && <FavoritesPopup onClose={() => setShowFavorites(false)} />}
+            {/* --- FIM DA ADIÇÃO --- */}
+
 
             {/* --- Navigation Bar --- */}
             <nav ref={mainNavRef} className={`${styles.mainNav} ${isNavSticky ? styles.navIsSticky : ''}`}>
@@ -340,7 +379,20 @@ function RockPage() {
                 </div>
                 <div className={styles.navRight}>
                     <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
-                    <a href="#" title="Favoritos"><span className="material-symbols-outlined">favorite</span></a>
+                    
+                    {/* --- BOTÃO DE FAVORITOS (CORRIGIDO) --- */}
+                    {isAuthenticated && (
+                         <button 
+                            className="menu-btn icon-only-btn" // Reutilizando a classe do botão de usuário
+                            title="Favoritos" 
+                            onClick={() => setShowFavorites(true)} // Abre o Pop-up
+                            style={{ color: 'white' }} // Garante que o ícone seja branco
+                        >
+                            <span className="material-symbols-outlined">favorite</span>
+                        </button>
+                    )}
+                    {/* --- FIM DA CORREÇÃO --- */}
+                   
                     <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
                     {renderUserSection()}
                 </div>

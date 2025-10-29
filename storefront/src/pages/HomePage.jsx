@@ -1,18 +1,35 @@
 // storefront/src/pages/HomePage.jsx
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import '../assets/css/HomePage.css'; //
-import { AuthContext } from '../context/AuthContext.jsx'; //
-import { Link } from 'react-router-dom'; // 
+import React, { useState, useEffect, useRef } from 'react'; // Removido 'useContext'
+import '../assets/css/HomePage.css'; 
+// --- CORRIGIDO: Importando o hook useAuth ---
+import { useAuth } from '../context/AuthContext.jsx'; 
+import { Link } from 'react-router-dom'; 
+import FavoritesPopup from '../components/FavoritesPopup'; // --- ADICIONADO ---
 
 // Caminhos para os logos
-const logoWhitePath = '/listen-white.svg'; //
-const logoDarkPath = '/listen.svg'; //
+const logoWhitePath = '/listen-white.svg'; 
+const logoDarkPath = '/listen.svg'; 
 
-// A prop onOpenAuthModal é necessária para abrir o modal no clique do ícone
-function HomePage({ onOpenSidebar, onOpenAuthModal }) {
-    const { user, logout } = useContext(AuthContext); //
+// --- CORRIGIDO: Removida a prop 'onOpenAuthModal' que agora vem do context ---
+function HomePage({ onOpenSidebar }) {
+    // --- CORRIGIDO: Usando o hook useAuth() ---
+    const { 
+        user, 
+        logout, 
+        isAuthenticated, // <-- ADICIONADO
+        favorites,     // <-- ADICIONADO
+        token,         // <-- ADICIONADO (para o link do backoffice)
+        setShowAuthModal // <-- ADICIONADO (para substituir a prop)
+    } = useAuth(); 
+    // --- FIM DA CORREÇÃO ---
+    
     const [isNavSticky, setIsNavSticky] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    
+    // --- ADICIONADO: Estado para o pop-up de favoritos ---
+    const [showFavorites, setShowFavorites] = useState(false);
+    // --- FIM DA ADIÇÃO ---
+    
     const mainNavRef = useRef(null);
     const userMenuRef = useRef(null); // Ref para o menu dropdown
 
@@ -66,34 +83,38 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
         // Lógica do clique no ícone
         const handleIconClick = (event) => {
              event.stopPropagation(); // Impede que o clique feche o menu imediatamente
-            if (user.isAuthenticated) {
+            
+            // --- CORRIGIDO: Usa 'isAuthenticated' e 'setShowAuthModal' do context ---
+            if (isAuthenticated) {
                 // Se autenticado, abre/fecha o dropdown
                 setIsUserMenuOpen(prev => !prev);
             } else {
                 // Se NÃO autenticado, abre o modal de login
-                onOpenAuthModal('login');
+                setShowAuthModal(true); 
             }
+            // --- FIM DA CORREÇÃO ---
         };
 
         return (
             // Adiciona a ref ao container
-            <div className="user-account-container" ref={userMenuRef}> {/* */}
+            <div className="user-account-container" ref={userMenuRef}> 
                 <button
-                    className="menu-btn icon-only-btn" //
+                    className="menu-btn icon-only-btn" 
                     onClick={handleIconClick} // Chama a lógica correta
-                    title={user.isAuthenticated ? `Conta de ${user.name}` : "Entrar ou Criar Conta"}
-                    aria-haspopup={user.isAuthenticated ? "true" : "dialog"} // dialog se abre modal
+                    // --- CORRIGIDO: Usa 'isAuthenticated' ---
+                    title={isAuthenticated ? `Conta de ${user?.nome}` : "Entrar ou Criar Conta"}
+                    aria-haspopup={isAuthenticated ? "true" : "dialog"} // dialog se abre modal
                     aria-expanded={isUserMenuOpen}
-                    aria-label={user.isAuthenticated ? "Abrir menu do usuário" : "Entrar ou Criar Conta"}
+                    aria-label={isAuthenticated ? "Abrir menu do usuário" : "Entrar ou Criar Conta"}
                 >
                     {/* Ícone de Usuário */}
                     <span className="material-symbols-outlined">account_circle</span>
                 </button>
 
                 {/* Dropdown do Usuário (Renderiza apenas se logado e o menu estiver aberto) */}
-                {user.isAuthenticated && isUserMenuOpen && (
-                    // Não precisa de stopPropagation aqui, pois está dentro do userMenuRef
-                    <div className="user-dropdown-menu"> {/* */}
+                {/* --- CORRIGIDO: Usa 'isAuthenticated' e 'user' (com ?) --- */}
+                {isAuthenticated && isUserMenuOpen && (
+                    <div className="user-dropdown-menu"> 
                         <ul>
                             {/* Opções baseadas na imagem */}
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
@@ -103,15 +124,11 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
 
 
                             {/* Link condicional para Backoffice (apenas para adm/vendas) */}
-                            {(user.role === 'adm' || user.role === 'vendas') && (
+                            {(user?.role === 'adm' || user?.role === 'vendas') && (
                                 <li className="user-dropdown-separator">
-                                  {/* *** CORREÇÃO AQUI ***
-                                    O link agora é absoluto (aponta para a porta do backoffice) 
-                                    e passa o token do usuário.
-                                    Ajuste 'http://localhost:3001' se o seu backoffice usar outra porta.
-                                  */}
+                                  {/* --- CORRIGIDO: Usa a variável 'token' do context --- */}
                                   <a 
-                                    href={`http://localhost:3001/app?token=${user.token}`} 
+                                    href={`http://localhost:3001/app?token=${token}`} 
                                     onClick={() => setIsUserMenuOpen(false)}
                                   >
                                     Backoffice
@@ -120,8 +137,8 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                             )}
 
                             {/* Botão Sair com separador */}
-                            <li className="user-dropdown-separator"> {/* */}
-                                <button onClick={handleLogout} className="user-dropdown-logout-btn"> {/* */}
+                            <li className="user-dropdown-separator"> 
+                                <button onClick={handleLogout} className="user-dropdown-logout-btn"> 
                                     Sair
                                 </button>
                             </li>
@@ -135,33 +152,46 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
     // Estrutura JSX da página (header, nav, main, footer)
     return (
         <>
-            <header className="hero-section"> {/* */}
-                 <div className="video-background"> {/* */}
+            <header className="hero-section"> 
+                 <div className="video-background"> 
                     <video src="/Minimalist_Vinyl_Record_Video_Generation.mp4" autoPlay muted loop playsInline></video>
-                    <div className="video-overlay"></div> {/* */}
+                    <div className="video-overlay"></div> 
                  </div>
 
-                <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}> {/* */}
-                    <div className="nav-left"> {/* */}
-                        <button className="menu-btn" onClick={onOpenSidebar}> {/* */}
+                <nav ref={mainNavRef} className={`main-nav ${isNavSticky ? 'nav-is-sticky' : ''}`}> 
+                    <div className="nav-left"> 
+                        <button className="menu-btn" onClick={onOpenSidebar}> 
                             <span className="material-symbols-outlined">menu</span>
                             MENU
                         </button>
-                        <div className="search-bar"> {/* */}
+                        <div className="search-bar"> 
                              <span className="material-symbols-outlined">search</span>
                              <input type="search" placeholder="Search" />
                         </div>
                     </div>
 
-                    <div className="nav-center"> {/* */}
-                         <div className="logo-container"> {/* */}
-                            <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" /> {/* */}
+                    <div className="nav-center"> 
+                         <div className="logo-container"> 
+                            <img src={isNavSticky ? logoDarkPath : logoWhitePath} alt="Listen." className="logo-svg" /> 
                          </div>
                     </div>
 
-                    <div className="nav-right"> {/* */}
+                    <div className="nav-right"> 
                         <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
-                        <a href="#" title="Favoritos"><span className="material-symbols-outlined">favorite</span></a>
+                        
+                        {/* --- BOTÃO DE FAVORITOS (CORRIGIDO) --- */}
+                        {/* Só mostra se estiver autenticado */}
+                        {isAuthenticated && (
+                            <button 
+                                className="menu-btn icon-only-btn" // Reutiliza classe
+                                title="Favoritos"
+                                onClick={() => setShowFavorites(true)} // Abre o pop-up
+                            >
+                                <span className="material-symbols-outlined">favorite</span>
+                            </button>
+                        )}
+                        {/* --- FIM DA CORREÇÃO --- */}
+                        
                         <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
                         {/* Ícone de usuário (que abre dropdown ou modal) */}
                         {renderUserSection()}
@@ -170,25 +200,25 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
             </header>
 
               <main>
-                  <section className="about-us"> {/* */}
+                  <section className="about-us"> 
                       <h2>A listen.</h2>
                         <p>Ouvir um vinil é um ritual. É tirar o disco da capa com cuidado, colocar na vitrola, ouvir os estalos antes da primeira nota. É presença. É tempo. É arte que gira. A listen. nasceu desse sentimento.</p>
                         <p>Não somos apenas uma loja. Somos um lugar que entende que a música tem textura, tem cheiro, tem peso. Que o design pode mudar de forma conforme o som muda de tom. Que o rock pede contraste, o jazz pede elegância, e a bossa nova dança em sutileza. Aqui, cada gênero tem espaço para ser o que é, sem se encaixar em moldes. Do clean ao punk, sem esforço.</p>
                         <p>Criamos a listen. porque acreditamos que estética importa. Mas sentimento importa mais. Se você coleciona discos porque cada um carrega uma história, está no lugar certo. Se você enxerga beleza no que é imperfeito, analógico, real seja bem-vindo. A gente compartilha do mesmo som.</p>
                   </section>
               </main>
-              <footer> {/* */}
-                  <div className="footer-container"> {/* */}
-                      <div className="footer-column"> {/* */}
+              <footer> 
+                  <div className="footer-container"> 
+                      <div className="footer-column"> 
                           <h3>Junte-se a nós</h3>
                           <p>Cadastre seu e-mail e receba 50% de desconto na primeira compra</p>
-                          <form className="newsletter-form"> {/* */}
+                          <form className="newsletter-form"> 
                               <input type="text" placeholder="Nome" required/>
                               <input type="email" placeholder="E-mail" required/>
                                
                           </form>
                       </div>
-                      <div className="footer-column"> {/* */}
+                      <div className="footer-column"> 
                           <h3>Categorias</h3>
                           <ul>
                             <li><Link to="/rock">Rock</Link></li>
@@ -197,13 +227,17 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
                               <li><Link to="/pop">Pop</Link></li> {/* Atualizar links depois */}
                           </ul>
                       </div>
-                      <div className="footer-column"> {/* */}
+                      <div className="footer-column"> 
                           <h3>Contato</h3>
                           <p>(19) 3590-000</p>
                           <p>E-mail: faleconosco@listen.com.br</p>
                       </div>
                   </div>
               </footer>
+
+            {/* --- ADICIONADO: Renderização do Pop-up de Favoritos --- */}
+            {showFavorites && <FavoritesPopup onClose={() => setShowFavorites(false)} />}
+            {/* --- FIM DA ADIÇÃO --- */}
         </>
     );
 }
