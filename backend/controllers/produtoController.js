@@ -256,3 +256,27 @@ exports.deletarVariosProdutos = async (req, res, next) => {
         next(error);
     }
 };
+
+// ==========================================================
+// <<< NOVA FUNÇÃO ADICIONADA AQUI >>>
+// ==========================================================
+
+// Buscar produto por ID
+exports.buscarProdutoPorId = async (req, res, next) => {
+  try {
+    // Busca o produto pelo ID fornecido nos parâmetros da rota
+    const produto = await Produto.findById(req.params.id)
+                                  .populate('fornecedor', 'nomeFantasia'); // Popula o fornecedor
+
+    if (!produto) {
+      // Se o produto não for encontrado, retorna 404
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    // Se encontrado, retorna o produto
+    res.json(produto);
+  } catch (error) {
+    // Passa erros (ex: ID mal formatado) para o middleware de erro
+    next(error);
+  }
+};

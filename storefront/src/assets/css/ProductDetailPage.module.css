@@ -1,145 +1,640 @@
 /* storefront/src/assets/css/ProductDetailPage.module.css */
+/* Este arquivo é uma fusão:
+  1. Base completa de RockPage.module.css (fontes, vars, nav, cards, footer, etc.)
+  2. Estilos renomeados do ProductDetailPage.module.css original (para o layout principal)
+  3. Estilos para a nova seção "Produtos Parecidos".
+*/
 
-.productDetailPage {
+/* --- Font (da RockPage) --- */
+@font-face {
+  font-family: 'Forgotten Junk';
+  src: url('../fonts/Forgotten Junk.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Base Styles & Variables (da RockPage) --- */
+:root {
+  --rock-red: #a31a27;
+  --text-light: #e0e0e0;
+  --text-medium: #bbb;
+  --text-dark: #333;
+  --background-dark: #000000;
+  --transition-fast: 0.18s;
+  --transition-med: 0.28s;
+  --transition-slow: 0.45s;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ============================================== */
+/* --- Navigation Bar (Preto Simples) --- */
+/* ============================================== */
+.mainNav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 2.5rem 3rem;
+  /* --- MUDANÇA: Altura mínima maior --- */
+  min-height: 110px; /* Era 100px */
+  color: var(--text-light);
+  background-color: var(--background-dark); /* Fundo preto simples */
+  transition: background-color var(--transition-med) ease-in-out, color var(--transition-med) ease-in-out, padding var(--transition-med) ease-in-out, box-shadow var(--transition-med) ease-in-out, min-height var(--transition-med) ease-in-out;
+}
+
+.navIsSticky {
+  position: fixed;
+  padding: 1.5rem 3rem;
+  /* --- MUDANÇA: Altura mínima maior --- */
+  min-height: 90px; /* Era 80px */
+  color: var(--text-light);
+  background-color: var(--background-dark); /* Fundo preto simples */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  animation: slideDownNav var(--transition-med) ease-in-out;
+}
+/* ============================================== */
+/* --- FIM DA MUDANÇA NA NAV --- */
+/* ============================================== */
+
+
+@keyframes slideDownNav {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.navLeft { display: flex; align-items: center; gap: 1.5rem; justify-self: start; }
+.navCenter { display: flex; align-items: center; justify-self: center; }
+.navRight { display: flex; align-items: center; justify-self: end; gap: 1rem; }
+
+.menuBtn {
+  display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer;
+}
+.menuBtn .material-symbols-outlined { font-size: 1.5rem; }
+
+.searchBar {
+  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
+}
+.navIsSticky .searchBar { background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+.searchBar .material-symbols-outlined { color:#eee; font-size:1.3rem; transition: color var(--transition-med); }
+.navIsSticky .searchBar .material-symbols-outlined { color:#ccc; }
+.searchBar input { border:none; outline:none; margin-left:0.5rem; font-size:0.9rem; width:100%; background:none; color:#fff; }
+.searchBar input::placeholder { color:#ccc; }
+
+.navRight a, .navRight button { color:inherit; position:relative; }
+.navRight .material-symbols-outlined { font-size:1.6rem; }
+
+/* AJUSTE: Logo no NavCenter (estilo da HomePage) */
+.logoContainer {
   display: flex;
-  flex-wrap: wrap; /* Permite que as colunas quebrem em telas menores */
-  justify-content: center; /* Centraliza o conteúdo */
-  gap: 3rem; /* Espaço entre a imagem e as infos */
-  padding: 4rem 2rem;
-  max-width: 1200px; /* Limita a largura máxima da página */
-  margin: 2rem auto; /* Centraliza o container da página */
-  background-color: #000; /* Fundo preto como na imagem */
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.logoSvg {
+  height: 28px;
+  width: auto;
+  transition: height var(--transition-med) ease;
+}
+.navIsSticky .logoSvg {
+  height: 24px;
+}
+.navRockTitle { display: none; }
+
+
+/* ============================================== */
+/* --- Hero/Breadcrumbs (Preto Simples e Menor) --- */
+/* ============================================== */
+.rockHeroSection {
+  /* --- MUDANÇA: Espaçamento ajustado --- */
+  padding-top: 120px; /* Compensar nav maior */
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-bottom: 1rem; /* Aproximar conteúdo abaixo */
+  position: relative;
+  z-index: 1;
+  color: var(--text-light);
+  background-color: var(--background-dark); /* Fundo preto simples */
+}
+/* ============================================== */
+/* --- FIM DA MUDANÇA NO HEADER --- */
+/* ============================================== */
+
+.heroContent { position: relative; }
+.breadcrumbs, .breadcrumbs a { font-size:0.9rem; color:var(--text-medium); text-shadow:1px 1px 2px rgba(0,0,0,0.7); text-decoration:none; }
+.breadcrumbs a:hover { color:var(--text-light); text-decoration:underline; }
+
+/* --- Page Content Wrapper --- */
+.pageContent {
+  /* --- MUDANÇA: Padding superior removido --- */
+  padding: 0 0 3rem 0; /* Era 1rem 0 3rem 0 */
+  background-color: var(--background-dark);
+  min-height: 50vh;
+}
+
+/* ================================================== */
+/* --- SEÇÃO DE DETALHE (ESTILO MODERNO) --- */
+/* ================================================== */
+
+.detailContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto 2rem; /* margin-top removido */
+  background-color: #000;
   color: white;
-  border-radius: 8px; /* Bordas levemente arredondadas */
-  border: 1px solid #222; /* Borda sutil para destacar o container */
+  border-radius: 8px;
+  border: 1px solid #222;
+  align-items: flex-start; /* Alinha o topo das colunas */
 }
 
 /* Coluna da Imagem */
-.productImage {
-  flex: 1 1 400px; /* A imagem pode crescer, mas tem base de 400px */
+.detailImageColumn {
+  flex: 1 1 400px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  max-width: 500px; /* Tamanho máximo para a coluna da imagem */
+  max-width: 500px;
 }
 
-.productImage img {
+/* Wrapper da Imagem (para Overlay) */
+.detailImageWrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden; /* Importante para o overlay */
+}
+.detailImageWrapper img {
   width: 100%;
   height: auto;
-  object-fit: cover;
-  border-radius: 4px;
+  display: block; /* Remove espaço inferior do <img> */
 }
 
-/* Coluna de Informações */
-.productInfo {
-  flex: 1 1 500px; /* As infos ocupam o espaço restante, base de 500px */
+/* Overlay de Esgotado (Efeito Vidro) */
+.soldOutOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem; /* Espaçamento entre os itens de info (preço, título, etc) */
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2;
 }
 
-.productTitle {
+/* Texto "Esgotado" */
+.soldOutText {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 2.5rem; /* Título grande e legível */
+  font-size: 2.5rem;
   font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.productStock {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1DB954; /* Verde para "Disponível" */
-  margin: -0.5rem 0 0.5rem; /* Ajusta espaçamento */
-}
-
-.productPrice {
-  font-size: 2.2rem; /* Preço bem destacado */
-  font-weight: 600;
-  margin: 0.5rem 0;
-}
-
-/* Container dos botões */
-.buttonContainer {
-  display: flex;
-  flex-direction: column; /* Botões um em cima do outro */
-  gap: 1rem; /* Espaço entre os botões */
-  margin: 1rem 0;
-  max-width: 400px; /* Limita a largura dos botões */
-}
-
-/* Estilo base dos botões */
-.buyButton,
-.addToCartButton {
-  padding: 1rem;
-  font-size: 0.9rem;
-  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
-  border: 2px solid white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   text-align: center;
 }
 
-/* Botão COMPRAR (preto com borda branca) */
-.buyButton {
-  background-color: #000;
+
+/* Coluna de Informações */
+.detailInfoColumn {
+  flex: 1 1 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Espaçamento geral */
+}
+
+/* Wrapper Título + Favorito */
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Alinha o ícone ao centro do texto */
+  gap: 1rem;
+  margin-bottom: 0.5rem; /* Espaço extra abaixo do título/ícone */
+}
+
+/* Título (Artista - Nome) */
+.detailTitle {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 2rem; /* Menor */
+  font-weight: 600; /* Mais leve */
+  margin: 0;
+  line-height: 1.2;
+  color: #fff;
+  flex: 1; /* Permite que o título cresça */
+  margin-top: -0.2rem; /* Puxa o texto levemente para cima */
+}
+.detailArtist { display: none; }
+
+/* Botão Favoritar (sem borda) */
+.detailFavoriteButton {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:40px;
+  height:40px;
+  background:transparent;
+  border: none; /* Borda removida */
+  cursor:pointer;
+  flex-shrink:0;
+  padding:4px;
+  margin:0;
+  border-radius: 50%; /* Círculo */
+  overflow:hidden;
+  transition: all var(--transition-fast) ease;
+}
+.detailFavoriteButton:hover {
+  background-color: rgba(255,255,255,0.1); /* Hover mais forte */
+}
+
+
+/* Preço */
+.detailPrice {
+  font-size: 2rem; /* Menor */
+  font-weight: 500; /* Mais leve */
+  margin: 0;
+  color: var(--text-light);
+}
+
+/* Estoque (Sutil) */
+.detailStock {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #aaa; /* Cor sutil para "Disponível" */
+  margin: -0.5rem 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Estilo "Indisponível" */
+.detailStock.outOfStock {
+  color: var(--rock-red); /* Vermelho para "Indisponível" */
+  font-weight: 600;
+}
+
+
+/* Descrição (Mais delicada) */
+.detailDescription {
+  margin-top: 0.5rem;
+  border-top: 1px solid #333;
+  padding-top: 1.25rem;
+}
+.detailDescription h2 {
+  display: none; /* Remove o H2 "Descrição" */
+}
+.detailDescription p {
+  font-size: 0.9rem; /* Menor */
+  line-height: 1.6;
+  color: #aaa; /* Cor mais clara/suave */
+}
+
+/* Container do Botão */
+.detailButtonContainer {
+  display: flex;
+  margin-top: 1rem; /* Espaço acima do botão */
+}
+
+/* Botão (Menor e Arredondado) */
+.detailAddToCartButton {
+  padding: 0.8rem 1.5rem; /* Menor */
+  font-size: 0.85rem; /* Menor */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid var(--rock-red);
+  border-radius: 50px; /* Totalmente arredondado */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background-color: var(--rock-red);
   color: #fff;
 }
-
-.buyButton:hover {
-  background-color: #fff;
-  color: #000;
+.detailAddToCartButton:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(163, 26, 39, 0.3);
 }
 
-/* Botão ADICIONAR AO CARRINHO (branco) */
-.addToCartButton {
-  background-color: #fff;
-  color: #000;
-  border-color: #fff;
+/* Estilo do botão quando desabilitado (Esgotado) */
+.detailAddToCartButton:disabled {
+  background-color: #333;
+  border-color: #333;
+  color: #777;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-.addToCartButton:hover {
-  background-color: #ddd; /* Escurece um pouco no hover */
-  border-color: #ddd;
-}
 
-/* Seção de Descrição */
-.productDescription {
-  margin-top: 1rem;
+/* ============================================== */
+/* --- SEÇÃO PRODUTOS PARECIDOS (Classes Novas) --- */
+/* ============================================== */
+
+.relatedProductsSection {
+  max-width: 1200px;
+  margin: 4rem auto 2rem;
+  padding: 0 2rem;
   border-top: 1px solid #333;
-  padding-top: 1.5rem;
+  padding-top: 2.5rem;
 }
 
-.productDescription h2 {
-  font-size: 1.5rem;
+.relatedTitle {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 2rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  color: white;
+  margin-bottom: 2.5rem;
+  text-align: center;
 }
 
-.productDescription p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #ccc; /* Texto da descrição um pouco mais claro que o título */
+.relatedProductsGrid {
+  display: grid;
+  /* Ajuste para 4 colunas em desktop, quebrando graciosamente */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  justify-items: center;
 }
 
-/* Responsividade para telas menores */
+/* Garante que o Link (wrapper do card) se comporte bem no grid */
+.relatedProductsGrid > a {
+  text-decoration: none;
+  width: 100%;
+  max-width: 320px; /* Limita o tamanho do card */
+}
+
+
+/* ================================================== */
+/* --- ESTILOS DOS CARDS (da RockPage) --- */
+/* (Usados pelos "Produtos Parecidos" E pelo novo .detailFavoriteButton) */
+/* ================================================== */
+.productCard {
+  flex-basis: 100%; /* O Grid cuida da largura */
+  max-width: 320px;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  color: #fff;
+  text-align: left;
+  transition: transform var(--transition-med) ease, box-shadow var(--transition-med) ease;
+  will-change: transform;
+  position: relative;
+  overflow: visible;
+}
+.productCard:hover { transform: scale(1.04); box-shadow: 0 6px 14px rgba(0,0,0,0.4); cursor:pointer; z-index:3; }
+
+.productCardPlaceholder { flex-basis:32%; max-width:320px; box-sizing:border-box; }
+.productImage { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; display:block; transition: transform var(--transition-med) ease-in-out; }
+.productCard:hover .productImage { transform: scale(1.05); }
+
+.productInfo {
+  padding: 0 10px 10px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.productTitle { font-size:1.2rem; font-weight:bold; margin-bottom:5px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.productArtist { font-size:1rem; color:#ccc; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.productDescription {
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; font-size:0.9rem; color:var(--text-medium); line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
+}
+
+.productPriceContainer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:5px;
+  gap:8px;
+  min-width:0;
+}
+.productPrice { font-size:1.1rem; font-weight:bold; color:#fff; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Estilos do ícone de favorito (usado no card E no .detailFavoriteButton) */
+.favoriteButton {
+  display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; background:transparent; border:none; cursor:pointer; flex-shrink:0; padding:4px; margin:0; border-radius:6px; overflow:hidden; -webkit-tap-highlight-color: transparent; transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
+}
+.favoriteButton:focus { outline:2px solid rgba(255,255,255,0.12); }
+
+/* Aplica a todos os ícones de favorito */
+.favoriteButton .material-symbols-outlined,
+.detailFavoriteButton .material-symbols-outlined {
+  display:block;
+  line-height:1;
+  font-size:1.4rem;
+  transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease;
+  pointer-events:none;
+}
+/* Ajusta o ícone do botão da página de detalhe para ser maior */
+.detailFavoriteButton .material-symbols-outlined {
+  font-size: 1.6rem;
+}
+
+
+.iconOutline { color:#fff; opacity:1; }
+.iconFilled { color:#e74c3c; opacity:0; position:absolute; }
+
+.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus,
+.detailFavoriteButton:hover, .detailFavoriteButton:active, .detailFavoriteButton:focus {
+  background-color: rgba(255,255,255,0.03);
+}
+/* Garante que o hover do botão sem borda fique ok */
+.detailFavoriteButton:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+
+.favoriteButton:hover .iconOutline, .favoriteButton:active .iconOutline, .favoriteButton:focus .iconOutline,
+.detailFavoriteButton:hover .iconOutline, .detailFavoriteButton:active .iconOutline, .detailFavoriteButton:focus .iconOutline {
+  opacity:0;
+  transform: scale(0.95);
+}
+.favoriteButton:hover .iconFilled, .favoriteButton:active .iconFilled, .favoriteButton:focus .iconFilled,
+.detailFavoriteButton:hover .iconFilled, .detailFavoriteButton:active .iconFilled, .detailFavoriteButton:focus .iconFilled {
+  opacity:1;
+  transform: scale(1);
+}
+.favoriteButton.is-favorited .iconOutline,
+.detailFavoriteButton.is-favorited .iconOutline { opacity:0; }
+
+.favoriteButton.is-favorited .iconFilled,
+.detailFavoriteButton.is-favorited .iconFilled { opacity:1; }
+
+/* Remove Carousel buttons (não usados aqui) */
+.carouselButton { display: none; }
+.carouselContainer { display: none; }
+
+
+/* ============================================== */
+/* --- FOOTER (da RockPage) --- */
+/* ============================================== */
+.rockFooter { background-image: url('../images/fundorock.png'); background-color: var(--background-dark); background-size: cover; background-position: center top; background-repeat: no-repeat; padding:2.5rem 2rem 1.5rem; color:var(--text-medium); border-top:1px solid #444; }
+.footerContainer { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:2rem 4rem; width:90%; max-width:1100px; margin:0 auto; }
+.footerColumn h3 { font-size:1rem; font-weight:600; color:var(--text-light); margin-bottom:0.8rem; }
+.footerColumn p, .footerColumn li, .footerColumn li a { font-size:0.9rem; color:var(--text-medium); line-height:1.6; margin-bottom:0.7rem; transition: color 0.2s ease; text-decoration:none; }
+.footerColumn li a:hover { color:#fff; }
+.newsletterForm input { width:100%; padding:0.6rem 0.8rem; border:1px solid #555; border-radius:4px; background-color: rgba(255,255,255,0.1); color:var(--text-light); font-size:0.9rem; margin-bottom:0.7rem; }
+.newsletterForm input::placeholder { color:#888; }
+.newsletterButton { padding:10px 15px; cursor:pointer; background:var(--rock-red); color:#fff; border:none; border-radius:4px; font-size:0.9rem; transition: background-color 0.2s ease; margin-top:0.3rem; }
+.newsletterButton:hover { background:#c0392b; }
+.footerLogoColumn { display:flex; justify-content:flex-end; align-items:flex-end; }
+.footerLogo { height:30px; width:auto; opacity:0.8; }
+
+/* ============================================== */
+/* --- RESPONSIVIDADE (da RockPage + Detalhes) --- */
+/* ============================================== */
+
+/* Dropdown (da RockPage) */
+.userAccountContainer { position: relative; display: inline-flex; }
+.iconOnlyBtn { padding:5px; gap:0; background:none; border:none; color:inherit; cursor:pointer; }
+.iconOnlyBtn .material-symbols-outlined { font-size:1.6rem; transition: font-size var(--transition-med); }
+.userDropdownMenu { display:block; position:absolute; top:calc(100% + 10px); right:0; background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; border-radius:6px; min-width:200px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:1010; padding:0.5rem 0; list-style:none; margin:0; animation: fadeInDropdown 0.2s ease-out; }
+@keyframes fadeInDropdown { from { opacity:0; transform: translateY(-5px); } to { opacity:1; transform: translateY(0); } }
+.userDropdownMenu li a,
+.userDropdownMenu li button.userDropdownLogoutBtn { display:block; width:100%; padding:0.75rem 0.8rem; font-family:'Lato',sans-serif; font-size:0.9rem; color:#555555; transition: background-color 0.2s ease, color 0.2s ease; text-align:left; background:none; border:none; cursor:pointer; text-decoration:none; }
+.userDropdownMenu li a:hover,
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#f5f5f5; color:#111111; }
+.userDropdownSeparator { border-top:1px solid #eeeeee; margin-top:0.5rem; padding-top:0.5rem; }
+.userDropdownMenu li button.userDropdownLogoutBtn { color:#c82333; font-weight:500; }
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#fbecec; color:#a31a27; }
+
+
+@media (max-width: 1200px) {
+  /* Nav (da RockPage) */
+  .navRockTitle { font-size: 3rem; }
+}
+
+@media (max-width: 1024px) {
+  /* Nav (da RockPage) */
+  .mainNav, .navIsSticky { padding: 1.5rem 2rem; }
+  .navLeft { gap: 1rem; }
+  .navRight { gap: 1.2rem; }
+  .searchBar { width: 200px; }
+  
+  /* Header */
+  .rockHeroSection {
+      padding-top: 110px; /* Mantém um pouco de espaço */
+  }
+
+  /* Grid de produtos relacionados */
+  .relatedProductsGrid {
+     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+     gap: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .productDetailPage {
+  /* Nav (da RockPage) */
+  .mainNav, .navIsSticky { padding: 1.2rem 1.5rem; grid-template-columns: auto 1fr auto; min-height: 80px; } /* Altura menor em tablet */
+  .navIsSticky { min-height: 70px; }
+  .searchBar { display: none; }
+  .navCenter { justify-self: center; padding: 0 1rem; }
+  .navRight a[title="Localização"],
+  .navRight a[title="Favoritos"] { display: none; }
+  .navRight { gap: 1rem; }
+  
+  /* Header (Breadcrumbs) */
+  .rockHeroSection {
+    padding-top: 90px; /* Sobe ainda mais em mobile */
+  }
+
+  /* Estilos de Detalhe (do original) */
+  .detailContainer {
     padding: 2rem 1rem;
     gap: 2rem;
   }
-
-  .productTitle {
-    font-size: 2rem;
+  .detailTitle {
+    font-size: 1.8rem; /* Responsividade do título */
+    margin-top: -0.1rem; /* Ajuste menor para fontes maiores */
+  }
+  .detailPrice {
+    font-size: 1.6rem; /* Responsividade do preço */
+  }
+  .detailButtonContainer {
+    max-width: 100%;
+  }
+  .detailFavoriteButton {
+    width: 36px;
+    height: 36px;
+  }
+  .detailFavoriteButton .material-symbols-outlined {
+    font-size: 1.4rem;
+  }
+  .soldOutText {
+    font-size: 2rem; /* Texto de esgotado menor */
   }
 
-  .productPrice {
+  /* Produtos Relacionados */
+  .relatedTitle {
+    font-size: 1.8rem;
+  }
+  .relatedProductsGrid {
+    grid-template-columns: 1fr 1fr; /* 2 colunas em tablet */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Nav (da RockPage) */
+  .mainNav, .navIsSticky { padding: 1rem; min-height: 70px; } /* Altura menor em mobile */
+  .navIsSticky { min-height: 60px; }
+  .logoSvg { height: 24px; } /* Logo menor */
+  .navIsSticky .logoSvg { height: 22px; }
+  .navRight { gap: 0.8rem; }
+  .navRight .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn { font-size: 0.8rem; }
+  .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
+  
+  /* Header (Breadcrumbs) */
+  .rockHeroSection {
+    padding-top: 80px; /* Sobe mais ainda */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Detalhes */
+  .detailTitle {
+    font-size: 1.5rem;
+    margin-top: 0; /* Geralmente não precisa de ajuste em fontes menores */
+  }
+  .detailPrice {
+    font-size: 1.4rem;
+  }
+  .detailAddToCartButton {
+    width: 100%; /* Botão ocupa toda a largura */
+  }
+  .soldOutText {
     font-size: 1.8rem;
   }
 
-  .buttonContainer {
-    max-width: 100%;
+  /* Produtos Relacionados */
+  .relatedProductsGrid {
+    grid-template-columns: 1fr; /* 1 coluna em mobile */
   }
+}
+/* --- Alinhamento da imagem com o título e nome do álbum --- */
+.detailContainer {
+  align-items: center; /* Centraliza verticalmente imagem e texto */
+}
+
+.detailImageColumn,
+.detailInfoColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Garante alinhamento vertical uniforme */
 }
