@@ -1,3 +1,4 @@
+// storefront/src/pages/HomePage.jsx
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import '../assets/css/HomePage.css'; //
 import { AuthContext } from '../context/AuthContext.jsx'; //
@@ -103,7 +104,19 @@ function HomePage({ onOpenSidebar, onOpenAuthModal }) {
 
                             {/* Link condicional para Backoffice (apenas para adm/vendas) */}
                             {(user.role === 'adm' || user.role === 'vendas') && (
-                                <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li> //
+                                <li className="user-dropdown-separator">
+                                  {/* *** CORREÇÃO AQUI ***
+                                    O link agora é absoluto (aponta para a porta do backoffice) 
+                                    e passa o token do usuário.
+                                    Ajuste 'http://localhost:3001' se o seu backoffice usar outra porta.
+                                  */}
+                                  <a 
+                                    href={`http://localhost:3001/app?token=${user.token}`} 
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                  >
+                                    Backoffice
+                                  </a>
+                                </li>
                             )}
 
                             {/* Botão Sair com separador */}
