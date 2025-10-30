@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import styles from '../assets/css/CategoryNavs.module.css'; // <-- MUDANÇA 1: Mesmo CSS
+import styles from '../assets/css/CategoryNavs.module.css'; // Importa o CSS Module
 import LiquidGlassSidebar from './LiquidGlassSidebar';
 import AuthModal from './AuthModal';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Importa o Link para o carrinho
 import FavoritesPopup from './FavoritesPopup';
 
-function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
-    // --- Lógica de Estado (idêntica ao RockNav) ---
+function BossaNovaNav() {
+    // --- Lógica de Estado ---
     const { 
         user, 
         logout, 
@@ -23,7 +23,7 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
     const mainNavRef = useRef(null);
     const userMenuRef = useRef(null);
 
-    // --- Lógica de Efeitos (idêntica ao RockNav) ---
+    // --- Lógica de Efeitos ---
     useEffect(() => {
         const handleScroll = () => setIsNavSticky(window.scrollY > 10);
         window.addEventListener('scroll', handleScroll);
@@ -41,16 +41,15 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isUserMenuOpen]);
 
-    // --- Handlers (idênticos ao RockNav) ---
+    // --- Handlers ---
     const handleCloseSidebar = () => setIsSidebarOpen(false);
     const handleLogout = () => {
         logout();
         setIsUserMenuOpen(false);
     };
 
-    // --- Renderização do Menu de Usuário (idêntica ao RockNav) ---
+    // --- Renderização do Menu de Usuário ---
     const renderUserSection = () => {
-        // (Código idêntico ao RockNav.jsx)
         const handleIconClick = (event) => {
             event.stopPropagation();
             if (isAuthenticated) { setIsUserMenuOpen(prev => !prev); } 
@@ -87,7 +86,7 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
         );
     };
 
-    // --- Renderização do Título Bossa Nova (da BossaNovaPage.jsx) ---
+    // --- Renderização do Título Bossa Nova ---
     const renderBossaNovaTitle = () => {
         const title = "BOSSA NOVA";
         return (
@@ -120,10 +119,9 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
                     ${styles.mainNav} 
                     ${isNavSticky ? styles.navIsSticky : ''} 
                     ${styles.bossaNovaNav} 
-                `} // <-- MUDANÇA 3: Classe CSS
+                `}
             >
                 <div className={styles.navLeft}>
-                    {/* (Conteúdo idêntico ao RockNav) */}
                     <button className={styles.menuBtn} onClick={() => setIsSidebarOpen(true)}>
                         <span className="material-symbols-outlined">menu</span>
                         MENU
@@ -135,15 +133,15 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
                 </div>
 
                 <div className={styles.navCenter}>
-                    {/* --- PONTO DE VARIAÇÃO --- */}
                     {renderBossaNovaTitle()}
                 </div>
 
+                {/* // --- ÁREA CORRIGIDA --- // */}
                 <div className={styles.navRight}>
-                    {/* (Conteúdo idêntico ao RockNav) */}
                     <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
+                    
                     {isAuthenticated && (
-                         <button 
+                        <button 
                             className={`${styles.menuBtn} ${styles.iconOnlyBtn}`}
                             title="Favoritos" 
                             onClick={() => setShowFavorites(true)}
@@ -151,12 +149,20 @@ function BossaNovaNav() { // <-- MUDANÇA 2: Nome da Função
                             <span className="material-symbols-outlined">favorite</span>
                         </button>
                     )}
-                    <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
+                    
+                    {/* Link para o Carrinho */}
+                    <Link to="/cart" title="Carrinho" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <span className="material-symbols-outlined">shopping_cart</span>
+                    </Link>
+
                     {renderUserSection()}
                 </div>
+                {/* // --- FIM DA ÁREA CORRIGIDA --- // */}
+
             </nav>
         </>
     );
 }
 
-export default BossaNovaNav; // <-- MUDANÇA 2 (continuação)
+export default BossaNovaNav;
+// (NÃO HÁ MAIS NADA AQUI)

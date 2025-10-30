@@ -9,6 +9,7 @@ import RockPage from './pages/RockPage.jsx';
 import ProductDetailPage from './pages/ProductDetailPage.jsx';
 import BossaNovaPage from './pages/BossaNovaPage.jsx';
 import JazzBluesPage from './pages/JazzBluesPage.jsx'; // <-- ADICIONADO
+import CartPage from './pages/CartPage.jsx';
 
 // Import Components
 import LiquidGlassSidebar from './components/LiquidGlassSidebar.jsx';
@@ -73,7 +74,7 @@ function App() {
         <Route path="/jazz-blues" element={<JazzBluesPage />} /> {/* <-- ADICIONADO */}
         
         <Route path="/produto/:id" element={<ProductDetailPage />} />
-        
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     </Router>
   ); 
