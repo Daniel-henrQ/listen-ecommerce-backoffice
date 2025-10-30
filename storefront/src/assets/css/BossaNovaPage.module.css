@@ -1,21 +1,19 @@
 /* storefront/src/assets/css/BossaNovaPage.module.css
-   VERSÃO CORRIGIDA:
-   - Aplica o fundo "areia" ao header (breadcrumbs) e ao main (produtos).
-   - Ajusta a cor dos breadcrumbs para ficarem visíveis no fundo areia.
-   - Clareia o texto do rodapé para melhor contraste com a imagem de fundo.
+   VERSÃO CORRIGIDA FINAL (BASEADO NO ROCKPAGE):
+   ✅ Corrige exibição em telas grandes (carrossel flexível)
+   ✅ Mantém visual e paleta Bossa Nova
+   ✅ Compatível com lógica atual da BossaNovaPage.jsx
 */
 
-/* --- MUDANÇA: Adiciona a nova fonte (coloque o arquivo em /assets/fonts/) --- */
+/* --- Fontes --- */
 @font-face {
   font-family: 'SouthPort';
-  /* Verifique se o caminho/nome do arquivo está correto */
   src: url('../fonts/SouthPort.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
-/* --- Font (Mantida do RockPage para fallback) --- */
 @font-face {
   font-family: 'Forgotten Junk';
   src: url('../fonts/Forgotten Junk.ttf') format('truetype');
@@ -24,9 +22,8 @@
   font-display: swap;
 }
 
-/* --- Base Styles & Variables --- */
+/* --- Variáveis --- */
 :root {
-  /* Variáveis antigas mantidas */
   --rock-red: #a31a27;
   --text-light: #e0e0e0;
   --text-medium: #bbb;
@@ -36,181 +33,148 @@
   --transition-med: 0.28s;
   --transition-slow: 0.45s;
 
-  /* --- MUDANÇA: Novas variáveis Bossa Nova --- */
-  /* Substitua estes valores pelos seus corretos */
-  --bossa-sand: #F5EAAA; /* Cor "Areia" */
-  --bossa-green: #009B3A; /* Verde */
-  --bossa-yellow: #FFCC29; /* Amarelo */
-  /* Coloque a imagem em /assets/images/ */
-  --bossa-background-image: url('../images/fundobossa.png'); 
+  --bossa-sand: #F5EAAA;
+  --bossa-green: #009B3A;
+  --bossa-yellow: #FFCC29;
+  --bossa-background-image: url('../images/fundobossa.png');
+  --bossa-content-background: url('../images/areia.png');
 }
 
-/* acessibilidade: reduzir movimento quando preferido */
+/* Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
+  * { transition: none !important; animation: none !important; }
 }
 
-/* --- Global box-sizing */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-/* --- MUDANÇA: Estilo do Conteúdo Principal --- */
-/* Define o fundo "areia" para a área de conteúdo principal */
+/* --- Conteúdo principal --- */
 .pageContent {
+  background-image: var(--bossa-content-background);
   background-color: var(--bossa-sand);
+  background-repeat: repeat;
+  background-position: top left;
   padding-top: 2rem;
   padding-bottom: 2rem;
-  /* --- AJUSTE: Garante que o conteúdo puxe a cor de fundo areia --- */
   position: relative;
   z-index: 1;
 }
 
-/* --- Navigation Bar Specific Styles --- */
+/* --- NAV --- */
 .mainNav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  padding: 2.5rem 3rem;
-  min-height: 100px;
-  color: var(--text-light); /* Texto claro sobre fundo escuro */
-  
-  /* --- MUDANÇA: Fundo Bossa Nova --- */
+  position: absolute; top: 0; left: 0; width: 100%; z-index: 100;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 2.5rem 3rem; min-height: 100px; color: var(--text-light);
   background-image: var(--bossa-background-image);
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-color: var(--bossa-sand); /* Cor de fallback */
-  
+  background-size: cover; background-position: center bottom; background-repeat: no-repeat;
+  background-color: var(--bossa-sand);
   transition: background-color var(--transition-med) ease-in-out, color var(--transition-med) ease-in-out, padding var(--transition-med) ease-in-out, box-shadow var(--transition-med) ease-in-out, min-height var(--transition-med) ease-in-out, background-image var(--transition-med) ease-in-out;
 }
 
 .navIsSticky {
-  position: fixed;
-  padding: 1.5rem 3rem;
-  min-height: 80px;
-  color: var(--text-light); /* Texto claro */
-  
-  /* --- MUDANÇA: Fundo Bossa Nova --- */
-  background-image: var(--bossa-background-image);
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-color: var(--bossa-sand); /* Cor de fallback */
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px);
+  position: fixed; padding: 1.5rem 3rem; min-height: 80px; color: var(--text-light);
+  background-image: var(--bossa-background-image); background-size: cover; background-position: center bottom; background-repeat: no-repeat;
+  background-color: var(--bossa-sand);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px);
   animation: slideDownNav var(--transition-med) ease-in-out;
 }
-
-@keyframes slideDownNav {
-  from { transform: translateY(-100%); }
-  to { transform: translateY(0); }
-}
+@keyframes slideDownNav { from { transform: translateY(-100%); } to { transform: translateY(0); } }
 
 .navLeft { display: flex; align-items: center; gap: 1.5rem; justify-self: start; }
 .navCenter { display: flex; align-items: center; justify-self: center; }
 .navRight { display: flex; align-items: center; justify-self: end; gap: 1rem; }
 
-.menuBtn {
-  display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer;
-}
+.menuBtn { display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer; }
 .menuBtn .material-symbols-outlined { font-size: 1.5rem; }
 
-/* Barra de busca (mantida clara, pois está sobre a nav escura) */
 .searchBar {
-  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
+  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
 }
 .navIsSticky .searchBar { background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
 .searchBar .material-symbols-outlined { color:#eee; font-size:1.3rem; transition: color var(--transition-med); }
-.navIsSticky .searchBar .material-symbols-outlined { color:#ccc; }
 .searchBar input { border:none; outline:none; margin-left:0.5rem; font-size:0.9rem; width:100%; background:none; color:#fff; }
 .searchBar input::placeholder { color:#ccc; }
 
 .navRight a, .navRight button { color:inherit; position:relative; }
 .navRight .material-symbols-outlined { font-size:1.6rem; }
 
-/* --- MUDANÇA: Título Bossa Nova --- */
+/* --- Título BOSSA NOVA --- */
 .navBossaNovaTitle {
-  font-family: 'SouthPort', Impact, sans-serif; /* Nova fonte */
-  font-size: 3.2rem; /* Ajuste o tamanho se necessário */
-  font-weight: normal;
-  margin: 0;
-  line-height: 1;
-  text-transform: uppercase;
-  /* A cor é definida pelos spans internos */
+  font-family: 'SouthPort', Impact, sans-serif;
+  font-size: 3.2rem; font-weight: normal; margin: 0; line-height: 1; text-transform: uppercase;
 }
-/* Estilo para as letras alternadas */
-.navBossaNovaTitle span {
-  display: inline-block;
-}
-.navBossaNovaTitle span:nth-child(odd) {
-  color: var(--bossa-green); /* Cor Verde */
-}
-.navBossaNovaTitle span:nth-child(even) {
-  color: var(--bossa-yellow); /* Cor Amarelo */
-}
+.navBossaNovaTitle span { display: inline-block; }
+.navBossaNovaTitle span:nth-child(odd) { color: var(--bossa-green); }
+.navBossaNovaTitle span:nth-child(even) { color: var(--bossa-yellow); }
 
-/* --- MUDANÇA: Hero Section (Breadcrumbs) --- */
-/* Renomeado de .rockHeroSection para .bossaNovaHeroSection */
-.bossaNovaHeroSection { 
-  padding-top: 140px; 
-  padding-left: 3rem; 
-  padding-right: 3rem; 
-  padding-bottom: 2rem; 
-  position: relative; 
-  z-index: 1; 
-
-  /* --- AJUSTE: Fundo areia e texto escuro para o Hero --- */
-  background-color: var(--bossa-sand); 
-  color: var(--text-dark); 
+/* --- HERO --- */
+.bossaNovaHeroSection {
+  padding-top: 140px; padding-left: 3rem; padding-right: 3rem; padding-bottom: 2rem; position: relative; z-index: 1;
+  background-image: var(--bossa-content-background); background-color: var(--bossa-sand); background-repeat: repeat; background-position: top left;
+  color: var(--text-dark);
 }
 .heroContent { position: relative; }
+.breadcrumbs, .breadcrumbs a { font-size:0.9rem; color:#555; text-shadow:none; text-decoration:none; }
+.breadcrumbs a:hover { color: var(--text-dark); text-decoration:underline; }
 
-/* --- AJUSTE: Cores dos Breadcrumbs para fundo areia --- */
-.breadcrumbs, .breadcrumbs a { 
-  font-size:0.9rem; 
-  color: #555; /* Cor escura (cinza) */
-  text-shadow: none; /* Remove sombra de texto */
-  text-decoration:none; 
+/* --- CAROUSEL (Base ROCK) --- */
+.carouselContainer {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  overflow: hidden;
 }
-.breadcrumbs a:hover { 
-  color: var(--text-dark); /* Cor preta no hover */
-  text-decoration:underline; 
+
+.carouselTrack {
+  display: flex;
+  transition: transform var(--transition-slow) cubic-bezier(.2,.9,.2,1);
 }
 
-/* --- Carousel --- */
-.carouselContainer { position: relative; width: 90%; max-width: 1200px; margin: 30px auto; overflow: hidden; }
-.carouselTrack { display:flex; transition: transform var(--transition-slow) cubic-bezier(.2,.9,.2,1); }
-.carouselSlide { display:flex; justify-content:center; gap:2%; flex-shrink:0; width:100%; }
+.carouselSlide {
+  display: flex;
+  justify-content: center;
+  gap: 2%;
+  flex-shrink: 0;
+  width: 100%;
+  align-items: flex-start;
+}
 
-/* --- MUDANÇA: Product Cards (para fundo "areia") --- */
-/* (Esta seção estava correta, os produtos deveriam aparecer) */
+/* --- PRODUCT CARD (Base ROCK) --- */
 .productCard {
   flex-basis: 32%;
   max-width: 320px;
   box-sizing: border-box;
   background: none;
   border: none;
-  color: var(--text-dark); /* TEXTO ESCURO */
+  color: var(--text-dark);
   text-align: left;
   transition: transform var(--transition-med) ease, box-shadow var(--transition-med) ease;
   will-change: transform;
   position: relative;
   overflow: visible;
 }
-.productCard:hover { transform: scale(1.04); box-shadow: 0 6px 14px rgba(0,0,0,0.15); cursor:pointer; z-index:3; }
+.productCard:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  cursor: pointer;
+  z-index: 3;
+}
 
-.productCardPlaceholder { flex-basis:32%; max-width:320px; box-sizing:border-box; }
-.productImage { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; display:block; transition: transform var(--transition-med) ease-in-out; }
+.productCardPlaceholder {
+  flex-basis: 32%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.productImage {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  transition: transform var(--transition-med) ease-in-out;
+}
 .productCard:hover .productImage { transform: scale(1.05); }
 
 .productInfo {
@@ -225,164 +189,89 @@
 .productTitle { font-size:1.2rem; font-weight:bold; margin-bottom:5px; color: #111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .productArtist { font-size:1rem; color: #444; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .productDescription {
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; font-size:0.9rem; color: #555; line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis;
+  font-size:0.9rem; color: #555; line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
 }
 
-.productPriceContainer {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:5px;
-  gap:8px;
-  min-width:0;
-}
+.productPriceContainer { display:flex; justify-content:space-between; align-items:center; margin-top:5px; gap:8px; min-width:0; }
 .productPrice { font-size:1.1rem; font-weight:bold; color: #222; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 .favoriteButton {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:34px;
-  height:34px;
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  flex-shrink:0;
-  padding:4px;
-  margin:0;
-  border-radius:6px;
-  overflow:hidden;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
+  display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; background:transparent; border:none; cursor:pointer; flex-shrink:0; padding:4px; margin:0; border-radius:6px; overflow:hidden;
+  -webkit-tap-highlight-color: transparent; transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
 }
 .favoriteButton:focus { outline:2px solid rgba(0,0,0,0.12); }
-.favoriteButton .material-symbols-outlined {
-  display:block;
-  line-height:1;
-  font-size:1.4rem;
-  transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease;
-  pointer-events:none;
-}
+.favoriteButton .material-symbols-outlined { display:block; line-height:1; font-size:1.4rem; transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease; pointer-events:none; }
 
-.iconOutline { color: var(--text-dark); opacity:1; } /* Ícone escuro */
+.iconOutline { color: var(--text-dark); opacity:1; }
 .iconFilled { color:#e74c3c; opacity:0; position:absolute; }
 
-.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus {
-  background-color: rgba(0,0,0,0.03); /* Fundo sutil ao passar o mouse */
-}
+.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus { background-color: rgba(0,0,0,0.03); }
 .favoriteButton:hover .iconOutline, .favoriteButton:active .iconOutline, .favoriteButton:focus .iconOutline { opacity:0; transform: scale(0.95); }
 .favoriteButton:hover .iconFilled, .favoriteButton:active .iconFilled, .favoriteButton:focus .iconFilled { opacity:1; transform: scale(1); }
 .favoriteButton.isFavorite .iconOutline { opacity:0; }
 .favoriteButton.isFavorite .iconFilled { opacity:1; }
 
-
-/* --- MUDANÇA: Mensagens de Status (para fundo "areia") --- */
+/* --- Mensagens --- */
 .loadingMessage, .errorMessage, .noProductsMessage {
-  color: var(--text-dark); /* Texto escuro */
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.1rem;
+  color: var(--text-dark);
+  text-align: center; padding: 2rem; font-size: 1.1rem;
 }
 
-
-/* --- MUDANÇA: Carousel Buttons (para fundo "areia") --- */
+/* --- Botões de Carrossel --- */
 .carouselButton {
   position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; width:50px; height:50px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; transition: transform var(--transition-fast) ease;
 }
 .carouselButton:hover { transform: translateY(-50%) scale(1.12); }
-.carouselButton .material-symbols-outlined { 
-  color: var(--text-dark); /* Setas escuras */
-  font-size:2.2rem; 
-  font-weight:bold; 
-  text-shadow:0 1px 3px rgba(0,0,0,0.2); /* Sombra sutil */
-  transition:text-shadow var(--transition-fast); 
-}
-.carouselButton:hover .material-symbols-outlined { 
-  text-shadow:0 0 10px rgba(0,0,0,0.4); 
-}
+.carouselButton .material-symbols-outlined { color: var(--text-dark); font-size:2.2rem; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.2); transition:text-shadow var(--transition-fast); }
+.carouselButton:hover .material-symbols-outlined { text-shadow:0 0 10px rgba(0,0,0,0.4); }
 .prev { left:10px; }
 .next { right:10px; }
 
-
-/* --- MUDANÇA: Footer --- */
-/* Renomeado de .rockFooter para .bossaNovaFooter */
-.bossaNovaFooter { 
-  background-image: var(--bossa-background-image); /* Fundo Bossa Nova */
-  background-color: var(--bossa-sand); /* Fallback */
-  background-size: cover; 
-  background-position: center top; 
-  background-repeat: no-repeat; 
-  padding:2.5rem 2rem 1.5rem; 
-  border-top:1px solid #444; 
-
-  /* --- AJUSTE: Cor de texto base do rodapé clareada --- */
-  color: #e0e0e0; 
+/* --- Footer --- */
+.bossaNovaFooter {
+  background-image: var(--bossa-background-image);
+  background-color: var(--bossa-sand);
+  background-size: cover; background-position: center top; background-repeat: no-repeat;
+  padding:2.5rem 2rem 1.5rem; border-top:1px solid #444; color: #e0e0e0;
 }
 .footerContainer { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:2rem 4rem; width:90%; max-width:1100px; margin:0 auto; }
 
-/* --- AJUSTE: Títulos do rodapé mais claros --- */
-.footerColumn h3 { 
-  font-size:1rem; 
-  font-weight:600; 
-  color: #ffffff; /* Branco puro */
-  margin-bottom:0.8rem; 
-}
+.footerColumn h3 { font-size:1rem; font-weight:600; color: #ffffff; margin-bottom:0.8rem; }
+.footerColumn p, .footerColumn li, .footerColumn li a { font-size:0.9rem; color: #e0e0e0; line-height:1.6; margin-bottom:0.7rem; transition: color 0.2s ease; text-decoration:none; }
+.footerColumn li a:hover { color:#fff; }
 
-/* --- AJUSTE: Texto e links do rodapé mais claros --- */
-.footerColumn p, .footerColumn li, .footerColumn li a { 
-  font-size:0.9rem; 
-  color: #e0e0e0; /* Cor clara */
-  line-height:1.6; 
-  margin-bottom:0.7rem; 
-  transition: color 0.2s ease; 
-  text-decoration:none; 
-}
-.footerColumn li a:hover { color:#fff; } /* Hover branco (OK) */
-
-/* --- AJUSTE: Placeholder do newsletter mais claro --- */
 .newsletterForm input { width:100%; padding:0.6rem 0.8rem; border:1px solid #555; border-radius:4px; background-color: rgba(255,255,255,0.1); color:var(--text-light); font-size:0.9rem; margin-bottom:0.7rem; }
-.newsletterForm input::placeholder { 
-  color: #b0b0b0; /* Cinza mais claro */
-}
-
+.newsletterForm input::placeholder { color: #b0b0b0; }
 .newsletterButton { padding:10px 15px; cursor:pointer; background:var(--rock-red); color:#fff; border:none; border-radius:4px; font-size:0.9rem; transition: background-color 0.2s ease; margin-top:0.3rem; }
 .newsletterButton:hover { background:#c0392b; }
 .footerLogoColumn { display:flex; justify-content:flex-end; align-items:flex-end; }
 .footerLogo { height:30px; width:auto; opacity:0.8; }
 
-/* =========================================================
-   AJUSTES DE RESPONSIVIDADE (Copiados do RockPage)
-   ========================================================= */
-@media (max-width: 1200px) {
-  /* MUDANÇA: seletor de título */
-  .navBossaNovaTitle { font-size: 2.8rem; } 
-}
+/* --- Responsividade --- */
+@media (max-width: 1200px) { .navBossaNovaTitle { font-size: 2.8rem; } }
 
 @media (max-width: 1024px) {
-  .mainNav, .navIsSticky {
-    padding: 1.5rem 2rem;
-  }
-  .navLeft { gap: 1rem; }
-  .navRight { gap: 1.2rem; }
-  .searchBar { width: 200px; }
+  .mainNav, .navIsSticky { padding: 1.5rem 2rem; }
+  .navLeft { gap: 1rem; } .navRight { gap: 1.2rem; } .searchBar { width: 200px; }
+  
   .carouselSlide { gap: 3%; }
   .productCard { flex-basis: 48%; max-width: 48%; }
   .productCardPlaceholder { flex-basis: 48%; max-width: 48%; }
+
+  .carouselTrack { display:flex; align-items:flex-start; }
 }
 
 @media (max-width: 768px) {
-  .mainNav, .navIsSticky {
-    padding: 1.2rem 1.5rem;
-    grid-template-columns: auto 1fr auto;
-  }
-  .searchBar { display: none; }
-  .navCenter { justify-self: center; padding: 0 1rem; }
-  .navRight a[title="Localização"],
-  .navRight a[title="Favoritos"] { display: none; }
-  .navRight { gap: 1rem; }
+  .mainNav, .navIsSticky { padding: 1.2rem 1.5rem; grid-template-columns: auto 1fr auto; }
+  .searchBar { display: none; } .navCenter { justify-self: center; padding: 0 1rem; }
+  .navRight a[title="Localização"], .navRight a[title="Favoritos"] { display: none; }
+  .navRight { gap: 1rem; } 
+  
   .carouselSlide { padding: 0 30px; gap: 0; }
   .productCard { flex-basis: 100%; max-width: 420px; margin: 0 auto; }
   .productCardPlaceholder { display: none; }
+  
   .productCard:hover { transform: scale(1.02); }
   .productCard:hover .productImage { transform: scale(1.03); }
   .favoriteButton { width:30px; height:30px; padding:3px; }
@@ -391,77 +280,29 @@
 }
 
 @media (max-width: 480px) {
-  .mainNav, .navIsSticky {
-    padding: 1rem;
-  }
-  /* MUDANÇA: seletor de título */
-  .navBossaNovaTitle { font-size: 2.2rem; } 
-  .navRight { gap: 0.8rem; }
-  .navRight .material-symbols-outlined { font-size: 1.4rem; }
-  .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
-  .menuBtn { font-size: 0.8rem; }
-  .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
-  .productInfo { padding: 0 6px 6px; }
-  .productTitle { font-size: 0.95rem; }
+  .mainNav, .navIsSticky { padding: 1rem; }
+  .navBossaNovaTitle { font-size: 2.2rem; } .navRight { gap: 0.8rem; }
+  .navRight .material-symbols-outlined { font-size: 1.4rem; } .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn { font-size: 0.8rem; } .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
+  .productInfo { padding: 0 6px 6px; } .productTitle { font-size: 0.95rem; }
   .productArtist, .productDescription, .productPrice { font-size: 0.8rem; }
-  .favoriteButton { width: 26px; height: 26px; }
-  .favoriteButton .material-symbols-outlined { font-size: 1.15rem; }
-  .productCard:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); }
-  .productCard:hover .productImage { transform: none; }
-  .carouselButton { width:40px; height:40px; }
-  .carouselButton .material-symbols-outlined { font-size:1.9rem; }
+  .favoriteButton { width: 26px; height: 26px; } .favoriteButton .material-symbols-outlined { font-size: 1.15rem; }
+  .productCard:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); } .productCard:hover .productImage { transform: none; }
+  .carouselButton { width:40px; height:40px; } .carouselButton .material-symbols-outlined { font-size:1.9rem; }
 }
 
-/* =========================================================
-   AJUSTES DROPDOWN USUÁRIO (Copiados do RockPage)
-   ========================================================= */
+/* --- Dropdown Usuário --- */
 .userAccountContainer { position: relative; display: inline-flex; }
 .iconOnlyBtn { padding:5px; gap:0; background:none; border:none; color:inherit; cursor:pointer; }
 .iconOnlyBtn .material-symbols-outlined { font-size:1.6rem; transition: font-size var(--transition-med); }
-.userDropdownMenu { display:block; position:absolute; top:calc(100% + 10px); right:0; background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; border-radius:6px; min-width:200px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:1010; padding:0.5rem 0; list-style:none; margin:0; animation: fadeInDropdown 0.2s ease-out; }
-@keyframes fadeInDropdown { from { opacity:0; transform: translateY(-5px); } to { opacity:1; transform: translateY(0); } }
-.userDropdownMenu li a, 
-.userDropdownMenu li button.userDropdownLogoutBtn { display:block; width:100%; padding:0.75rem 0.8rem; font-family:'Lato',sans-serif; font-size:0.9rem; color:#555555; transition: background-color 0.2s ease, color 0.2s ease; text-align:left; background:none; border:none; cursor:pointer; text-decoration:none; }
-.userDropdownMenu li a:hover, 
-.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#f5f5f5; color:#111111; }
-.userDropdownSeparator { border-top:1px solid #eeeeee; margin-top:0.5rem; padding-top:0.5rem; }
-.userDropdownMenu li button.userDropdownLogoutBtn { color:#c82333; font-weight:500; }
-.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#fbecec; color:#a31a27; }
+.userDropdownMenu { display:block; position:absolute; top:calc(100% + 10px); right:0; background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); width:220px; z-index:1000; padding:0.5rem 0; }
+.userDropdownMenu ul { list-style:none; margin:0; padding:0; }
+.userDropdownMenu li a, .userDropdownMenu li button {
+  display:block; width:100%; text-align:left; padding:0.8rem 1rem; font-size:0.95rem;
+  color:#333333; background:none; border:none; cursor:pointer; font-family:'Lato',sans-serif;
+}
+.userDropdownMenu li a:hover, .userDropdownMenu li button:hover { background-color:#f2f2f2; }
+.userDropdownSeparator { border-top:1px solid #e0e0e0; margin-top:0.4rem; padding-top:0.4rem; }
+.userDropdownLogoutBtn { color:#c0392b; font-weight:600; }
 
-/* --- Seção final copiada do RockPage (lógica dos favoritos) --- */
-.favoriteButton .iconFilled,
-.detailFavoriteButton .iconFilled {
-  display: none;
-}
-.favoriteButton .iconOutline,
-.detailFavoriteButton .iconOutline {
-  display: inline-block;
-}
-.favoriteButton.isFavorite .iconFilled,
-.detailFavoriteButton.isFavorite .iconFilled {
-  display: inline-block;
-  color: red;
-}
-.favoriteButton.isFavorite .iconOutline,
-.detailFavoriteButton.isFavorite .iconOutline {
-  display: none;
-}
-.mainNav .menuBtn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-.mainNav .menuBtn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
+

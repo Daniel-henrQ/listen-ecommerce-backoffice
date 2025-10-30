@@ -102,6 +102,7 @@ function BossaNovaPage() {
         setIsUserMenuOpen(false);
     };
 
+    // === INÍCIO DA CORREÇÃO DE CLASSES CSS ===
     // --- Render Auth Section (ATUALIZADO) ---
     const renderUserSection = () => {
         const handleIconClick = (event) => {
@@ -110,9 +111,9 @@ function BossaNovaPage() {
             else { setShowAuthModal(true); } 
         };
         return (
-            <div className="user-account-container" ref={userMenuRef}>
+            <div className={styles.userAccountContainer} ref={userMenuRef}>
                 <button
-                    className="menu-btn icon-only-btn"
+                    className={`${styles.menuBtn} ${styles.iconOnlyBtn}`}
                     onClick={handleIconClick}
                     title={isAuthenticated ? `Conta de ${user?.nome}` : "Entrar ou Criar Conta"}
                     aria-haspopup={isAuthenticated ? "true" : "dialog"}
@@ -122,7 +123,7 @@ function BossaNovaPage() {
                     <span className="material-symbols-outlined">account_circle</span>
                 </button>
                 {isAuthenticated && isUserMenuOpen && (
-                    <div className="user-dropdown-menu">
+                    <div className={styles.userDropdownMenu}>
                         <ul>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus pedidos'); setIsUserMenuOpen(false); }}>Meus pedidos</a></li>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Meus dados'); setIsUserMenuOpen(false); }}>Meus dados</a></li>
@@ -130,11 +131,11 @@ function BossaNovaPage() {
                             <li><a href="/politica" target="_blank" onClick={() => setIsUserMenuOpen(false)}>Política de dados</a></li>
 
                             {(user?.role === 'adm' || user?.role === 'vendas') && (
-                                <li className="user-dropdown-separator"><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
+                                <li className={styles.userDropdownSeparator}><a href="/app" onClick={() => setIsUserMenuOpen(false)}>Backoffice</a></li>
                             )}
 
-                            <li className="user-dropdown-separator">
-                                <button onClick={handleLogout} className="user-dropdown-logout-btn">Sair</button>
+                            <li className={styles.userDropdownSeparator}>
+                                <button onClick={handleLogout} className={styles.userDropdownLogoutBtn}>Sair</button>
                             </li>
                         </ul>
                     </div>
@@ -142,21 +143,18 @@ function BossaNovaPage() {
             </div>
         );
     };
+    // === FIM DA CORREÇÃO DE CLASSES CSS ===
 
-    // === INÍCIO DA CORREÇÃO ===
-    // --- Lógica de Carrossel DINÂMICA (Corrigida) ---
-    // A lógica anterior estava (<= 1024) => 1, o que conflitava com o CSS.
-    // Esta lógica agora bate com as regras do CSS (mobile=1, tablet=2, desktop=3)
+
+    // === INÍCIO DA CORREÇÃO DA LÓGICA JS ===
+    // --- Lógica de Carrossel (IDÊNTICA AO ROCKPAGE) ---
     const getProductsPerSlide = () => {
-        if (window.innerWidth <= 768) { // Mobile (bate com flex-basis: 100%)
+        if (window.innerWidth <= 1024) { // Telas menores (tablet e mobile)
             return 1;
         }
-        if (window.innerWidth <= 1024) { // Tablet (bate com flex-basis: 48%)
-            return 2;
-        }
-        return 3; // Desktop (bate com flex-basis: 32%)
+        return 3; // Telas maiores (desktop)
     };
-    // === FIM DA CORREÇÃO ===
+    // === FIM DA CORREÇÃO DA LÓGICA JS ===
 
     const [productsPerSlide, setProductsPerSlide] = useState(getProductsPerSlide());
     const realTotalSlidesRow1 = Math.ceil(productsRow1.length / productsPerSlide);
@@ -249,7 +247,7 @@ function BossaNovaPage() {
             <Link
                 to={`/produto/${product._id}`}
                 key={product._id}
-                className={styles.productCardLink}
+                // className={styles.productCardLink} // Esta classe não existe no CSS, removendo.
             >
                 <div className={styles.productCard}>
                     <img
@@ -356,11 +354,13 @@ function BossaNovaPage() {
                     {/* --- MUDANÇA: Renderiza o título customizado --- */}
                     {renderBossaNovaTitle()}
                 </div>
+                
+                {/* === INÍCIO DA CORREÇÃO DE CLASSES CSS (NAV) === */}
                 <div className={styles.navRight}>
                     <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
                     {isAuthenticated && (
                          <button 
-                            className="menu-btn icon-only-btn"
+                            className={`${styles.menuBtn} ${styles.iconOnlyBtn}`}
                             title="Favoritos" 
                             onClick={() => setShowFavorites(true)}
                             style={{ color: 'white' }} 
@@ -371,6 +371,7 @@ function BossaNovaPage() {
                     <a href="#" title="Carrinho"><span className="material-symbols-outlined">shopping_cart</span></a>
                     {renderUserSection()}
                 </div>
+                {/* === FIM DA CORREÇÃO DE CLASSES CSS (NAV) === */}
             </nav>
 
             {/* --- Header Section (Breadcrumbs) --- */}
