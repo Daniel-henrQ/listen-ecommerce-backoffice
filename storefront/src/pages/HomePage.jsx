@@ -222,7 +222,7 @@ function HomePage({ onOpenSidebar }) {
                           <h3>Categorias</h3>
                           <ul>
                             <li><Link to="/rock">Rock</Link></li>
-                             <li><Link to="/bossa-nova">Bossa nova</Link></li> {/* Atualizar links depois */}
+                             <li><Link to="/bossa-nova-clone">Bossa nova</Link></li> {/* Atualizar links depois */}
                              <li><Link to="/jazz-blues">Jazz e Blues</Link></li> {/* Atualizar links depois */}
                               <li><Link to="/pop">Pop</Link></li> {/* Atualizar links depois */}
                           </ul>

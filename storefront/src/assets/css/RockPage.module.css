@@ -124,6 +124,10 @@
 .carouselTrack { display:flex; transition: transform var(--transition-slow) cubic-bezier(.2,.9,.2,1); }
 .carouselSlide { display:flex; justify-content:center; gap:2%; flex-shrink:0; width:100%; }
 
+.productLink {
+  display: contents; /* Faz o .productCard agir como filho direto do .carouselSlide */
+  text-decoration: none; /* Garante que os cards não fiquem sublinhados */
+}
 /* --- Product Cards --- */
 .productCard {
   flex-basis: 32%;

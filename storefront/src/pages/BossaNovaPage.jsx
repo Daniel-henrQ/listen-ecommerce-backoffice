@@ -145,16 +145,15 @@ function BossaNovaPage() {
     };
     // === FIM DA CORREÇÃO DE CLASSES CSS ===
 
-
-    // === INÍCIO DA CORREÇÃO DA LÓGICA JS ===
-    // --- Lógica de Carrossel (IDÊNTICA AO ROCKPAGE) ---
-    const getProductsPerSlide = () => {
-        if (window.innerWidth <= 1024) { // Telas menores (tablet e mobile)
-            return 1;
-        }
-        return 3; // Telas maiores (desktop)
-    };
-    // === FIM DA CORREÇÃO DA LÓGICA JS ===
+const getProductsPerSlide = () => {
+    if (window.innerWidth <= 768) { // Mobile
+        return 1;
+    }
+    if (window.innerWidth <= 1024) { // Tablet
+        return 2;
+    }
+    return 3; // Desktop (Telas maiores)
+};
 
     const [productsPerSlide, setProductsPerSlide] = useState(getProductsPerSlide());
     const realTotalSlidesRow1 = Math.ceil(productsRow1.length / productsPerSlide);
@@ -247,7 +246,7 @@ function BossaNovaPage() {
             <Link
                 to={`/produto/${product._id}`}
                 key={product._id}
-                // className={styles.productCardLink} // Esta classe não existe no CSS, removendo.
+                className={styles.productLink}
             >
                 <div className={styles.productCard}>
                     <img

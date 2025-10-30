@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage.jsx';
 import RockPage from './pages/RockPage.jsx';
 import ProductDetailPage from './pages/ProductDetailPage.jsx';
 import BossaNovaPage from './pages/BossaNovaPage.jsx';
+import BossaNovaClonePage from './pages/BossaNovaClonePage.jsx';  
 
 // Import Components
 import LiquidGlassSidebar from './components/LiquidGlassSidebar.jsx';
@@ -73,6 +74,7 @@ function App() {
         
         {/* Adicione as outras rotas aqui */}
          <Route path="/bossa-nova" element={<BossaNovaPage />} />
+          <Route path="/bossa-nova-clone" element={<BossaNovaClonePage />} />
         {/* <Route path="/jazz-blues" element={<JazzBluesPage />} /> */}
         {/* <Route path="/pop" element={<PopPage />} /> */}
       </Routes>

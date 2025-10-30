@@ -1,19 +1,12 @@
-/* storefront/src/assets/css/BossaNovaPage.module.css
-   VERSÃO CORRIGIDA FINAL (BASEADO NO ROCKPAGE):
-   ✅ Corrige exibição em telas grandes (carrossel flexível)
-   ✅ Mantém visual e paleta Bossa Nova
-   ✅ Compatível com lógica atual da BossaNovaPage.jsx
+/* storefront/src/assets/css/RockPage.module.css
+
+   Versão corrigida: ajustes de responsividade DA NAV (baseado na Home)
+   e manutenção das correções do ícone de coração e outras otimizações.
+   
+   Ajuste final: Sincronização do padding e animação do dropdown com a HomePage.
 */
 
-/* --- Fontes --- */
-@font-face {
-  font-family: 'SouthPort';
-  src: url('../fonts/SouthPort.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* --- Font --- */
 @font-face {
   font-family: 'Forgotten Junk';
   src: url('../fonts/Forgotten Junk.ttf') format('truetype');
@@ -22,7 +15,7 @@
   font-display: swap;
 }
 
-/* --- Variáveis --- */
+/* --- Base Styles & Variables --- */
 :root {
   --rock-red: #a31a27;
   --text-light: #e0e0e0;
@@ -32,277 +25,457 @@
   --transition-fast: 0.18s;
   --transition-med: 0.28s;
   --transition-slow: 0.45s;
-
-  --bossa-sand: #F5EAAA;
-  --bossa-green: #009B3A;
-  --bossa-yellow: #FFCC29;
-  --bossa-background-image: url('../images/fundobossa.png');
-  --bossa-content-background: url('../images/areia.png');
 }
 
-/* Acessibilidade */
+/* acessibilidade: reduzir movimento quando preferido */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
-/* --- Conteúdo principal --- */
-.pageContent {
-  background-image: var(--bossa-content-background);
-  background-color: var(--bossa-sand);
-  background-repeat: repeat;
-  background-position: top left;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  position: relative;
-  z-index: 1;
+/* --- Global box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* --- NAV --- */
+/* --- Navigation Bar Specific Styles --- */
 .mainNav {
-  position: absolute; top: 0; left: 0; width: 100%; z-index: 100;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  padding: 2.5rem 3rem; min-height: 100px; color: var(--text-light);
-  background-image: var(--bossa-background-image);
-  background-size: cover; background-position: center bottom; background-repeat: no-repeat;
-  background-color: var(--bossa-sand);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 2.5rem 3rem;
+  min-height: 100px;
+  color: var(--text-light);
+  background-image: url('../images/fundorock.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-color: var(--background-dark);
   transition: background-color var(--transition-med) ease-in-out, color var(--transition-med) ease-in-out, padding var(--transition-med) ease-in-out, box-shadow var(--transition-med) ease-in-out, min-height var(--transition-med) ease-in-out, background-image var(--transition-med) ease-in-out;
 }
 
 .navIsSticky {
-  position: fixed; padding: 1.5rem 3rem; min-height: 80px; color: var(--text-light);
-  background-image: var(--bossa-background-image); background-size: cover; background-position: center bottom; background-repeat: no-repeat;
-  background-color: var(--bossa-sand);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); backdrop-filter: blur(5px);
+  position: fixed;
+  padding: 1.5rem 3rem;
+  min-height: 80px;
+  color: var(--text-light);
+  background-image: url('../images/fundorock.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-color: var(--background-dark);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
   animation: slideDownNav var(--transition-med) ease-in-out;
 }
-@keyframes slideDownNav { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+
+@keyframes slideDownNav {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
 
 .navLeft { display: flex; align-items: center; gap: 1.5rem; justify-self: start; }
 .navCenter { display: flex; align-items: center; justify-self: center; }
 .navRight { display: flex; align-items: center; justify-self: end; gap: 1rem; }
 
-.menuBtn { display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer; }
+.menuBtn {
+  display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer;
+}
 .menuBtn .material-symbols-outlined { font-size: 1.5rem; }
 
 .searchBar {
-  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
+  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
 }
 .navIsSticky .searchBar { background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
 .searchBar .material-symbols-outlined { color:#eee; font-size:1.3rem; transition: color var(--transition-med); }
+.navIsSticky .searchBar .material-symbols-outlined { color:#ccc; }
 .searchBar input { border:none; outline:none; margin-left:0.5rem; font-size:0.9rem; width:100%; background:none; color:#fff; }
 .searchBar input::placeholder { color:#ccc; }
 
 .navRight a, .navRight button { color:inherit; position:relative; }
 .navRight .material-symbols-outlined { font-size:1.6rem; }
 
-/* --- Título BOSSA NOVA --- */
-.navBossaNovaTitle {
-  font-family: 'SouthPort', Impact, sans-serif;
-  font-size: 3.2rem; font-weight: normal; margin: 0; line-height: 1; text-transform: uppercase;
+.navRockTitle {
+  font-family: 'Forgotten Junk', Impact, sans-serif;
+  font-size: 3.5rem;
+  font-weight: normal;
+  color: inherit;
+  margin: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: color var(--transition-med);
 }
-.navBossaNovaTitle span { display: inline-block; }
-.navBossaNovaTitle span:nth-child(odd) { color: var(--bossa-green); }
-.navBossaNovaTitle span:nth-child(even) { color: var(--bossa-yellow); }
 
-/* --- HERO --- */
-.bossaNovaHeroSection {
-  padding-top: 140px; padding-left: 3rem; padding-right: 3rem; padding-bottom: 2rem; position: relative; z-index: 1;
-  background-image: var(--bossa-content-background); background-color: var(--bossa-sand); background-repeat: repeat; background-position: top left;
-  color: var(--text-dark);
-}
+/* --- Rock Hero Section --- */
+.rockHeroSection { padding-top: 140px; padding-left: 3rem; padding-right: 3rem; padding-bottom: 2rem; background-color: transparent; position: relative; z-index: 1; color: var(--text-light); }
 .heroContent { position: relative; }
-.breadcrumbs, .breadcrumbs a { font-size:0.9rem; color:#555; text-shadow:none; text-decoration:none; }
-.breadcrumbs a:hover { color: var(--text-dark); text-decoration:underline; }
+.breadcrumbs, .breadcrumbs a { font-size:0.9rem; color:var(--text-medium); text-shadow:1px 1px 2px rgba(0,0,0,0.7); text-decoration:none; }
+.breadcrumbs a:hover { color:var(--text-light); text-decoration:underline; }
 
-/* --- CAROUSEL (Base ROCK) --- */
-.carouselContainer {
-  position: relative;
-  width: 90%;
-  max-width: 1200px;
-  margin: 30px auto;
-  overflow: hidden;
+/* --- Carousel --- */
+.carouselContainer { position: relative; width: 90%; max-width: 1200px; margin: 30px auto; overflow: hidden; }
+.carouselTrack { display:flex; transition: transform var(--transition-slow) cubic-bezier(.2,.9,.2,1); }
+.carouselSlide { display:flex; justify-content:center; gap:2%; flex-shrink:0; width:100%; }
+
+.productLink {
+  display: contents; /* Faz o .productCard agir como filho direto do .carouselSlide */
+  text-decoration: none; /* Garante que os cards não fiquem sublinhados */
 }
-
-.carouselTrack {
-  display: flex;
-  transition: transform var(--transition-slow) cubic-bezier(.2,.9,.2,1);
-}
-
-.carouselSlide {
-  display: flex;
-  justify-content: center;
-  gap: 2%;
-  flex-shrink: 0;
-  width: 100%;
-  align-items: flex-start;
-}
-
-/* --- PRODUCT CARD (Base ROCK) --- */
+/* --- Product Cards --- */
 .productCard {
   flex-basis: 32%;
   max-width: 320px;
   box-sizing: border-box;
   background: none;
   border: none;
-  color: var(--text-dark);
+  color: #fff;
   text-align: left;
   transition: transform var(--transition-med) ease, box-shadow var(--transition-med) ease;
   will-change: transform;
   position: relative;
-  overflow: visible;
+  overflow: visible; /* garante que badges/ícones possam ser exibidos sem cortar */
 }
-.productCard:hover {
-  transform: scale(1.04);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-  cursor: pointer;
-  z-index: 3;
-}
+.productCard:hover { transform: scale(1.04); box-shadow: 0 6px 14px rgba(0,0,0,0.4); cursor:pointer; z-index:3; }
 
-.productCardPlaceholder {
-  flex-basis: 32%;
-  max-width: 320px;
-  box-sizing: border-box;
-}
-
-.productImage {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-  transition: transform var(--transition-med) ease-in-out;
-}
+.productCardPlaceholder { flex-basis:32%; max-width:320px; box-sizing:border-box; }
+.productImage { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; display:block; transition: transform var(--transition-med) ease-in-out; }
 .productCard:hover .productImage { transform: scale(1.05); }
 
+/* --- Ajuste aplicado aqui: mantém contexto para ícones e infos --- */
 .productInfo {
   padding: 0 10px 10px;
-  position: relative;
+  position: relative; /* contexto para posicionamento interno */
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.productTitle { font-size:1.2rem; font-weight:bold; margin-bottom:5px; color: #111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.productArtist { font-size:1rem; color: #444; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.productTitle { font-size:1.2rem; font-weight:bold; margin-bottom:5px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.productArtist { font-size:1rem; color:#ccc; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .productDescription {
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis;
-  font-size:0.9rem; color: #555; line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; font-size:0.9rem; color:var(--text-medium); line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
 }
 
-.productPriceContainer { display:flex; justify-content:space-between; align-items:center; margin-top:5px; gap:8px; min-width:0; }
-.productPrice { font-size:1.1rem; font-weight:bold; color: #222; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* --- Coração corrigido: estrutura estável, sem 'position:absolute' que quebre layout.
+   Usamos inline-flex para centralizar, overflow hidden para evitar que o ícone "escape",
+   e transições controladas. */
+.productPriceContainer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:5px;
+  gap:8px;
+  min-width:0;
+}
+.productPrice { font-size:1.1rem; font-weight:bold; color:#fff; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 .favoriteButton {
-  display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; background:transparent; border:none; cursor:pointer; flex-shrink:0; padding:4px; margin:0; border-radius:6px; overflow:hidden;
-  -webkit-tap-highlight-color: transparent; transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  flex-shrink:0;
+  padding:4px;
+  margin:0;
+  border-radius:6px;
+  overflow:hidden; /* evita overflow do ícone */
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
 }
-.favoriteButton:focus { outline:2px solid rgba(0,0,0,0.12); }
-.favoriteButton .material-symbols-outlined { display:block; line-height:1; font-size:1.4rem; transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease; pointer-events:none; }
 
-.iconOutline { color: var(--text-dark); opacity:1; }
+/* reduz o crescimento do botão quando ativo/hover em telas menores */
+.favoriteButton:focus { outline:2px solid rgba(255,255,255,0.12); }
+
+.favoriteButton .material-symbols-outlined {
+  /* elemento único — controlamos trocas de estado via classes JS (iconOutline/iconFilled) */
+  display:block;
+  line-height:1;
+  font-size:1.4rem;
+  transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease;
+  pointer-events:none; /* clique é no botão, não no ícone */
+}
+
+/* Estado iniciais */
+.iconOutline { color:#fff; opacity:1; }
 .iconFilled { color:#e74c3c; opacity:0; position:absolute; }
 
-.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus { background-color: rgba(0,0,0,0.03); }
-.favoriteButton:hover .iconOutline, .favoriteButton:active .iconOutline, .favoriteButton:focus .iconOutline { opacity:0; transform: scale(0.95); }
-.favoriteButton:hover .iconFilled, .favoriteButton:active .iconFilled, .favoriteButton:focus .iconFilled { opacity:1; transform: scale(1); }
-.favoriteButton.isFavorite .iconOutline { opacity:0; }
-.favoriteButton.isFavorite .iconFilled { opacity:1; }
-
-/* --- Mensagens --- */
-.loadingMessage, .errorMessage, .noProductsMessage {
-  color: var(--text-dark);
-  text-align: center; padding: 2rem; font-size: 1.1rem;
+/* Ao interagir (hover no desktop / active no touch) — trocável também por JS para manter estado) */
+.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus {
+  background-color: rgba(255,255,255,0.03);
 }
 
-/* --- Botões de Carrossel --- */
+/* trocas visuais — usamos combinadores para touch/keyboard também */
+.favoriteButton:hover .iconOutline, .favoriteButton:active .iconOutline, .favoriteButton:focus .iconOutline { opacity:0; transform: scale(0.95); }
+.favoriteButton:hover .iconFilled, .favoriteButton:active .iconFilled, .favoriteButton:focus .iconFilled { opacity:1; transform: scale(1); }
+
+/* quando o botão estiver marcado (ex.: .is-favorited adicionado via JS) mantenha o ícone preenchido */
+.favoriteButton.is-favorited .iconOutline { opacity:0; }
+.favoriteButton.is-favorited .iconFilled { opacity:1; }
+
+/* --- Carousel Buttons --- */
 .carouselButton {
   position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:none; width:50px; height:50px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; transition: transform var(--transition-fast) ease;
 }
 .carouselButton:hover { transform: translateY(-50%) scale(1.12); }
-.carouselButton .material-symbols-outlined { color: var(--text-dark); font-size:2.2rem; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.2); transition:text-shadow var(--transition-fast); }
-.carouselButton:hover .material-symbols-outlined { text-shadow:0 0 10px rgba(0,0,0,0.4); }
+.carouselButton .material-symbols-outlined { color:white; font-size:2.2rem; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.6); transition:text-shadow var(--transition-fast); }
+.carouselButton:hover .material-symbols-outlined { text-shadow:0 0 10px rgba(255,255,255,0.9); }
 .prev { left:10px; }
 .next { right:10px; }
 
 /* --- Footer --- */
-.bossaNovaFooter {
-  background-image: var(--bossa-background-image);
-  background-color: var(--bossa-sand);
-  background-size: cover; background-position: center top; background-repeat: no-repeat;
-  padding:2.5rem 2rem 1.5rem; border-top:1px solid #444; color: #e0e0e0;
-}
+.rockFooter { background-image: url('../images/fundorock.png'); background-color: var(--background-dark); background-size: cover; background-position: center top; background-repeat: no-repeat; padding:2.5rem 2rem 1.5rem; color:var(--text-medium); border-top:1px solid #444; }
 .footerContainer { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:2rem 4rem; width:90%; max-width:1100px; margin:0 auto; }
-
-.footerColumn h3 { font-size:1rem; font-weight:600; color: #ffffff; margin-bottom:0.8rem; }
-.footerColumn p, .footerColumn li, .footerColumn li a { font-size:0.9rem; color: #e0e0e0; line-height:1.6; margin-bottom:0.7rem; transition: color 0.2s ease; text-decoration:none; }
+.footerColumn h3 { font-size:1rem; font-weight:600; color:var(--text-light); margin-bottom:0.8rem; }
+.footerColumn p, .footerColumn li, .footerColumn li a { font-size:0.9rem; color:var(--text-medium); line-height:1.6; margin-bottom:0.7rem; transition: color 0.2s ease; text-decoration:none; }
 .footerColumn li a:hover { color:#fff; }
-
 .newsletterForm input { width:100%; padding:0.6rem 0.8rem; border:1px solid #555; border-radius:4px; background-color: rgba(255,255,255,0.1); color:var(--text-light); font-size:0.9rem; margin-bottom:0.7rem; }
-.newsletterForm input::placeholder { color: #b0b0b0; }
+.newsletterForm input::placeholder { color:#888; }
 .newsletterButton { padding:10px 15px; cursor:pointer; background:var(--rock-red); color:#fff; border:none; border-radius:4px; font-size:0.9rem; transition: background-color 0.2s ease; margin-top:0.3rem; }
 .newsletterButton:hover { background:#c0392b; }
 .footerLogoColumn { display:flex; justify-content:flex-end; align-items:flex-end; }
 .footerLogo { height:30px; width:auto; opacity:0.8; }
 
-/* --- Responsividade --- */
-@media (max-width: 1200px) { .navBossaNovaTitle { font-size: 2.8rem; } }
+/* =========================================================
+   AJUSTES DE RESPONSIVIDADE DA NAV
+   ========================================================= */
+@media (max-width: 1200px) {
+  .navRockTitle { font-size: 3rem; }
+}
 
 @media (max-width: 1024px) {
-  .mainNav, .navIsSticky { padding: 1.5rem 2rem; }
-  .navLeft { gap: 1rem; } .navRight { gap: 1.2rem; } .searchBar { width: 200px; }
-  
+  /* --- Ajustes NAV --- */
+  .mainNav, .navIsSticky {
+    padding: 1.5rem 2rem;
+  }
+  .navLeft { gap: 1rem; }
+  .navRight { gap: 1.2rem; }
+  .searchBar { width: 200px; }
+
+  /* --- Ajustes Carousel (originais) --- */
   .carouselSlide { gap: 3%; }
   .productCard { flex-basis: 48%; max-width: 48%; }
   .productCardPlaceholder { flex-basis: 48%; max-width: 48%; }
-
-  .carouselTrack { display:flex; align-items:flex-start; }
 }
 
 @media (max-width: 768px) {
-  .mainNav, .navIsSticky { padding: 1.2rem 1.5rem; grid-template-columns: auto 1fr auto; }
-  .searchBar { display: none; } .navCenter { justify-self: center; padding: 0 1rem; }
-  .navRight a[title="Localização"], .navRight a[title="Favoritos"] { display: none; }
-  .navRight { gap: 1rem; } 
-  
+  /* --- Ajustes NAV --- */
+  .mainNav, .navIsSticky {
+    padding: 1.2rem 1.5rem;
+    grid-template-columns: auto 1fr auto; /* Centraliza logo */
+  }
+  .searchBar { display: none; } /* Esconde busca */
+  .navCenter { justify-self: center; padding: 0 1rem; }
+  /* Esconde ícones específicos */
+  .navRight a[title="Localização"],
+  .navRight a[title="Favoritos"] { display: none; }
+  .navRight { gap: 1rem; }
+
+
+  /* --- Ajustes Carousel (originais) --- */
   .carouselSlide { padding: 0 30px; gap: 0; }
   .productCard { flex-basis: 100%; max-width: 420px; margin: 0 auto; }
   .productCardPlaceholder { display: none; }
-  
+
+  /* suavizar 'grow' em telas menores */
   .productCard:hover { transform: scale(1.02); }
   .productCard:hover .productImage { transform: scale(1.03); }
+
+  /* diminuir tamanho do botão de favorito e do ícone */
   .favoriteButton { width:30px; height:30px; padding:3px; }
   .favoriteButton .material-symbols-outlined { font-size:1.3rem; }
+
+  /* tornar transições um pouco mais curtas para parecer mais responsivo */
   :root { --transition-med: 0.22s; --transition-fast: 0.14s; }
 }
 
 @media (max-width: 480px) {
-  .mainNav, .navIsSticky { padding: 1rem; }
-  .navBossaNovaTitle { font-size: 2.2rem; } .navRight { gap: 0.8rem; }
-  .navRight .material-symbols-outlined { font-size: 1.4rem; } .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
-  .menuBtn { font-size: 0.8rem; } .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
-  .productInfo { padding: 0 6px 6px; } .productTitle { font-size: 0.95rem; }
+  /* --- Ajustes NAV --- */
+  .mainNav, .navIsSticky {
+    padding: 1rem;
+  }
+  .navRockTitle { font-size: 2.6rem; } /* Mantém o H1 da RockPage */
+  .navRight { gap: 0.8rem; }
+  .navRight .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn { font-size: 0.8rem; }
+  /* Garante que o ícone de usuário também diminua */
+  .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
+
+
+  /* --- Ajustes Carousel (originais) --- */
+  .productInfo { padding: 0 6px 6px; }
+  .productTitle { font-size: 0.95rem; }
   .productArtist, .productDescription, .productPrice { font-size: 0.8rem; }
-  .favoriteButton { width: 26px; height: 26px; } .favoriteButton .material-symbols-outlined { font-size: 1.15rem; }
-  .productCard:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); } .productCard:hover .productImage { transform: none; }
-  .carouselButton { width:40px; height:40px; } .carouselButton .material-symbols-outlined { font-size:1.9rem; }
+  .favoriteButton { width: 26px; height: 26px; }
+  .favoriteButton .material-symbols-outlined { font-size: 1.15rem; }
+
+  /* reduzir ainda mais o crescimento do card no hover (praticamente nulo) */
+  .productCard:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,0.25); }
+  .productCard:hover .productImage { transform: none; }
+
+  /* carousel buttons menores */
+  .carouselButton { width:40px; height:40px; }
+  .carouselButton .material-symbols-outlined { font-size:1.9rem; }
 }
 
-/* --- Dropdown Usuário --- */
-.userAccountContainer { position: relative; display: inline-flex; }
-.iconOnlyBtn { padding:5px; gap:0; background:none; border:none; color:inherit; cursor:pointer; }
-.iconOnlyBtn .material-symbols-outlined { font-size:1.6rem; transition: font-size var(--transition-med); }
-.userDropdownMenu { display:block; position:absolute; top:calc(100% + 10px); right:0; background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); width:220px; z-index:1000; padding:0.5rem 0; }
-.userDropdownMenu ul { list-style:none; margin:0; padding:0; }
-.userDropdownMenu li a, .userDropdownMenu li button {
-  display:block; width:100%; text-align:left; padding:0.8rem 1rem; font-size:0.95rem;
-  color:#333333; background:none; border:none; cursor:pointer; font-family:'Lato',sans-serif;
+/* =========================================================
+   AJUSTES DROPDOWN USUÁRIO (PARA IGUALAR À HOME)
+   ========================================================= */
+.userAccountContainer { /* --- AJUSTE: Renomeado de .user-account-container --- */
+  position: relative; 
+  display: inline-flex; 
 }
-.userDropdownMenu li a:hover, .userDropdownMenu li button:hover { background-color:#f2f2f2; }
-.userDropdownSeparator { border-top:1px solid #e0e0e0; margin-top:0.4rem; padding-top:0.4rem; }
-.userDropdownLogoutBtn { color:#c0392b; font-weight:600; }
+
+.iconOnlyBtn { /* --- AJUSTE: Renomeado de .icon-only-btn --- */
+  padding:5px; 
+  gap:0; 
+  background:none; 
+  border:none; 
+  color:inherit; 
+  cursor:pointer; 
+}
+.iconOnlyBtn .material-symbols-outlined { /* --- AJUSTE: Renomeado de .icon-only-btn --- */
+  font-size:1.6rem; 
+  transition: font-size var(--transition-med); 
+}
+
+.userDropdownMenu { /* --- AJUSTE: Renomeado de .user-dropdown-menu --- */
+  display:block; 
+  position:absolute; 
+  top:calc(100% + 10px); 
+  right:0; 
+  background-color:#ffffff; 
+  color:#333333; 
+  border:1px solid #e0e0e0; 
+  border-radius:6px; 
+  min-width:200px; 
+  box-shadow:0 4px 12px rgba(0,0,0,0.1); 
+  z-index:1010; 
+  padding:0.5rem 0; 
+  list-style:none; 
+  margin:0; 
+  animation: fadeInDropdown 0.2s ease-out; /* AJUSTE: Duração da animação 0.2s (era 0.18s) */
+}
+
+@keyframes fadeInDropdown { 
+  from { opacity:0; transform: translateY(-5px); } 
+  to { opacity:1; transform: translateY(0); } 
+}
+
+.userDropdownMenu li a, 
+.userDropdownMenu li button.userDropdownLogoutBtn { /* --- AJUSTE: Renomeado de .user-dropdown-menu e .user-dropdown-logout-btn --- */
+  display:block; 
+  width:100%; 
+  padding:0.75rem 0.8rem; /* AJUSTE: Padding 0.8rem (era 1rem) para igualar à Home */
+  font-family:'Lato',sans-serif; 
+  font-size:0.9rem; 
+  color:#555555; 
+  transition: background-color 0.2s ease, color 0.2s ease; 
+  text-align:left; 
+  background:none; 
+  border:none; 
+  cursor:pointer; 
+  text-decoration:none; 
+}
+
+.userDropdownMenu li a:hover, 
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { /* --- AJUSTE: Renomeado --- */
+  background-color:#f5f5f5; 
+  color:#111111; 
+}
+
+.userDropdownSeparator { /* --- AJUSTE: Renomeado de .user-dropdown-separator --- */
+  border-top:1px solid #eeeeee; 
+  margin-top:0.5rem; 
+  padding-top:0.5rem; 
+}
+
+.userDropdownMenu li button.userDropdownLogoutBtn { /* --- AJUSTE: Renomeado --- */
+  color:#c82333; 
+  font-weight:500; 
+}
+
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { /* --- AJUSTE: Renomeado --- */
+  background-color:#fbecec; 
+  color:#a31a27; 
+}
+/* Adicione isto em:
+  - storefront/src/assets/css/RockPage.module.css 
+  - storefront/src/assets/css/ProductDetailPage.module.css 
+*/
+
+/* Seu código existente já tem .iconOutline e .iconFilled.
+  Esta classe .isFavorite vai usá-los para inverter o ícone.
+*/
+
+.favoriteButton .iconFilled,
+.detailFavoriteButton .iconFilled {
+  display: none; /* Esconde o preenchido por padrão */
+}
+
+.favoriteButton .iconOutline,
+.detailFavoriteButton .iconOutline {
+  display: inline-block; /* Mostra o contorno por padrão */
+}
+
+/* Quando o botão tiver a classe .isFavorite (adicionada via React) */
+.favoriteButton.isFavorite .iconFilled,
+.detailFavoriteButton.isFavorite .iconFilled {
+  display: inline-block; /* Mostra o preenchido */
+  color: red; /* Opcional: força a cor vermelha */
+}
+
+.favoriteButton.isFavorite .iconOutline,
+.detailFavoriteButton.isFavorite .iconOutline {
+  display: none; /* Esconde o contorno */
+}
+
+/* Adicione isso ao ProductDetailPage.module.css para o botão da nav */
+.mainNav .menuBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.mainNav .menuBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Adicione isso ao RockPage.module.css para o botão da nav */
+.mainNav .menuBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.mainNav .menuBtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
 
 
