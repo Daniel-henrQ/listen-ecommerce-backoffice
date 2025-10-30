@@ -10,6 +10,7 @@ import LiquidGlassSidebar from '../components/LiquidGlassSidebar';
 import AuthModal from '../components/AuthModal';
 import FavoritesPopup from '../components/FavoritesPopup';
 import QuantitySelector from '../components/QuantitySelector.jsx';
+import { FaHeart, FaTruck, FaShieldAlt } from 'react-icons/fa';
 
 // --- Imports DOS FOOTERS DINÂMICOS (Lógica V2) ---
 import RockFooter from '../components/RockFooter';
@@ -17,7 +18,7 @@ import BossaNovaFooter from '../components/BossaNovaFooter';
 import JazzBluesFooter from '../components/JazzBluesFooter';
 
 // <<< 1. LÓGICA INCORPORADA (V1) - IMPORTAR O CONTEXTO DO CARRINHO >>>
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../context/CartContext';
 
 // --- Caminho do logo ---
 const logoWhitePath = '/listen-white.svg';
@@ -36,7 +37,7 @@ const getDynamicConfig = (genreString) => {
       FooterComponent: BossaNovaFooter,
     };
   }
-  
+
   // Se incluir "jazz", usa o tema Jazz
   if (lowerGenre.includes('jazz')) {
     return {
@@ -44,7 +45,7 @@ const getDynamicConfig = (genreString) => {
       FooterComponent: JazzBluesFooter,
     };
   }
-  
+
   // Caso contrário, usa o tema Rock
   return {
     pageClass: styles.rockPage,
@@ -61,15 +62,15 @@ const ProductDetailPage = () => {
   const { id } = useParams();
 
   // --- State e Lógica de Layout (Lógica V2) ---
-  const { 
-      user, 
-      logout, 
-      favorites,
-      addFavorite,
-      removeFavorite,
-      isAuthenticated,
-      showAuthModal,
-      setShowAuthModal
+  const {
+    user,
+    logout,
+    favorites,
+    addFavorite,
+    removeFavorite,
+    isAuthenticated,
+    showAuthModal,
+    setShowAuthModal
   } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isNavSticky, setIsNavSticky] = useState(false);
@@ -87,8 +88,8 @@ const ProductDetailPage = () => {
     const fetchProductData = async () => {
       setLoading(true);
       setError(null);
-      setRelatedProducts([]); 
-      
+      setRelatedProducts([]);
+
       try {
         const response = await api.get(`/produtos/${id}`);
         const mainProduct = response.data;
@@ -141,35 +142,29 @@ const ProductDetailPage = () => {
 
   // Lógica de Favoritos (Lógica V2)
   const handleToggleFavorite = (e, produtoId) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      if (!isAuthenticated) { 
-          setShowAuthModal(true);
-          return;
-      }
-      
-      const isFavorito = favorites?.some(fav => fav._id === produtoId);
-      if (isFavorito) {
-          removeFavorite(produtoId);
-      } else {
-          addFavorite(produtoId);
-      }
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    const isFavorito = favorites?.some(fav => fav._id === produtoId);
+    if (isFavorito) {
+      removeFavorite(produtoId);
+    } else {
+      addFavorite(produtoId);
+    }
   };
 
   // <<< 3. LÓGICA INCORPORADA (V1) - HANDLERS PARA QUANTIDADE E CARRINHO >>>
-  // Função para controlar o seletor de quantidade
-  const handleQuantityChange = (amount) => {
-    // Garante que a quantidade não seja menor que 1
-    setQuantity(prev => Math.max(1, prev + amount)); 
-  };
-
   // Função para adicionar ao carrinho
   const handleAddToCart = () => {
     if (product) {
       // Chama a função do contexto com o produto (da API) e a quantidade (do estado)
       addToCart(product, quantity);
-      
+
       // (Opcional) Mostra um feedback para o usuário
       alert(`${quantity} "${product.nome}" adicionado(s) ao carrinho!`);
     }
@@ -179,7 +174,6 @@ const ProductDetailPage = () => {
 
   // Render Functions (Lógica V2)
   const renderUserSection = () => {
-    // ... (Seu código de renderUserSection sem alteração) ...
     const handleIconClick = (event) => {
       event.stopPropagation();
       if (isAuthenticated) { setIsUserMenuOpen(prev => !prev); }
@@ -218,41 +212,40 @@ const ProductDetailPage = () => {
   };
 
   const renderProductCard = (product) => {
-    // ... (Seu código de renderProductCard sem alteração) ...
     const isFavorito = isAuthenticated && favorites?.some(fav => fav._id === product._id);
     return (
-        <Link
-          to={`/produto/${product._id}`}
-          key={product._id}
-          className={styles.productCardLink} 
-        >
-          <div className={styles.productCard}>
-            <img
-              src={`http://localhost:3000/uploads/${product.imagem}`}
-              alt={`${product.nome} - ${product.artista}`}
-              className={styles.productImage}
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-            <div className={styles.productInfo}>
-              <h3 className={styles.productTitle}>{product.nome}</h3>
-              <p className={styles.productArtist}>{product.artista}</p>
-              <p className={styles.productDescription}>{product.descricao}</p>
-              <div className={styles.productPriceContainer}>
-                <p className={styles.productPrice}>
-                  R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
-                </p>
-                <button
-                  className={`${styles.favoriteButton} ${isFavorito ? styles.isFavorite : ''}`}
-                  aria-label={isFavorito ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
-                  onClick={(e) => handleToggleFavorite(e, product._id)}
-                >
-                  <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
-                  <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
-                </button>
-              </div>
+      <Link
+        to={`/produto/${product._id}`}
+        key={product._id}
+        className={styles.productCardLink}
+      >
+        <div className={styles.productCard}>
+          <img
+            src={`http://localhost:3000/uploads/${product.imagem}`}
+            alt={`${product.nome} - ${product.artista}`}
+            className={styles.productImage}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <div className={styles.productInfo}>
+            <h3 className={styles.productTitle}>{product.nome}</h3>
+            <p className={styles.productArtist}>{product.artista}</p>
+            <p className={styles.productDescription}>{product.descricao}</p>
+            <div className={styles.productPriceContainer}>
+              <p className={styles.productPrice}>
+                R$ {product.preco?.toFixed(2).replace('.', ',') ?? '0,00'}
+              </p>
+              <button
+                className={`${styles.favoriteButton} ${isFavorito ? styles.isFavorite : ''}`}
+                aria-label={isFavorito ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+                onClick={(e) => handleToggleFavorite(e, product._id)}
+              >
+                <span className={`${styles.iconOutline} material-symbols-outlined`}>favorite_border</span>
+                <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
+              </button>
             </div>
           </div>
-        </Link>
+        </div>
+      </Link>
     );
   };
 
@@ -263,7 +256,7 @@ const ProductDetailPage = () => {
     return <div style={{ color: 'white', textAlign: 'center', marginTop: '5rem', fontSize: '1.5rem', background: '#000', height: '100vh' }}>Carregando...</div>;
   }
   if (error) {
-      return <div style={{ color: 'red', textAlign: 'center', marginTop: '5rem', fontSize: '1.5rem', background: '#000', height: '100vh' }}>{error}</div>;
+    return <div style={{ color: 'red', textAlign: 'center', marginTop: '5rem', fontSize: '1.5rem', background: '#000', height: '100vh' }}>{error}</div>;
   }
   if (!product) {
     return <div style={{ color: 'white', textAlign: 'center', marginTop: '5rem', fontSize: '1.5rem', background: '#000', height: '100vh' }}>Produto não encontrado.</div>;
@@ -311,7 +304,7 @@ const ProductDetailPage = () => {
               <input type="search" placeholder="Search" />
             </div>
           </div>
-          
+
           <div className={styles.navCenter}>
             <Link to="/" className={styles.logoContainer}>
               <img src={logoWhitePath} alt="Listen." className={styles.logoSvg} />
@@ -320,7 +313,7 @@ const ProductDetailPage = () => {
 
           <div className={styles.navRight}>
             <a href="#" title="Localização"><span className="material-symbols-outlined">location_on</span></a>
-            
+
             {isAuthenticated && (
               <button title="Favoritos" className={styles.menuBtn} onClick={() => setIsFavoritesOpen(true)}>
                 <span className="material-symbols-outlined">favorite</span>
@@ -337,7 +330,7 @@ const ProductDetailPage = () => {
         <header className={styles.rockHeroSection}>
           <div className={styles.heroContent}>
             <p className={styles.breadcrumbs}>
-              <Link to="/">Home</Link> / 
+              <Link to="/">Home</Link> /
               {(product.genero || product.categoria) && (
                 <><Link to={`/${(product.genero || product.categoria).toLowerCase().replace(' ', '-')}`}>{product.genero || product.categoria}</Link> / </>
               )}
@@ -348,14 +341,14 @@ const ProductDetailPage = () => {
 
         {/* --- Main Content Area (Lógica V2) --- */}
         <main className={styles.pageContent}>
-        
+
           {/* --- Container Principal do Produto (Lógica V2) --- */}
           <div className={styles.detailContainer}>
-            
+
             <div className={styles.detailImageColumn}>
               <div className={styles.detailImageWrapper}>
                 <img src={imageUrl} alt={product.nome} />
-                
+
                 {(product.quantidade <= 0) && (
                   <div className={styles.soldOutOverlay}>
                     <span className={styles.soldOutText}>Esgotado</span>
@@ -365,12 +358,12 @@ const ProductDetailPage = () => {
             </div>
 
             <div className={styles.detailInfoColumn}>
-              
+
               <div className={styles.detailHeader}>
                 <h1 className={styles.detailTitle}>
                   {product.artista} - {product.nome}
                 </h1>
-                <button 
+                <button
                   className={`${styles.detailFavoriteButton} ${isMainFavorite ? styles.isFavorite : ''}`}
                   aria-label={isMainFavorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
                   onClick={(e) => handleToggleFavorite(e, product._id)}
@@ -379,14 +372,14 @@ const ProductDetailPage = () => {
                   <span className={`${styles.iconFilled} material-symbols-outlined`}>favorite</span>
                 </button>
               </div>
-              
+
               <p className={styles.detailPrice}>
                 {new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL',
                 }).format(product.preco)}
               </p>
-              
+
               <p className={`${styles.detailStock} ${product.quantidade <= 0 ? styles.outOfStock : ''}`}>
                 {product.quantidade > 0 ? 'Disponível' : 'Indisponível'}
               </p>
@@ -396,21 +389,19 @@ const ProductDetailPage = () => {
               </div>
 
               {/* <<< 4. LÓGICA INCORPORADA (V1) - SELETOR DE QUANTIDADE (UI) >>> */}
-              {/* (Assumindo que as classes 'quantitySelector' etc. existem no seu CSS Module) */}
-              {/* 2. Substituir o seletor de quantidade antigo pelo novo componente */}
-            <div className={styles.controls}>
-              <QuantitySelector 
-                quantity={quantity}
-                onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
-                onIncrease={() => setQuantity(q => q + 1)}
-              />
-            </div>
-            {/* --- FIM DA MUDANÇA --- */}
-              {/* --- Fim da Lógica (V1) --- */}
+              {/* --- INÍCIO DA CORREÇÃO --- */}
+              {/* Passando 'quantity' e 'setQuantity' diretamente */}
+              <div className={styles.controls}>
+                <QuantitySelector
+                  quantity={quantity}
+                  setQuantity={setQuantity} // << CORRIGIDO
+                />
+              </div>
+              {/* --- FIM DA CORREÇÃO --- */}
 
 
               <div className={styles.detailButtonContainer}>
-                <button 
+                <button
                   className={styles.detailAddToCartButton}
                   disabled={product.quantidade <= 0}
                   // <<< 5. LÓGICA INCORPORADA (V1) - CONECTANDO O BOTÃO AO onClick >>>
@@ -419,7 +410,7 @@ const ProductDetailPage = () => {
                   {product.quantidade > 0 ? 'ADICIONAR AO CARRINHO' : 'ESGOTADO'}
                 </button>
               </div>
-              
+
             </div>
           </div>
 
@@ -431,10 +422,10 @@ const ProductDetailPage = () => {
                 {relatedProducts.map(renderProductCard)}
               </div>
             </div>
-           )}
+          )}
 
         </main>
-        
+
         {/* --- Footer Dinâmico (Lógica V2) --- */}
         <FooterComponent />
 

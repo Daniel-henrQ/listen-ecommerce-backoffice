@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './QuantitySelector.module.css';
-//import { FaPlus, FaMinus } from 'react-icons/fa';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 
 function QuantitySelector({ quantity, onDecrease, onIncrease }) {
   return (

@@ -33,14 +33,13 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(loadCart()); // Carrega na inicialização
 
   // Efeito para salvar no localStorage sempre que o cartItems mudar
-  // (Nota: Isso foi removido das funções individuais para evitar redundância)
   useEffect(() => {
     saveCart(cartItems);
   }, [cartItems]);
 
   /**
    * Adiciona um produto ao carrinho ou atualiza sua quantidade.
-   * @param {object} product - O objeto do produto (deve conter id, nome, preco, imagem_url).
+   * @param {object} product - O objeto do produto (deve conter id, nome, preco, imagem, artista).
    * @param {number} quantity - A quantidade a ser adicionada.
    */
   const addToCart = (product, quantity) => {
@@ -55,19 +54,30 @@ export const CartProvider = ({ children }) => {
         updatedItems[existingItemIndex].quantity += quantity;
       } else {
         // Item novo, adiciona ao carrinho
-        // --- MUDANÇA APLICADA ---
-        // Garantimos que a 'imagem_url' é salva no objeto do carrinho
+        
+        // --- INÍCIO DA CORREÇÃO ---
+        
+        // 1. Definimos a URL base do servidor (onde as imagens estão)
+        // (Baseado no seu server.js e api.js)
+        const SERVER_URL = 'http://localhost:3000';
+
+        // 2. Construímos a URL completa da imagem
+        // (product.imagem vem da API e é só o nome do arquivo)
+        const imageUrl = `${SERVER_URL}/uploads/${product.imagem}`;
+
+        // 3. Mapeamos os campos do 'product' (vindo da API) para os campos
+        //    que o 'CartPage.jsx' espera (name, artist, price, image)
         updatedItems = [...currentItems, { 
-          id: product.id, 
-          nome: product.nome, 
-          preco: product.preco, 
-          imagem_url: product.imagem_url, // <-- ADICIONADO AQUI
-          quantity 
+          id: product.id,
+          name: product.nome,       // Mapeia 'nome' para 'name'
+          artist: product.artista,  // Mapeia 'artista' para 'artist'
+          price: product.preco,     // Mapeia 'preco' para 'price'
+          image: imageUrl,          // Salva a URL completa em 'image'
+          quantity
         }];
-        // --- FIM DA MUDANÇA ---
+        // --- FIM DA CORREÇÃO ---
       }
       
-      // saveCart(updatedItems); // Removido, pois o useEffect agora cuida disso
       return updatedItems;
     });
   };
@@ -87,7 +97,6 @@ export const CartProvider = ({ children }) => {
         const updatedItems = currentItems.map(item => 
           item.id === itemId ? { ...item, quantity: newQuantity } : item
         );
-        // saveCart(updatedItems); // Removido
         return updatedItems;
       });
     }
@@ -100,7 +109,6 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = (itemId) => {
     setCartItems(currentItems => {
       const updatedItems = currentItems.filter(item => item.id !== itemId);
-      // saveCart(updatedItems); // Removido
       return updatedItems;
     });
   };
@@ -110,17 +118,21 @@ export const CartProvider = ({ children }) => {
    */
   const clearCart = () => {
     setCartItems([]);
-    // saveCart([]); // Removido
   };
 
   // Calcula o total do carrinho
-  const total = cartItems.reduce((acc, item) => acc + item.preco * item.quantity, 0);
+  // --- CORREÇÃO APLICADA ---
+  // Agora usamos 'item.price' para calcular o total, pois foi o que salvamos
+  const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   // O valor fornecido pelo contexto
   const value = {
     cartItems,
     addToCart,
-    updateCartQuantity,
+    // --- CORREÇÃO APLICADA ---
+    // Renomeia 'updateCartQuantity' para 'updateQuantity' para corresponder
+    // ao que o CartPage.jsx importa (const { ... updateQuantity } = useCart())
+    updateQuantity: updateCartQuantity,
     removeFromCart,
     clearCart,
     total,
