@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import LiquidGlassSidebar from '../components/LiquidGlassSidebar';
 import AuthModal from '../components/AuthModal';
 import FavoritesPopup from '../components/FavoritesPopup';
+import QuantitySelector from '../components/QuantitySelector.jsx';
 
 // --- Imports DOS FOOTERS DINÂMICOS (Lógica V2) ---
 import RockFooter from '../components/RockFooter';
@@ -396,14 +397,15 @@ const ProductDetailPage = () => {
 
               {/* <<< 4. LÓGICA INCORPORADA (V1) - SELETOR DE QUANTIDADE (UI) >>> */}
               {/* (Assumindo que as classes 'quantitySelector' etc. existem no seu CSS Module) */}
-              <div className={styles.quantitySelector}>
-                <span>Quantidade:</span>
-                <div className={styles.quantityControls}>
-                  <button onClick={() => handleQuantityChange(-1)} disabled={product.quantidade <= 0}>-</button>
-                  <input type="text" value={quantity} readOnly />
-                  <button onClick={() => handleQuantityChange(1)} disabled={product.quantidade <= 0}>+</button>
-                </div>
-              </div>
+              {/* 2. Substituir o seletor de quantidade antigo pelo novo componente */}
+            <div className={styles.controls}>
+              <QuantitySelector 
+                quantity={quantity}
+                onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
+                onIncrease={() => setQuantity(q => q + 1)}
+              />
+            </div>
+            {/* --- FIM DA MUDANÇA --- */}
               {/* --- Fim da Lógica (V1) --- */}
 
 

@@ -1,97 +1,135 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext'; // Importa seu AuthContext existente
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
+// Função auxiliar para carregar o carrinho do localStorage
+const loadCart = () => {
+  try {
+    const serializedCart = localStorage.getItem('cartItems');
+    if (serializedCart === null) {
+      return [];
+    }
+    return JSON.parse(serializedCart);
+  } catch (err) {
+    console.error("Erro ao carregar o carrinho:", err);
+    return [];
+  }
+};
+
+// Função auxiliar para salvar o carrinho no localStorage
+const saveCart = (cartItems) => {
+  try {
+    const serializedCart = JSON.stringify(cartItems);
+    localStorage.setItem('cartItems', serializedCart);
+  } catch (err) {
+    console.error("Erro ao salvar o carrinho:", err);
+  }
+};
+
+
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-  const { user } = useAuth(); // Pega o usuário do seu AuthContext
+  const [cartItems, setCartItems] = useState(loadCart()); // Carrega na inicialização
 
-  // Função para pegar a chave correta do localStorage
-  const getStorageKey = () => {
-    return user ? `cart_${user.id}` : 'cart_guest';
-  };
-
-  // Efeito para CARREGAR o carrinho quando o usuário muda (login/logout)
+  // Efeito para salvar no localStorage sempre que o cartItems mudar
+  // (Nota: Isso foi removido das funções individuais para evitar redundância)
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storageKey = getStorageKey();
-      const storedCart = localStorage.getItem(storageKey);
-      if (storedCart) {
-        setCartItems(JSON.parse(storedCart));
-      } else {
-        setCartItems([]); // Limpa o carrinho se não houver nada salvo
-      }
-    }
-  }, [user]); // Dispara toda vez que o 'user' mudar
+    saveCart(cartItems);
+  }, [cartItems]);
 
-  // Efeito para SALVAR o carrinho quando os itens mudam
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const storageKey = getStorageKey();
-      localStorage.setItem(storageKey, JSON.stringify(cartItems));
-    }
-  }, [cartItems, user]); // Salva toda vez que 'cartItems' ou 'user' mudar
-
-  // --- FUNÇÕES DE MANIPULAÇÃO DO CARRINHO ---
-
+  /**
+   * Adiciona um produto ao carrinho ou atualiza sua quantidade.
+   * @param {object} product - O objeto do produto (deve conter id, nome, preco, imagem_url).
+   * @param {number} quantity - A quantidade a ser adicionada.
+   */
   const addToCart = (product, quantity) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+    setCartItems(currentItems => {
+      const existingItemIndex = currentItems.findIndex(item => item.id === product.id);
       
-      if (existingItem) {
-        // Se já existe, atualiza a quantidade
-        return prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        // Se não existe, adiciona o produto ao carrinho
-        // Certifique-se de que o produto tenha id, nome, preco, etc.
-        // E adicione a imagem
-        const imageUrl = product.imagem_url 
-          ? `http://localhost:3001${product.imagem_url}` 
-          : '/listen.png'; // Placeholder
+      let updatedItems;
 
-        return [...prevItems, { 
-            id: product.id, 
-            name: product.nome, 
-            artist: product.artista, // Assumindo que seu produto tem 'artista'
-            price: parseFloat(product.preco), 
-            quantity, 
-            image: imageUrl 
+      if (existingItemIndex > -1) {
+        // Item já existe, atualiza a quantidade
+        updatedItems = [...currentItems];
+        updatedItems[existingItemIndex].quantity += quantity;
+      } else {
+        // Item novo, adiciona ao carrinho
+        // --- MUDANÇA APLICADA ---
+        // Garantimos que a 'imagem_url' é salva no objeto do carrinho
+        updatedItems = [...currentItems, { 
+          id: product.id, 
+          nome: product.nome, 
+          preco: product.preco, 
+          imagem_url: product.imagem_url, // <-- ADICIONADO AQUI
+          quantity 
         }];
+        // --- FIM DA MUDANÇA ---
       }
+      
+      // saveCart(updatedItems); // Removido, pois o useEffect agora cuida disso
+      return updatedItems;
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-  };
-
-  const updateQuantity = (productId, newQuantity) => {
+  /**
+   * Atualiza a quantidade de um item específico no carrinho.
+   * Se a quantidade for < 1, remove o item.
+   * @param {number} itemId - O ID do item a ser atualizado.
+   * @param {number} newQuantity - A nova quantidade total do item.
+   */
+  const updateCartQuantity = (itemId, newQuantity) => {
     if (newQuantity < 1) {
-      removeFromCart(productId); // Remove se a quantidade for menor que 1
-      return;
+      // Se a quantidade for zero ou menos, remove o item
+      removeFromCart(itemId);
+    } else {
+      setCartItems(currentItems => {
+        const updatedItems = currentItems.map(item => 
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        );
+        // saveCart(updatedItems); // Removido
+        return updatedItems;
+      });
     }
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
   };
 
-  // Valor que o provider vai fornecer para todos os componentes
+  /**
+   * Remove um item completamente do carrinho.
+   * @param {number} itemId - O ID do item a ser removido.
+   */
+  const removeFromCart = (itemId) => {
+    setCartItems(currentItems => {
+      const updatedItems = currentItems.filter(item => item.id !== itemId);
+      // saveCart(updatedItems); // Removido
+      return updatedItems;
+    });
+  };
+
+  /**
+   * Limpa todo o carrinho.
+   */
+  const clearCart = () => {
+    setCartItems([]);
+    // saveCart([]); // Removido
+  };
+
+  // Calcula o total do carrinho
+  const total = cartItems.reduce((acc, item) => acc + item.preco * item.quantity, 0);
+
+  // O valor fornecido pelo contexto
   const value = {
     cartItems,
     addToCart,
+    updateCartQuantity,
     removeFromCart,
-    updateQuantity,
-    itemCount: cartItems.reduce((sum, item) => sum + item.quantity, 0)
+    clearCart,
+    total,
+    itemCount: cartItems.reduce((acc, item) => acc + item.quantity, 0) // Total de unidades
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
 };
