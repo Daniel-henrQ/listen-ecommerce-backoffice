@@ -133,7 +133,7 @@ const loginUser = async (req, res) => {
             // Retorna informações básicas do usuário (sem a senha!)
             user: {
                 id: user._id,
-                name: user.name || user.nome,
+                name: user.name || user.nome, // <-- ISSO ESTÁ CORRETO!
                 email: user.email,
                 role: role // Papel incluído na resposta
             }
@@ -147,3 +147,4 @@ const loginUser = async (req, res) => {
 };
 
 module.exports = { registerUser, loginUser };
+// O '}' extra foi removido daqui.

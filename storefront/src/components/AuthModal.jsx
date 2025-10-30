@@ -52,51 +52,44 @@ function AuthModal({ isOpen, onClose }) {
     }, [isOpen]);
 
     // --- LOGIN ---
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setMessage({ text: '', type: '', target: null }); // Clear general message
-        setFieldErrors({}); // Clear field errors
-        setIsLoading(true);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setMessage({ text: '', type: '', target: null });
+  setFieldErrors({});
+  setIsLoading(true);
 
-        let errors = {};
-        if (!loginEmail) errors.loginEmail = 'Email é obrigatório.';
-        if (!loginPassword) errors.loginPassword = 'Senha é obrigatória.';
+  let errors = {};
+  if (!loginEmail) errors.loginEmail = 'Email é obrigatório.';
+  if (!loginPassword) errors.loginPassword = 'Senha é obrigatória.';
 
-        if (Object.keys(errors).length > 0) {
-            setFieldErrors(errors);
-            setIsLoading(false);
-            return;
-        }
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    setIsLoading(false);
+    return;
+  }
 
-        try {
-            const response = await axios.post('/api/auth/login', { email: loginEmail, password: loginPassword });
-            const { token, user } = response.data;
+  try {
+    // 🔹 Usa o AuthContext, que já lida com token e API base
+    const loginData = { email: loginEmail, password: loginPassword };
+    const result = await login(loginData);
 
-            login(token); // Update AuthContext
-
-            // Brief success indication maybe on button, or just proceed
-            // setMessage({ text: '✓', type: 'success', target: 'login' }); // Example
-
-            if (user?.role === 'adm' || user?.role === 'vendas') {
-                // Redirect with token in URL (handled by AuthProvider in backoffice)
-                const backofficeUrlBase = import.meta.env.DEV ? 'http://localhost:5174/app/' : '/app';
-                const redirectUrl = `${backofficeUrlBase}?token=${encodeURIComponent(token)}`;
-                window.location.href = redirectUrl;
-                // No need to setIsLoading(false) due to redirect
-            } else {
-                // For Client, just close modal after short delay
-                setTimeout(() => onClose(), 500); // Shorter delay
-                 setIsLoading(false); // Make sure loading stops for client
-            }
-
-        } catch (error) {
-            const errorMsg = error.response?.data?.msg || 'Erro no login. Verifique as suas credenciais.';
-            setMessage({ text: errorMsg, type: 'error', target: 'login' }); // General message for credential errors
-            // Highlight both fields as potentially wrong
-            setFieldErrors({ loginEmail: ' ', loginPassword: ' ' }); // Use space to trigger error class without text
-            setIsLoading(false);
-        }
-    };
+    // Se o login for bem-sucedido, o AuthContext já deve armazenar o token e o user
+    if (result?.user?.role === 'adm' || result?.user?.role === 'vendas') {
+      const backofficeUrlBase = import.meta.env.DEV ? 'http://localhost:5174/app/' : '/app';
+      const redirectUrl = `${backofficeUrlBase}?token=${encodeURIComponent(result.token)}`;
+      window.location.href = redirectUrl;
+    } else {
+      setTimeout(() => onClose(), 500);
+      setIsLoading(false);
+    }
+  } catch (error) {
+    console.error('Erro no login:', error);
+    const errorMsg = error.response?.data?.msg || 'Erro no login. Verifique as suas credenciais.';
+    setMessage({ text: errorMsg, type: 'error', target: 'login' });
+    setFieldErrors({ loginEmail: ' ', loginPassword: ' ' });
+    setIsLoading(false);
+  }
+};
 
     // --- REGISTER ---
     const handleRegister = async (e) => {

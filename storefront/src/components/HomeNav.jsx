@@ -17,7 +17,7 @@ function HomeNav({ onOpenSidebar }) {
         user, 
         logout, 
         isAuthenticated,
-        token,         
+        token,          
         showAuthModal,   
         setShowAuthModal 
     } = useAuth(); 
