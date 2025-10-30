@@ -1,8 +1,8 @@
 /* storefront/src/assets/css/ProductDetailPage.module.css */
-/* Este arquivo é uma fusão:
-  1. Base completa de RockPage.module.css (fontes, vars, nav, cards, footer, etc.)
-  2. Estilos renomeados do ProductDetailPage.module.css original (para o layout principal)
-  3. Estilos para a nova seção "Produtos Parecidos".
+/* --- MUDANÇAS: ---
+  1. `.navIsSticky` (nav com scroll) agora usa variáveis de tema
+     para a cor de fundo (semi-transparente) e cor de texto.
+  2. Adicionado `backdrop-filter` ao `.navIsSticky` para o efeito "vidro".
 */
 
 /* --- Font (da RockPage) --- */
@@ -24,6 +24,17 @@
   --transition-fast: 0.18s;
   --transition-med: 0.28s;
   --transition-slow: 0.45s;
+
+  /* --- Variáveis de tema como fallback (padrão Rock) --- */
+  --theme-color-primary: var(--rock-red);
+  --theme-color-primary-hover: #c0392b;
+  --theme-color-text-primary: #ffffff;
+  --theme-color-text-secondary: #e0e0e0;
+  --theme-button-text-color: #ffffff;
+  --theme-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  
+  /* --- NOVO: Fundo da Nav Sticky (Padrão) --- */
+  --theme-sticky-nav-bg: rgba(0, 0, 0, 0.3);
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
@@ -31,7 +42,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 /* ============================================== */
-/* --- Navigation Bar (Preto Simples) --- */
+/* --- Navigation Bar (ALTERADO) --- */
 /* ============================================== */
 .mainNav {
   position: absolute;
@@ -43,42 +54,45 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 2.5rem 3rem;
-  /* --- MUDANÇA: Altura mínima maior --- */
-  min-height: 110px; /* Era 100px */
-  color: var(--text-light);
-  background-color: var(--background-dark); /* Fundo preto simples */
+  min-height: 110px;
+  color: var(--theme-color-text-primary, var(--text-light));
+  background-color: transparent; 
   transition: background-color var(--transition-med) ease-in-out, color var(--transition-med) ease-in-out, padding var(--transition-med) ease-in-out, box-shadow var(--transition-med) ease-in-out, min-height var(--transition-med) ease-in-out;
 }
 
+/* --- Nav Sticky (A GRANDE MUDANÇA) --- */
 .navIsSticky {
   position: fixed;
   padding: 1.5rem 3rem;
-  /* --- MUDANÇA: Altura mínima maior --- */
-  min-height: 90px; /* Era 80px */
-  color: var(--text-light);
-  background-color: var(--background-dark); /* Fundo preto simples */
+  min-height: 90px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   animation: slideDownNav var(--transition-med) ease-in-out;
+
+  /* --- ALTERADO: Agora usa as variáveis de tema --- */
+  /* 1. Cor do texto muda (ex: Bossa Nova fica escuro) */
+  color: var(--theme-color-text-primary, var(--text-light));
+  
+  /* 2. Fundo semi-transparente que muda por tema */
+  background-color: var(--theme-sticky-nav-bg); 
+  
+  /* 3. Efeito "Vidro Fosco" */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* --- FIM DA ALTERAÇÃO --- */
 }
-/* ============================================== */
-/* --- FIM DA MUDANÇA NA NAV --- */
-/* ============================================== */
-
-
 @keyframes slideDownNav {
   from { transform: translateY(-100%); }
   to { transform: translateY(0); }
 }
 
+/* ... (Estilos de Nav .navLeft, .navCenter, etc. - Sem alteração) ... */
 .navLeft { display: flex; align-items: center; gap: 1.5rem; justify-self: start; }
 .navCenter { display: flex; align-items: center; justify-self: center; }
 .navRight { display: flex; align-items: center; justify-self: end; gap: 1rem; }
-
 .menuBtn {
   display: flex; align-items: center; gap: 0.5rem; background: none; border: none; font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; color: inherit; cursor: pointer;
 }
 .menuBtn .material-symbols-outlined { font-size: 1.5rem; }
-
 .searchBar {
   display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background-color: rgba(255,255,255,0.15); transition: background-color var(--transition-med), border-color var(--transition-med), color var(--transition-med);
 }
@@ -87,11 +101,8 @@
 .navIsSticky .searchBar .material-symbols-outlined { color:#ccc; }
 .searchBar input { border:none; outline:none; margin-left:0.5rem; font-size:0.9rem; width:100%; background:none; color:#fff; }
 .searchBar input::placeholder { color:#ccc; }
-
 .navRight a, .navRight button { color:inherit; position:relative; }
 .navRight .material-symbols-outlined { font-size:1.6rem; }
-
-/* AJUSTE: Logo no NavCenter (estilo da HomePage) */
 .logoContainer {
   display: flex;
   align-items: center;
@@ -110,37 +121,41 @@
 
 
 /* ============================================== */
-/* --- Hero/Breadcrumbs (Preto Simples e Menor) --- */
+/* --- Hero/Breadcrumbs (Correto - Transparente) --- */
 /* ============================================== */
 .rockHeroSection {
-  /* --- MUDANÇA: Espaçamento ajustado --- */
-  padding-top: 120px; /* Compensar nav maior */
+  padding-top: 120px;
   padding-left: 3rem;
   padding-right: 3rem;
-  padding-bottom: 1rem; /* Aproximar conteúdo abaixo */
+  padding-bottom: 1rem;
   position: relative;
   z-index: 1;
-  color: var(--text-light);
-  background-color: var(--background-dark); /* Fundo preto simples */
+  color: var(--theme-color-text-primary, var(--text-light));
+  background-color: transparent; 
 }
-/* ============================================== */
-/* --- FIM DA MUDANÇA NO HEADER --- */
-/* ============================================== */
 
 .heroContent { position: relative; }
-.breadcrumbs, .breadcrumbs a { font-size:0.9rem; color:var(--text-medium); text-shadow:1px 1px 2px rgba(0,0,0,0.7); text-decoration:none; }
-.breadcrumbs a:hover { color:var(--text-light); text-decoration:underline; }
+.breadcrumbs, .breadcrumbs a { 
+  font-size:0.9rem; 
+  color: var(--theme-color-text-secondary, var(--text-medium)); 
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+  text-decoration:none; 
+}
+.breadcrumbs a:hover { 
+  color: var(--theme-color-text-primary, var(--text-light)); 
+  text-decoration:underline; 
+}
 
-/* --- Page Content Wrapper --- */
+/* --- Page Content Wrapper (Correto - Transparente) --- */
 .pageContent {
-  /* --- MUDANÇA: Padding superior removido --- */
-  padding: 0 0 3rem 0; /* Era 1rem 0 3rem 0 */
-  background-color: var(--background-dark);
+  padding: 0 0 3rem 0;
+  background-color: transparent;
   min-height: 50vh;
+  flex: 1; 
 }
 
 /* ================================================== */
-/* --- SEÇÃO DE DETALHE (ESTILO MODERNO) --- */
+/* --- SEÇÃO DE DETALHE (Correto - Transparente) --- */
 /* ================================================== */
 
 .detailContainer {
@@ -150,186 +165,130 @@
   gap: 3rem;
   padding: 3rem 2rem;
   max-width: 1200px;
-  margin: 0 auto 2rem; /* margin-top removido */
-  background-color: #000;
-  color: white;
+  margin: 0 auto 2rem;
   border-radius: 8px;
-  border: 1px solid #222;
-  align-items: flex-start; /* Alinha o topo das colunas */
-}
-
-/* Coluna da Imagem */
-.detailImageColumn {
-  flex: 1 1 400px;
-  display: flex;
-  justify-content: center;
   align-items: flex-start;
-  max-width: 500px;
+  background-color: transparent; 
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-/* Wrapper da Imagem (para Overlay) */
-.detailImageWrapper {
-  position: relative;
-  width: 100%;
-  border-radius: 4px;
-  overflow: hidden; /* Importante para o overlay */
-}
-.detailImageWrapper img {
-  width: 100%;
-  height: auto;
-  display: block; /* Remove espaço inferior do <img> */
-}
-
-/* Overlay de Esgotado (Efeito Vidro) */
-.soldOutOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 2;
-}
-
-/* Texto "Esgotado" */
-.soldOutText {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  text-align: center;
-}
-
+/* ... (Estilos de .detailImageColumn, .soldOutOverlay - Sem alteração) ... */
+.detailImageColumn{flex:1 1 400px;display:flex;justify-content:center;align-items:flex-start;max-width:500px}.detailImageWrapper{position:relative;width:100%;border-radius:4px;overflow:hidden}.detailImageWrapper img{width:100%;height:auto;display:block}.soldOutOverlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background-color:rgba(0,0,0,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2}.soldOutText{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:2.5rem;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.5);text-align:center}
 
 /* Coluna de Informações */
 .detailInfoColumn {
   flex: 1 1 500px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem; /* Espaçamento geral */
+  gap: 1.25rem;
 }
 
-/* Wrapper Título + Favorito */
 .detailHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Alinha o ícone ao centro do texto */
+  align-items: center;
   gap: 1rem;
-  margin-bottom: 0.5rem; /* Espaço extra abaixo do título/ícone */
+  margin-bottom: 0.5rem;
 }
 
-/* Título (Artista - Nome) */
+/* Título (Usa variável de cor e sombra) */
 .detailTitle {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 2rem; /* Menor */
-  font-weight: 600; /* Mais leve */
+  font-size: 2rem;
+  font-weight: 600;
   margin: 0;
   line-height: 1.2;
-  color: #fff;
-  flex: 1; /* Permite que o título cresça */
-  margin-top: -0.2rem; /* Puxa o texto levemente para cima */
+  flex: 1;
+  margin-top: -0.2rem;
+  color: var(--theme-color-text-primary, #fff);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 .detailArtist { display: none; }
 
-/* Botão Favoritar (sem borda) */
-.detailFavoriteButton {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:40px;
-  height:40px;
-  background:transparent;
-  border: none; /* Borda removida */
-  cursor:pointer;
-  flex-shrink:0;
-  padding:4px;
-  margin:0;
-  border-radius: 50%; /* Círculo */
-  overflow:hidden;
-  transition: all var(--transition-fast) ease;
-}
-.detailFavoriteButton:hover {
-  background-color: rgba(255,255,255,0.1); /* Hover mais forte */
+/* Botão Favoritar (Usa variável de cor e sombra) */
+.detailFavoriteButton{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;flex-shrink:0;padding:4px;margin:0;border-radius:50%;overflow:hidden;transition:all var(--transition-fast) ease}
+.detailFavoriteButton:hover{background-color:rgba(255,255,255,.1)}
+.detailFavoriteButton .material-symbols-outlined {
+  color: var(--theme-color-text-primary, #fff);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
 
-/* Preço */
+/* Preço (Usa variável de cor e sombra) */
 .detailPrice {
-  font-size: 2rem; /* Menor */
-  font-weight: 500; /* Mais leve */
+  font-size: 2rem;
+  font-weight: 500;
   margin: 0;
-  color: var(--text-light);
+  color: var(--theme-color-text-primary, var(--text-light));
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
-/* Estoque (Sutil) */
+/* Estoque (Usa variável de cor e sombra) */
 .detailStock {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #aaa; /* Cor sutil para "Disponível" */
   margin: -0.5rem 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: var(--theme-color-text-secondary, #aaa);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
-/* Estilo "Indisponível" */
+/* Estilo "Indisponível" (Usa cor de tema primária - ex: vermelho) */
 .detailStock.outOfStock {
-  color: var(--rock-red); /* Vermelho para "Indisponível" */
+  color: var(--theme-color-primary, var(--rock-red));
   font-weight: 600;
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
 
-/* Descrição (Mais delicada) */
+/* Descrição (Usa variável de cor e sombra) */
 .detailDescription {
   margin-top: 0.5rem;
-  border-top: 1px solid #333;
+  border-top: none; 
   padding-top: 1.25rem;
 }
 .detailDescription h2 {
-  display: none; /* Remove o H2 "Descrição" */
+  display: none;
 }
 .detailDescription p {
-  font-size: 0.9rem; /* Menor */
+  font-size: 0.9rem;
   line-height: 1.6;
-  color: #aaa; /* Cor mais clara/suave */
+  color: var(--theme-color-text-secondary, #aaa);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
 /* Container do Botão */
 .detailButtonContainer {
   display: flex;
-  margin-top: 1rem; /* Espaço acima do botão */
+  margin-top: 1rem;
 }
 
-/* Botão (Menor e Arredondado) */
+/* Botão "Adicionar ao Carrinho" (Usa variável de cor primária) */
 .detailAddToCartButton {
-  padding: 0.8rem 1.5rem; /* Menor */
-  font-size: 0.85rem; /* Menor */
+  padding: 0.8rem 1.5rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border: 2px solid var(--rock-red);
-  border-radius: 50px; /* Totalmente arredondado */
+  border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
-  background-color: var(--rock-red);
-  color: #fff;
+  border: 2px solid var(--theme-color-primary, var(--rock-red));
+  background-color: var(--theme-color-primary, var(--rock-red));
+  color: var(--theme-button-text-color, #fff);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 .detailAddToCartButton:hover {
-  background-color: #c0392b;
-  border-color: #c0392b;
+  background-color: var(--theme-color-primary-hover, #c0392b);
+  border-color: var(--theme-color-primary-hover, #c0392b);
   transform: scale(1.03);
-  box-shadow: 0 4px 15px rgba(163, 26, 39, 0.3);
+  box-shadow: 0 4px 10px rgba(0,0,0, 0.4);
 }
 
-/* Estilo do botão quando desabilitado (Esgotado) */
 .detailAddToCartButton:disabled {
   background-color: #333;
   border-color: #333;
@@ -341,366 +300,135 @@
 
 
 /* ============================================== */
-/* --- SEÇÃO PRODUTOS PARECIDOS (Classes Novas) --- */
+/* --- SEÇÃO PRODUTOS PARECIDOS --- */
 /* ============================================== */
-
-.relatedProductsSection {
-  max-width: 1200px;
-  margin: 4rem auto 2rem;
-  padding: 0 2rem;
-  border-top: 1px solid #333;
+.relatedProductsSection{
+  max-width:1200px;
+  margin:4rem auto 2rem;
+  padding:0 2rem;
+  border-top: none; 
   padding-top: 2.5rem;
 }
 
-.relatedTitle {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 2rem;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 2.5rem;
-  text-align: center;
+/* Título "Produtos Parecidos" (Usa variável de cor e sombra) */
+.relatedTitle{
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-size:2rem;
+  font-weight:600;
+  margin-bottom:2.5rem;
+  text-align:center;
+  color: var(--theme-color-text-primary, white);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
 }
 
-.relatedProductsGrid {
-  display: grid;
-  /* Ajuste para 4 colunas em desktop, quebrando graciosamente */
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  justify-items: center;
-}
-
-/* Garante que o Link (wrapper do card) se comporte bem no grid */
-.relatedProductsGrid > a {
-  text-decoration: none;
-  width: 100%;
-  max-width: 320px; /* Limita o tamanho do card */
-}
+.relatedProductsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;justify-items:center}.relatedProductsGrid>a{text-decoration:none;width:100%;max-width:320px}
 
 
 /* ================================================== */
-/* --- ESTILOS DOS CARDS (da RockPage) --- */
-/* (Usados pelos "Produtos Parecidos" E pelo novo .detailFavoriteButton) */
+/* --- ESTILOS DOS CARDS (Usa variáveis de cor e sombra) --- */
 /* ================================================== */
-.productCard {
-  flex-basis: 100%; /* O Grid cuida da largura */
-  max-width: 320px;
-  box-sizing: border-box;
-  background: none;
-  border: none;
-  color: #fff;
-  text-align: left;
-  transition: transform var(--transition-med) ease, box-shadow var(--transition-med) ease;
-  will-change: transform;
-  position: relative;
-  overflow: visible;
+.productCard{flex-basis:100%;max-width:320px;box-sizing:border-box;background:none;border:none;text-align:left;transition:transform var(--transition-med) ease,box-shadow var(--transition-med) ease;will-change:transform;position:relative;overflow:visible;
+  color: var(--theme-color-text-primary, #fff);
 }
-.productCard:hover { transform: scale(1.04); box-shadow: 0 6px 14px rgba(0,0,0,0.4); cursor:pointer; z-index:3; }
+.productCard:hover{transform:scale(1.04);box-shadow:0 6px 14px rgba(0,0,0,.4);cursor:pointer;z-index:3}.productCardPlaceholder{flex-basis:32%;max-width:320px;box-sizing:border-box}.productImage{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;display:block;transition:transform var(--transition-med) ease-in-out}.productCard:hover .productImage{transform:scale(1.05)}.productInfo{padding:0 10px 10px;position:relative;z-index:2;display:flex;flex-direction:column;gap:6px}
 
-.productCardPlaceholder { flex-basis:32%; max-width:320px; box-sizing:border-box; }
-.productImage { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px; display:block; transition: transform var(--transition-med) ease-in-out; }
-.productCard:hover .productImage { transform: scale(1.05); }
+.productTitle{font-size:1.2rem;font-weight:bold;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color: var(--theme-color-text-primary, #fff);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+}
+.productArtist{font-size:1rem;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color: var(--theme-color-text-secondary, #ccc);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+}
+.productDescription{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;font-size:.9rem;line-height:1.4;height:calc(.9rem * 1.4 * 3);margin-bottom:10px;
+  color: var(--theme-color-text-secondary, var(--text-medium));
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+}
+.productPriceContainer{display:flex;justify-content:space-between;align-items:center;margin-top:5px;gap:8px;min-width:0}
+.productPrice{font-size:1.1rem;font-weight:bold;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color: var(--theme-color-text-primary, #fff);
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+}
 
-.productInfo {
-  padding: 0 10px 10px;
-  position: relative;
-  z-index: 2;
+/* ... (Estilos de Botão Favorito) ... */
+.favoriteButton{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:none;cursor:pointer;flex-shrink:0;padding:4px;margin:0;border-radius:6px;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:transform var(--transition-fast) ease,background-color var(--transition-fast) ease}.favoriteButton:focus{outline:2px solid rgba(255,255,255,.12)}.favoriteButton .material-symbols-outlined,.detailFavoriteButton .material-symbols-outlined{display:block;line-height:1;font-size:1.4rem;transition:transform var(--transition-fast) ease,opacity var(--transition-fast) ease,color var(--transition-fast) ease;pointer-events:none}.detailFavoriteButton .material-symbols-outlined{font-size:1.6rem}
+.iconOutline{
+  color:var(--theme-color-text-primary, #fff);
+  opacity:1; 
+  text-shadow: var(--theme-text-shadow); /* --- Sombra aplicada --- */
+}
+.iconFilled{color:#e74c3c;opacity:0;position:absolute; text-shadow: none;}
+.favoriteButton:hover,.favoriteButton:active,.favoriteButton:focus,.detailFavoriteButton:hover,.detailFavoriteButton:active,.detailFavoriteButton:focus{background-color:rgba(255,255,255,.03)}.detailFavoriteButton:hover{background-color:rgba(255,255,255,.1)}.favoriteButton:hover .iconOutline,.favoriteButton:active .iconOutline,.favoriteButton:focus .iconOutline,.detailFavoriteButton:hover .iconOutline,.detailFavoriteButton:active .iconOutline,.detailFavoriteButton:focus .iconOutline{opacity:0;transform:scale(.95)}.favoriteButton:hover .iconFilled,.favoriteButton:active .iconFilled,.favoriteButton:focus .iconFilled,.detailFavoriteButton:hover .iconFilled,.detailFavoriteButton:active .iconFilled,.detailFavoriteButton:focus .iconFilled{opacity:1;transform:scale(1)}.favoriteButton.is-favorited .iconOutline,.detailFavoriteButton.is-favorited .iconOutline{opacity:0}.favoriteButton.is-favorited .iconFilled,.detailFavoriteButton.is-favorited .iconFilled{opacity:1}.carouselButton{display:none}.carouselContainer{display:none}
+
+
+/* ============================================== */
+/* --- FOOTER (REMOVIDO - Correto) --- */
+/* ============================================== */
+
+
+
+/* ============================================== */
+/* --- RESPONSIVIDADE (Seus estilos - SEM MUDANÇAS) --- */
+/* ============================================== */
+.userAccountContainer{position:relative;display:inline-flex}.iconOnlyBtn{padding:5px;gap:0;background:none;border:none;color:inherit;cursor:pointer}.iconOnlyBtn .material-symbols-outlined{font-size:1.6rem;transition:font-size var(--transition-med)}.userDropdownMenu{display:block;position:absolute;top:calc(100% + 10px);right:0;background-color:#fff;color:#333;border:1px solid #e0e0e0;border-radius:6px;min-width:200px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:1010;padding:.5rem 0;list-style:none;margin:0;animation:fadeInDropdown .2s ease-out}@keyframes fadeInDropdown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}.userDropdownMenu li a,.userDropdownMenu li button.userDropdownLogoutBtn{display:block;width:100%;padding:.75rem .8rem;font-family:'Lato',sans-serif;font-size:.9rem;color:#555;transition:background-color .2s ease,color .2s ease;text-align:left;background:none;border:none;cursor:pointer;text-decoration:none}.userDropdownMenu li a:hover,.userDropdownMenu li button.userDropdownLogoutBtn:hover{background-color:#f5f5f5;color:#111}.userDropdownSeparator{border-top:1px solid #eee;margin-top:.5rem;padding-top:.5rem}.userDropdownMenu li button.userDropdownLogoutBtn{color:#c82333;font-weight:500}.userDropdownMenu li button.userDropdownLogoutBtn:hover{background-color:#fbecec;color:#a31a27}
+@media (max-width:1200px){.navRockTitle{font-size:3rem}}@media (max-width:1024px){.mainNav,.navIsSticky{padding:1.5rem 2rem}.navLeft{gap:1rem}.navRight{gap:1.2rem}.searchBar{width:200px}.rockHeroSection{padding-top:110px}.relatedProductsGrid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem}}@media (max-width:768px){.mainNav,.navIsSticky{padding:1.2rem 1.5rem;grid-template-columns:auto 1fr auto;min-height:80px}.navIsSticky{min-height:70px}.searchBar{display:none}.navCenter{justify-self:center;padding:0 1rem}.navRight a[title=Localização],.navRight a[title=Favoritos]{display:none}.navRight{gap:1rem}.rockHeroSection{padding-top:90px}.detailContainer{padding:2rem 1rem;gap:2rem}.detailTitle{font-size:1.8rem;margin-top:-.1rem}.detailPrice{font-size:1.6rem}.detailButtonContainer{max-width:100%}.detailFavoriteButton{width:36px;height:36px}.detailFavoriteButton .material-symbols-outlined{font-size:1.4rem}.soldOutText{font-size:2rem}.relatedTitle{font-size:1.8rem}.relatedProductsGrid{grid-template-columns:1fr 1fr}}@media (max-width:480px){.mainNav,.navIsSticky{padding:1rem;min-height:70px}.navIsSticky{min-height:60px}.logoSvg{height:24px}.navIsSticky .logoSvg{height:22px}.navRight{gap:.8rem}.navRight .material-symbols-outlined{font-size:1.4rem}.menuBtn .material-symbols-outlined{font-size:1.4rem}.menuBtn{font-size:.8rem}.iconOnlyBtn .material-symbols-outlined{font-size:1.4rem}.rockHeroSection{padding-top:80px;padding-left:1.5rem;padding-right:1.5rem}.detailTitle{font-size:1.5rem;margin-top:0}.detailPrice{font-size:1.4rem}.detailAddToCartButton{width:100%}.soldOutText{font-size:1.8rem}.relatedProductsGrid{grid-template-columns:1fr}}
+.detailContainer{align-items:center}.detailImageColumn,.detailInfoColumn{display:flex;flex-direction:column;justify-content:center}.favoriteButton .iconFilled,.detailFavoriteButton .iconFilled{display:none}.favoriteButton .iconOutline,.detailFavoriteButton .iconOutline{display:inline-block}.favoriteButton.isFavorite .iconFilled,.detailFavoriteButton.isFavorite .iconFilled{display:inline-block;color:red}.favoriteButton.isFavorite .iconOutline,.detailFavoriteButton.isFavorite .iconOutline{display:none}.mainNav .menuBtn{background:none;border:none;color:inherit;cursor:pointer;display:flex;align-items:center;padding:.5rem;border-radius:4px}.mainNav .menuBtn:hover{background-color:rgba(255,255,255,.1)}.mainNav .menuBtn{background:none;border:none;color:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-radius:4px;transition:background-color .2s ease}.mainNav .menuBtn:hover{background-color:rgba(255,255,255,.1)}
+
+
+/* ================================================== */
+/* --- SEÇÃO DE COMPONETIZAÇÃO (COM VARIÁVEIS DE TEMA) --- */
+/* ================================================== */
+
+/* 1. O contêiner base que envolve a página inteira */
+.pageContainer {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  background-color: var(--background-dark); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-image 0.3s ease;
 }
 
-.productTitle { font-size:1.2rem; font-weight:bold; margin-bottom:5px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.productArtist { font-size:1rem; color:#ccc; margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.productDescription {
-  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; font-size:0.9rem; color:var(--text-medium); line-height:1.4; height:calc(0.9rem * 1.4 * 3); margin-bottom:10px;
-}
+/* 2. Classes de Gênero (com variáveis de tema CORRIGIDAS) */
 
-.productPriceContainer {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:5px;
-  gap:8px;
-  min-width:0;
-}
-.productPrice { font-size:1.1rem; font-weight:bold; color:#fff; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-/* Estilos do ícone de favorito (usado no card E no .detailFavoriteButton) */
-.favoriteButton {
-  display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; background:transparent; border:none; cursor:pointer; flex-shrink:0; padding:4px; margin:0; border-radius:6px; overflow:hidden; -webkit-tap-highlight-color: transparent; transition: transform var(--transition-fast) ease, background-color var(--transition-fast) ease;
-}
-.favoriteButton:focus { outline:2px solid rgba(255,255,255,0.12); }
-
-/* Aplica a todos os ícones de favorito */
-.favoriteButton .material-symbols-outlined,
-.detailFavoriteButton .material-symbols-outlined {
-  display:block;
-  line-height:1;
-  font-size:1.4rem;
-  transition: transform var(--transition-fast) ease, opacity var(--transition-fast) ease, color var(--transition-fast) ease;
-  pointer-events:none;
-}
-/* Ajusta o ícone do botão da página de detalhe para ser maior */
-.detailFavoriteButton .material-symbols-outlined {
-  font-size: 1.6rem;
-}
-
-
-.iconOutline { color:#fff; opacity:1; }
-.iconFilled { color:#e74c3c; opacity:0; position:absolute; }
-
-.favoriteButton:hover, .favoriteButton:active, .favoriteButton:focus,
-.detailFavoriteButton:hover, .detailFavoriteButton:active, .detailFavoriteButton:focus {
-  background-color: rgba(255,255,255,0.03);
-}
-/* Garante que o hover do botão sem borda fique ok */
-.detailFavoriteButton:hover {
-  background-color: rgba(255,255,255,0.1);
-}
-
-
-.favoriteButton:hover .iconOutline, .favoriteButton:active .iconOutline, .favoriteButton:focus .iconOutline,
-.detailFavoriteButton:hover .iconOutline, .detailFavoriteButton:active .iconOutline, .detailFavoriteButton:focus .iconOutline {
-  opacity:0;
-  transform: scale(0.95);
-}
-.favoriteButton:hover .iconFilled, .favoriteButton:active .iconFilled, .favoriteButton:focus .iconFilled,
-.detailFavoriteButton:hover .iconFilled, .detailFavoriteButton:active .iconFilled, .detailFavoriteButton:focus .iconFilled {
-  opacity:1;
-  transform: scale(1);
-}
-.favoriteButton.is-favorited .iconOutline,
-.detailFavoriteButton.is-favorited .iconOutline { opacity:0; }
-
-.favoriteButton.is-favorited .iconFilled,
-.detailFavoriteButton.is-favorited .iconFilled { opacity:1; }
-
-/* Remove Carousel buttons (não usados aqui) */
-.carouselButton { display: none; }
-.carouselContainer { display: none; }
-
-
-/* ============================================== */
-/* --- FOOTER (da RockPage) --- */
-/* ============================================== */
-.rockFooter { background-image: url('../images/fundorock.png'); background-color: var(--background-dark); background-size: cover; background-position: center top; background-repeat: no-repeat; padding:2.5rem 2rem 1.5rem; color:var(--text-medium); border-top:1px solid #444; }
-.footerContainer { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:2rem 4rem; width:90%; max-width:1100px; margin:0 auto; }
-.footerColumn h3 { font-size:1rem; font-weight:600; color:var(--text-light); margin-bottom:0.8rem; }
-.footerColumn p, .footerColumn li, .footerColumn li a { font-size:0.9rem; color:var(--text-medium); line-height:1.6; margin-bottom:0.7rem; transition: color 0.2s ease; text-decoration:none; }
-.footerColumn li a:hover { color:#fff; }
-.newsletterForm input { width:100%; padding:0.6rem 0.8rem; border:1px solid #555; border-radius:4px; background-color: rgba(255,255,255,0.1); color:var(--text-light); font-size:0.9rem; margin-bottom:0.7rem; }
-.newsletterForm input::placeholder { color:#888; }
-.newsletterButton { padding:10px 15px; cursor:pointer; background:var(--rock-red); color:#fff; border:none; border-radius:4px; font-size:0.9rem; transition: background-color 0.2s ease; margin-top:0.3rem; }
-.newsletterButton:hover { background:#c0392b; }
-.footerLogoColumn { display:flex; justify-content:flex-end; align-items:flex-end; }
-.footerLogo { height:30px; width:auto; opacity:0.8; }
-
-/* ============================================== */
-/* --- RESPONSIVIDADE (da RockPage + Detalhes) --- */
-/* ============================================== */
-
-/* Dropdown (da RockPage) */
-.userAccountContainer { position: relative; display: inline-flex; }
-.iconOnlyBtn { padding:5px; gap:0; background:none; border:none; color:inherit; cursor:pointer; }
-.iconOnlyBtn .material-symbols-outlined { font-size:1.6rem; transition: font-size var(--transition-med); }
-.userDropdownMenu { display:block; position:absolute; top:calc(100% + 10px); right:0; background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; border-radius:6px; min-width:200px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:1010; padding:0.5rem 0; list-style:none; margin:0; animation: fadeInDropdown 0.2s ease-out; }
-@keyframes fadeInDropdown { from { opacity:0; transform: translateY(-5px); } to { opacity:1; transform: translateY(0); } }
-.userDropdownMenu li a,
-.userDropdownMenu li button.userDropdownLogoutBtn { display:block; width:100%; padding:0.75rem 0.8rem; font-family:'Lato',sans-serif; font-size:0.9rem; color:#555555; transition: background-color 0.2s ease, color 0.2s ease; text-align:left; background:none; border:none; cursor:pointer; text-decoration:none; }
-.userDropdownMenu li a:hover,
-.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#f5f5f5; color:#111111; }
-.userDropdownSeparator { border-top:1px solid #eeeeee; margin-top:0.5rem; padding-top:0.5rem; }
-.userDropdownMenu li button.userDropdownLogoutBtn { color:#c82333; font-weight:500; }
-.userDropdownMenu li button.userDropdownLogoutBtn:hover { background-color:#fbecec; color:#a31a27; }
-
-
-@media (max-width: 1200px) {
-  /* Nav (da RockPage) */
-  .navRockTitle { font-size: 3rem; }
-}
-
-@media (max-width: 1024px) {
-  /* Nav (da RockPage) */
-  .mainNav, .navIsSticky { padding: 1.5rem 2rem; }
-  .navLeft { gap: 1rem; }
-  .navRight { gap: 1.2rem; }
-  .searchBar { width: 200px; }
+.rockPage {
+  background-image: url('../images/couro.png');
+  background-repeat: repeat;
   
-  /* Header */
-  .rockHeroSection {
-      padding-top: 110px; /* Mantém um pouco de espaço */
-  }
-
-  /* Grid de produtos relacionados */
-  .relatedProductsGrid {
-     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-     gap: 1.5rem;
-  }
+  --theme-color-primary: var(--rock-red);
+  --theme-color-primary-hover: #c0392b;
+  --theme-color-text-primary: #ffffff;
+  --theme-color-text-secondary: #e0e0e0;
+  --theme-button-text-color: #ffffff;
+  --theme-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  --theme-sticky-nav-bg: rgba(0, 0, 0, 0.3); /* Fundo da Nav Sticky */
 }
 
-@media (max-width: 768px) {
-  /* Nav (da RockPage) */
-  .mainNav, .navIsSticky { padding: 1.2rem 1.5rem; grid-template-columns: auto 1fr auto; min-height: 80px; } /* Altura menor em tablet */
-  .navIsSticky { min-height: 70px; }
-  .searchBar { display: none; }
-  .navCenter { justify-self: center; padding: 0 1rem; }
-  .navRight a[title="Localização"],
-  .navRight a[title="Favoritos"] { display: none; }
-  .navRight { gap: 1rem; }
+.bossaNovaPage {
+  background-image: url('../images/areia.png');
+  background-repeat: repeat;
   
-  /* Header (Breadcrumbs) */
-  .rockHeroSection {
-    padding-top: 90px; /* Sobe ainda mais em mobile */
-  }
-
-  /* Estilos de Detalhe (do original) */
-  .detailContainer {
-    padding: 2rem 1rem;
-    gap: 2rem;
-  }
-  .detailTitle {
-    font-size: 1.8rem; /* Responsividade do título */
-    margin-top: -0.1rem; /* Ajuste menor para fontes maiores */
-  }
-  .detailPrice {
-    font-size: 1.6rem; /* Responsividade do preço */
-  }
-  .detailButtonContainer {
-    max-width: 100%;
-  }
-  .detailFavoriteButton {
-    width: 36px;
-    height: 36px;
-  }
-  .detailFavoriteButton .material-symbols-outlined {
-    font-size: 1.4rem;
-  }
-  .soldOutText {
-    font-size: 2rem; /* Texto de esgotado menor */
-  }
-
-  /* Produtos Relacionados */
-  .relatedTitle {
-    font-size: 1.8rem;
-  }
-  .relatedProductsGrid {
-    grid-template-columns: 1fr 1fr; /* 2 colunas em tablet */
-  }
+  --theme-color-primary: #54a0e3;
+  --theme-color-primary-hover: #7cb6d1;
+  --theme-color-text-primary: #333333; /* Texto escuro */
+  --theme-color-text-secondary: #594a42;
+  --theme-button-text-color: #ffffff;
+  --theme-text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3); /* Sombra clara */
+  --theme-sticky-nav-bg: rgba(255, 255, 255, 0.2); /* Fundo da Nav Sticky */
 }
 
-@media (max-width: 480px) {
-  /* Nav (da RockPage) */
-  .mainNav, .navIsSticky { padding: 1rem; min-height: 70px; } /* Altura menor em mobile */
-  .navIsSticky { min-height: 60px; }
-  .logoSvg { height: 24px; } /* Logo menor */
-  .navIsSticky .logoSvg { height: 22px; }
-  .navRight { gap: 0.8rem; }
-  .navRight .material-symbols-outlined { font-size: 1.4rem; }
-  .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
-  .menuBtn { font-size: 0.8rem; }
-  .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
+.jazzPage {
+  /* --- A MUDANÇA QUE VOCÊ PEDIU --- */
+  background: linear-gradient(170deg, #1d1129 0%, #0d0d1e 50%, #110d1c 100%);
+  background-attachment: fixed;
   
-  /* Header (Breadcrumbs) */
-  .rockHeroSection {
-    padding-top: 80px; /* Sobe mais ainda */
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  /* Detalhes */
-  .detailTitle {
-    font-size: 1.5rem;
-    margin-top: 0; /* Geralmente não precisa de ajuste em fontes menores */
-  }
-  .detailPrice {
-    font-size: 1.4rem;
-  }
-  .detailAddToCartButton {
-    width: 100%; /* Botão ocupa toda a largura */
-  }
-  .soldOutText {
-    font-size: 1.8rem;
-  }
-
-  /* Produtos Relacionados */
-  .relatedProductsGrid {
-    grid-template-columns: 1fr; /* 1 coluna em mobile */
-  }
-}
-/* --- Alinhamento da imagem com o título e nome do álbum --- */
-.detailContainer {
-  align-items: center; /* Centraliza verticalmente imagem e texto */
-}
-
-.detailImageColumn,
-.detailInfoColumn {
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Garante alinhamento vertical uniforme */
-}
-/* Adicione isto em:
-  - storefront/src/assets/css/RockPage.module.css 
-  - storefront/src/assets/css/ProductDetailPage.module.css 
-*/
-
-/* Seu código existente já tem .iconOutline e .iconFilled.
-  Esta classe .isFavorite vai usá-los para inverter o ícone.
-*/
-
-.favoriteButton .iconFilled,
-.detailFavoriteButton .iconFilled {
-  display: none; /* Esconde o preenchido por padrão */
-}
-
-.favoriteButton .iconOutline,
-.detailFavoriteButton .iconOutline {
-  display: inline-block; /* Mostra o contorno por padrão */
-}
-
-/* Quando o botão tiver a classe .isFavorite (adicionada via React) */
-.favoriteButton.isFavorite .iconFilled,
-.detailFavoriteButton.isFavorite .iconFilled {
-  display: inline-block; /* Mostra o preenchido */
-  color: red; /* Opcional: força a cor vermelha */
-}
-
-.favoriteButton.isFavorite .iconOutline,
-.detailFavoriteButton.isFavorite .iconOutline {
-  display: none; /* Esconde o contorno */
-}
-
-/* Adicione isso ao ProductDetailPage.module.css para o botão da nav */
-.mainNav .menuBtn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-.mainNav .menuBtn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Adicione isso ao RockPage.module.css para o botão da nav */
-.mainNav .menuBtn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-.mainNav .menuBtn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  --theme-color-primary: #2a023b;
+  --theme-color-primary-hover: #3d022c;
+  --theme-color-text-primary: #ffffff;
+  --theme-color-text-secondary: #f0f0f0;
+  --theme-button-text-color: #000000;
+  --theme-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  --theme-sticky-nav-bg: rgba(15, 10, 20, 0.3); /* Fundo da Nav Sticky */
 }

@@ -5,7 +5,7 @@
 /* --- Estilos Base do Footer (Copiado de RockPage.module.css) --- */
 .footerBase {
   padding: 2.5rem 2rem 1.5rem;
-  color: #bbb; /* var(--text-medium) */
+  color: #fffdfd; /* var(--text-medium) */
   border-top: 1px solid #444;
   
   /* Backgrounds serão definidos pelas classes específicas */
@@ -26,12 +26,12 @@
 .footerColumn h3 { 
   font-size: 1rem; 
   font-weight: 600; 
-  color: #e0e0e0; /* var(--text-light) */
+  color: #ffffff; /* var(--text-light) */
   margin-bottom: 0.8rem; 
 }
 .footerColumn p, .footerColumn li, .footerColumn li a { 
   font-size: 0.9rem; 
-  color: #bbb; /* var(--text-medium) */
+  color: #ffffff; /* var(--text-medium) */
   line-height: 1.6; 
   margin-bottom: 0.7rem; 
   transition: color 0.2s ease; 
@@ -42,14 +42,14 @@
 .newsletterForm input { 
   width: 100%; 
   padding: 0.6rem 0.8rem; 
-  border: 1px solid #555; 
+  border: 1px solid #ddd7d7; 
   border-radius: 4px; 
   background-color: rgba(255, 255, 255, 0.1); 
   color: #e0e0e0; /* var(--text-light) */
   font-size: 0.9rem; 
   margin-bottom: 0.7rem; 
 }
-.newsletterForm input::placeholder { color: #888; }
+.newsletterForm input::placeholder { color: #dedcdc; }
 
 .footerLogoColumn { 
   display: flex; 
