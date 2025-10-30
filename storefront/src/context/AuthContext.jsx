@@ -1,170 +1,222 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-// CORREÇÃO: Importar os nomes corretos da API
-import { loginCliente, registerCliente, getFavoritos, addFavorito, removeFavorito } from '../services/api'; 
-import { jwtDecode } from 'jwt-decode'; // É necessário: npm install jwt-decode
+// storefront/src/context/AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api.js'; // Importa a instância configurada do Axios
 
-export const AuthContext = createContext();
+// Cria o Contexto
+export const AuthContext = createContext(null);
 
+// Hook customizado para facilitar o uso do contexto
+export const useAuth = () => {
+    return useContext(AuthContext);
+};
+
+// Componente Provedor
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
-  const [showAuthModal, setShowAuthModal] = useState(false); 
+    const [user, setUser] = useState(null); // Armazena o objeto do usuário (cliente)
+    const [token, setToken] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true); // Estado de carregamento inicial
+    
+    // Estado para o modal de autenticação (controlado globalmente)
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    
+    // Estado para erros de autenticação (para o modal)
+    const [authError, setAuthError] = useState(null);
 
-  // --- ADICIONADO: Estado de Favoritos ---
-  const [favorites, setFavorites] = useState([]);
-  // --- FIM DA ADIÇÃO ---
+    // --- ESTADOS DE FAVORITOS ---
+    const [favorites, setFavorites] = useState([]);
 
-  // --- ADICIONADO: Função para buscar favoritos ---
-  const fetchFavoritos = async (currentToken) => {
-    console.log("AuthProvider (Storefront): Buscando favoritos...");
-    try {
-      // Usa a função 'getFavoritos' corrigida da api.js
-      const response = await getFavoritos(currentToken); 
-      setFavorites(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar favoritos:", error);
-      if (error.response && error.response.status === 401) {
-        logout(); // Desloga se o token for inválido
-      }
-    }
-  };
-  // --- FIM DA ADIÇÃO ---
+    // Efeito para carregar o token e o usuário do localStorage ao iniciar
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
 
-  useEffect(() => {
-    const validateToken = async () => {
-      const storedToken = localStorage.getItem('token');
-      console.log("AuthProvider (Storefront): Verificando token...");
-      if (storedToken) {
-        try {
-          const decodedToken = jwtDecode(storedToken);
-          const currentTime = Date.now() / 1000;
-          
-          if (decodedToken.exp < currentTime) {
-            console.log("AuthProvider (Storefront): Token expirado.");
-            logout();
-          } else {
-            setToken(storedToken);
-            setUser({
-              // Garante que pega o ID, mesmo que esteja aninhado
-              id: decodedToken.id || (decodedToken.user ? decodedToken.user.id : null), 
-              nome: decodedToken.nome,
-              role: decodedToken.role,
-            });
-            console.log(`AuthProvider (Storefront): Token válido encontrado. Utilizador: ${decodedToken.nome} Role: ${decodedToken.role}`);
-            
-            // --- ADICIONADO: Buscar favoritos após validar token ---
-            await fetchFavoritos(storedToken);
-            // --- FIM DA ADIÇÃO ---
-          }
-        } catch (error) {
-          console.error("AuthProvider (Storefront): Token inválido.", error);
-          logout(); 
+        if (storedToken && storedUser) {
+            try {
+                const userObj = JSON.parse(storedUser);
+                setUser(userObj);
+                setToken(storedToken);
+                setIsAuthenticated(true);
+                // Configura o header do Axios para futuras requisições
+                api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+            } catch (error) {
+                console.error("Erro ao parsear usuário do localStorage:", error);
+                // Limpa se os dados estiverem corrompidos
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
         }
-      }
-      setLoading(false);
+        setLoading(false); // Termina o carregamento inicial
+    }, []);
+
+    // Efeito para carregar favoritos quando o usuário é autenticado
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            // (Lógica para buscar favoritos da API pode ser adicionada aqui)
+            // Por enquanto, podemos carregar do localStorage se existir
+            const storedFavorites = localStorage.getItem(`favorites_${user._id}`);
+            if (storedFavorites) {
+                setFavorites(JSON.parse(storedFavorites));
+            }
+        } else {
+            // Limpa os favoritos se o usuário deslogar
+            setFavorites([]);
+        }
+    }, [isAuthenticated, user]);
+
+    // Função de Login
+    const login = async (loginData) => {
+        try {
+            // Chama o backend (certifique-se que o api.js está com a porta 3001)
+            const response = await api.post('/auth/store/login', loginData);
+            
+            // Verificamos se o backend retornou o token E o usuário
+            if (response.data.token && response.data.user) {
+                
+                // Configurações do Token
+                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                localStorage.setItem('token', response.data.token);
+                setToken(response.data.token);
+                setIsAuthenticated(true);
+
+                // --- CORREÇÃO ADICIONADA ---
+                // 1. Salva o objeto do usuário no estado do React
+                setUser(response.data.user);
+                
+                // 2. Salva o usuário no localStorage para persistir
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                // --- FIM DA CORREÇÃO ---
+
+                console.log("Login bem-sucedido, token e usuário salvos.");
+                setShowAuthModal(false); // Fechar o modal no sucesso
+                setAuthError(null); // Limpar erros antigos
+            } else {
+                setAuthError(response.data.msg || 'Resposta inesperada.');
+            }
+        } catch (error) {
+            console.error('Erro no login:', error.response ? error.response.data : error.message);
+            // Mostra o erro vindo do backend (ex: "E-mail ou senha incorretos.")
+            setAuthError(error.response?.data?.msg || 'E-mail ou senha incorretos.');
+        }
     };
 
-    validateToken();
-  }, []); // Dependência vazia, roda apenas uma vez
+    // Função de Registro
+    const register = async (registerData) => {
+        try {
+            const response = await api.post('/auth/store/register', registerData);
+            
+            // Verifica se o backend retornou o token E o usuário (fluxo de auto-login pós-registro)
+            if (response.data.token && response.data.user) {
+                
+                // Configurações do Token
+                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                localStorage.setItem('token', response.data.token);
+                setToken(response.data.token);
+                setIsAuthenticated(true);
 
-  const login = async (email, password) => {
-    try {
-      // O seu AuthModal provavelmente passa 'password'. Se for 'senha', mude aqui.
-      const response = await loginCliente({ email, senha: password }); 
-      const { token } = response.data; // Pega o token da resposta
-      
-      localStorage.setItem('token', token);
-      const decodedToken = jwtDecode(token);
-      
-      setToken(token);
-      setUser({
-        id: decodedToken.id || (decodedToken.user ? decodedToken.user.id : null),
-        nome: decodedToken.nome,
-        role: decodedToken.role,
-      });
-      
-      // --- ADICIONADO: Buscar favoritos após login ---
-      await fetchFavoritos(token);
-      // --- FIM DA ADIÇÃO ---
+                // Salva o usuário (igual ao login)
+                setUser(response.data.user);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      setShowAuthModal(false); 
-    } catch (error) {
-      console.error('Erro no login:', error);
-      throw error; 
-    }
-  };
+                console.log("Registro bem-sucedido, usuário logado.");
+                setShowAuthModal(false); // Fechar o modal no sucesso
+                setAuthError(null); // Limpar erros antigos
+            } else {
+                setAuthError(response.data.msg || 'Resposta inesperada após registro.');
+            }
+        } catch (error) {
+            console.error('Erro no registro:', error.response ? error.response.data : error.message);
+            setAuthError(error.response?.data?.msg || 'Não foi possível criar a conta.');
+        }
+    };
 
-  const register = async (userData) => {
-    try {
-      // O seu controller 'criarCliente' espera estes campos.
-      await registerCliente(userData);
-      
-      setShowAuthModal(false); 
-      alert("Registro bem-sucedido! Por favor, faça o login.");
 
-    } catch (error) {
-      console.error('Erro no registro:', error);
-      throw error;
-    }
-  };
+    // Função de Logout
+    const logout = () => {
+        // Limpa o estado
+        setUser(null);
+        setToken(null);
+        setIsAuthenticated(false);
+        setFavorites([]); // Limpa favoritos do estado
 
-  const logout = () => {
-    console.log("AuthProvider (Storefront): Deslogando...");
-    localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
-    // --- ADICIONADO: Limpar favoritos no logout ---
-    setFavorites([]);
-    // --- FIM DA ADIÇÃO ---
-  };
+        // Limpa o localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        // Remove o header de autorização do Axios
+        delete api.defaults.headers.common['Authorization'];
+        
+        // Opcional: Limpar localStorage de favoritos (se você salvar por ID)
+        if (user && user._id) {
+             localStorage.removeItem(`favorites_${user._id}`);
+        }
+        
+        console.log("Usuário deslogado.");
+    };
 
-  // --- FUNÇÕES DE FAVORITOS (CORRIGIDAS) ---
-  const handleAddFavorite = async (produtoId) => {
-    if (!token) return; 
-    try {
-      // Usa a função 'addFavorito' (com 'o') da api.js
-      const response = await addFavorito(produtoId);
-      setFavorites(response.data); // Atualiza o estado
-    } catch (error) {
-      console.error("Erro ao adicionar favorito", error);
-    }
-  };
+    // --- FUNÇÕES DE FAVORITOS ---
+    // (Estas funções são exemplos, ajuste conforme sua necessidade)
 
-  const handleRemoveFavorite = async (produtoId) => {
-    if (!token) return; 
-    try {
-      // Usa a função 'removeFavorito' (com 'o') da api.js
-      const response = await removeFavorito(produtoId);
-      setFavorites(response.data); // Atualiza o estado
-    } catch (error) {
-      console.error("Erro ao remover favorito", error);
-    }
-  };
-  // --- FIM DA CORREÇÃO ---
+    // Adiciona um produto aos favoritos
+    const addFavorito = (produto) => {
+        if (!isAuthenticated || !user) {
+            setShowAuthModal(true); // Pede login se tentar favoritar sem estar logado
+            return;
+        }
+        
+        // Evita duplicatas
+        if (!favorites.find(fav => fav._id === produto._id)) {
+            const newFavorites = [...favorites, produto];
+            setFavorites(newFavorites);
+            // Salva no localStorage associado ao usuário
+            localStorage.setItem(`favorites_${user._id}`, JSON.stringify(newFavorites));
+        }
+    };
 
-  return (
-    <AuthContext.Provider
-      value={{
+    // Remove um produto dos favoritos
+    const removeFavorito = (produtoId) => {
+        if (!isAuthenticated || !user) return;
+
+        const newFavorites = favorites.filter(fav => fav._id !== produtoId);
+        setFavorites(newFavorites);
+        localStorage.setItem(`favorites_${user._id}`, JSON.stringify(newFavorites));
+    };
+
+    // Limpa todos os favoritos
+    const clearFavoritos = () => {
+         if (!isAuthenticated || !user) return;
+         setFavorites([]);
+         localStorage.removeItem(`favorites_${user._id}`);
+    };
+
+
+    // Valor fornecido pelo Provider
+    const value = {
         user,
         token,
-        isAuthenticated: !!token,
+        isAuthenticated,
         loading,
         login,
         register,
         logout,
+        
+        // Estados e setters do Modal
         showAuthModal,
         setShowAuthModal,
-        // --- CORRIGIDO: Exportando os nomes corretos ('addFavorite' com 'e') ---
-        favorites,
-        addFavorite: handleAddFavorite,    // <-- Exporta como 'addFavorite'
-        removeFavorite: handleRemoveFavorite // <-- Exporta como 'removeFavorite'
-        // --- FIM DA CORREÇÃO ---
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+        authError,
+        setAuthError,
 
-export const useAuth = () => useContext(AuthContext);
+        // Estados e setters de Favoritos
+        favorites,
+        addFavorito,
+        removeFavorito,
+        clearFavoritos
+    };
+
+    // Retorna o Provider envolvendo os children (componentes filhos)
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
