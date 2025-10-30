@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// --- CORREÇÃO DE IMPORTAÇÃO ---
+// Removemos o 'BrowserRouter as Router' daqui, pois ele já existe no main.jsx
+import { Routes, Route } from 'react-router-dom';
 // Importa o hook que criámos
 import { useAuth } from './context/AuthContext.jsx'; 
 
@@ -51,8 +53,10 @@ function App() {
   // --- FIM DA ADIÇÃO ---
 
   return (
-    // O <AuthProvider> foi REMOVIDO daqui (correto, pois está no main.jsx)
-    <Router>
+    // --- CORREÇÃO ---
+    // Removemos o <Router> que envolvia todo o componente.
+    // Usamos um Fragment (<>) para agrupar os elementos.
+    <>
       <LiquidGlassSidebar 
         isOpen={isSidebarOpen} 
         onClose={handleCloseSidebar} 
@@ -76,7 +80,8 @@ function App() {
         <Route path="/produto/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
       </Routes>
-    </Router>
+    </>
+    // --- FIM DA CORREÇÃO ---
   ); 
 }
 
