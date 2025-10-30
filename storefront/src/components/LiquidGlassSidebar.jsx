@@ -1,6 +1,7 @@
 // storefront/src/components/LiquidGlassSidebar.jsx
 import React, { useState } from 'react';
-import styles from './LiquidGlassSidebar.module.css'; //
+import { Link } from 'react-router-dom';
+import styles from './LiquidGlassSidebar.module.css';
 
 // Ícones SVG
 const CloseIcon = () => (
@@ -10,20 +11,19 @@ const CloseIcon = () => (
   </svg>
 );
 const ChevronDownIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
 );
 
 // --- Componente Principal ---
-// Define "Visitante" como valor padrão para userName se a prop for null ou undefined
 function LiquidGlassSidebar({ isOpen, onClose, userName = "Visitante" }) {
   const [openSections, setOpenSections] = useState({
     discover: true,
     rock: false,
     jazzblues: false,
     bossanova: false,
-    pop: false, // Adicionado baseado na imagem
+    pop: false,
   });
 
   const toggleSection = (sectionName) => {
@@ -39,99 +39,86 @@ function LiquidGlassSidebar({ isOpen, onClose, userName = "Visitante" }) {
     <>
       {/* Overlay */}
       <div
-        className={`${styles.overlay} ${isOpen ? styles.showOverlay : ''}`} //
+        className={`${styles.overlay} ${isOpen ? styles.showOverlay : ''}`}
         onClick={onClose}
       ></div>
 
       {/* Sidebar */}
       <aside
-        className={`${styles.sidebar} ${isOpen ? styles.open : ''}`} //
+        className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}
         onClick={handleSidebarClick}
         aria-hidden={!isOpen}
-       >
+      >
         {/* Cabeçalho */}
-        <div className={styles.sidebarHeader}> {/* */}
-          <div className={styles.userInfo}> {/* */}
-            {/* Usa o valor da prop userName (que será "Visitante" se não logado) */}
-            <span className={styles.greeting}>Olá, {userName}</span> {/* */}
+        <div className={styles.sidebarHeader}>
+          <div className={styles.userInfo}>
+            <span className={styles.greeting}>Olá, {userName}</span>
           </div>
-          <button className={styles.closeButton} onClick={onClose} aria-label="Fechar menu"> {/* */}
+          <button className={styles.closeButton} onClick={onClose} aria-label="Fechar menu">
             <CloseIcon />
           </button>
         </div>
 
         {/* Seção Descubra */}
-        <div className={styles.discoverSection}> {/* */}
-          <button className={styles.sectionHeader} onClick={() => toggleSection('discover')} aria-expanded={openSections.discover}> {/* */}
-            <h2 className={styles.discoverTitle}>Descubra a Listen.</h2> {/* */}
-            <span className={`${styles.arrowIcon} ${openSections.discover ? styles.arrowOpen : ''}`}> {/* */}
-                <ChevronDownIcon />
+        <div className={styles.discoverSection}>
+          <button className={styles.sectionHeader} onClick={() => toggleSection('discover')} aria-expanded={openSections.discover}>
+            <h2 className={styles.discoverTitle}>Descubra a Listen.</h2>
+            <span className={`${styles.arrowIcon} ${openSections.discover ? styles.arrowOpen : ''}`}>
+              <ChevronDownIcon />
             </span>
           </button>
-          <div className={`${styles.collapsibleContent} ${openSections.discover ? styles.contentOpen : ''}`}> {/* */}
-            <p className={styles.discoverText}> {/* */}
+          <div className={`${styles.collapsibleContent} ${openSections.discover ? styles.contentOpen : ''}`}>
+            <p className={styles.discoverText}>
               Mais que uma loja de discos, um espaço para sentir a música. Cada disco é uma história, cada gênero tem seu ritmo - do rock intenso, cheio de atitudes, ao punk. Valorizamos o charme analógico, exploramos sons com textura, celebramos a beleza imperfeita. Listen, um lugar único.
             </p>
           </div>
         </div>
 
         {/* Navegação Principal */}
-        <nav className={styles.navigation}> {/* */}
+        <nav className={styles.navigation}>
           {/* Seção Rock */}
-          <div className={styles.navSection}> {/* */}
-            <button className={styles.sectionHeader} onClick={() => toggleSection('rock')} aria-expanded={openSections.rock}> {/* */}
-              <span className={styles.sectionTitle}>Rock</span> {/* */}
-              <span className={`${styles.arrowIcon} ${openSections.rock ? styles.arrowOpen : ''}`}> {/* */}
+          <div className={styles.navSection}>
+            <button className={styles.sectionHeader} onClick={() => toggleSection('rock')} aria-expanded={openSections.rock}>
+              <span className={styles.sectionTitle}>Rock</span>
+              <span className={`${styles.arrowIcon} ${openSections.rock ? styles.arrowOpen : ''}`}>
                 <ChevronDownIcon />
               </span>
             </button>
-            <ul className={`${styles.subLinks} ${openSections.rock ? styles.subLinksOpen : ''}`}> {/* */}
-              <li><a href="#" className={styles.subLink}>Hard Rock</a></li> {/* */}
-              <li><a href="#" className={styles.subLink}>Punk Rock</a></li> {/* */}
-              <li><a href="#" className={styles.subLink}>Alternativo</a></li> {/* */}
+            <ul className={`${styles.subLinks} ${openSections.rock ? styles.subLinksOpen : ''}`}>
+              <li><Link to="/rock" className={styles.subLink} onClick={onClose}>Hard Rock</Link></li>
+              <li><Link to="/rock" className={styles.subLink} onClick={onClose}>Punk Rock</Link></li>
+              <li><Link to="/rock" className={styles.subLink} onClick={onClose}>Alternativo</Link></li>
             </ul>
           </div>
 
           {/* Seção Jazz&Blues */}
-          <div className={styles.navSection}> {/* */}
-            <button className={styles.sectionHeader} onClick={() => toggleSection('jazzblues')} aria-expanded={openSections.jazzblues}> {/* */}
-              <span className={styles.sectionTitle}>Jazz&Blues</span> {/* */}
-              <span className={`${styles.arrowIcon} ${openSections.jazzblues ? styles.arrowOpen : ''}`}> {/* */}
-                 <ChevronDownIcon />
+          <div className={styles.navSection}>
+            <button className={styles.sectionHeader} onClick={() => toggleSection('jazzblues')} aria-expanded={openSections.jazzblues}>
+              <span className={styles.sectionTitle}>Jazz&Blues</span>
+              <span className={`${styles.arrowIcon} ${openSections.jazzblues ? styles.arrowOpen : ''}`}>
+                <ChevronDownIcon />
               </span>
             </button>
-             <ul className={`${styles.subLinks} ${openSections.jazzblues ? styles.subLinksOpen : ''}`}> {/* */}
-              <li><a href="#" className={styles.subLink}>Classic Jazz</a></li> {/* */}
-              <li><a href="#" className={styles.subLink}>Delta Blues</a></li> {/* */}
+            <ul className={`${styles.subLinks} ${openSections.jazzblues ? styles.subLinksOpen : ''}`}>
+              <li><Link to="/jazz-blues" className={styles.subLink} onClick={onClose}>Classic Jazz</Link></li>
+              <li><Link to="/jazz-blues" className={styles.subLink} onClick={onClose}>Delta Blues</Link></li>
             </ul>
           </div>
 
           {/* Seção Bossa Nova */}
-           <div className={styles.navSection}> {/* */}
-            <button className={styles.sectionHeader} onClick={() => toggleSection('bossanova')} aria-expanded={openSections.bossanova}> {/* */}
-              <span className={styles.sectionTitle}>Bossa Nova</span> {/* */}
-              <span className={`${styles.arrowIcon} ${openSections.bossanova ? styles.arrowOpen : ''}`}> {/* */}
-                 <ChevronDownIcon />
-              </span>
-            </button>
-             <ul className={`${styles.subLinks} ${openSections.bossanova ? styles.subLinksOpen : ''}`}> {/* */}
-                 <li><a href="#" className={styles.subLink}>Clássicos</a></li> {/* */}
-            </ul>
-          </div>
-
-          {/* Seção Pop */}
-          <div className={styles.navSection}> {/* */}
-            <button className={styles.sectionHeader} onClick={() => toggleSection('pop')} aria-expanded={openSections.pop}> {/* */}
-              <span className={styles.sectionTitle}>Pop</span> {/* */}
-              <span className={`${styles.arrowIcon} ${openSections.pop ? styles.arrowOpen : ''}`}> {/* */}
+          <div className={styles.navSection}>
+            <button className={styles.sectionHeader} onClick={() => toggleSection('bossanova')} aria-expanded={openSections.bossanova}>
+              <span className={styles.sectionTitle}>Bossa Nova</span>
+              <span className={`${styles.arrowIcon} ${openSections.bossanova ? styles.arrowOpen : ''}`}>
                 <ChevronDownIcon />
               </span>
             </button>
-            <ul className={`${styles.subLinks} ${openSections.pop ? styles.subLinksOpen : ''}`}> {/* */}
-                <li><a href="#" className={styles.subLink}>Pop Hits</a></li> {/* */}
+            <ul className={`${styles.subLinks} ${openSections.bossanova ? styles.subLinksOpen : ''}`}>
+              <li><Link to="/bossa-nova" className={styles.subLink} onClick={onClose}>Clássicos</Link></li>
             </ul>
           </div>
 
+          
         </nav>
       </aside>
     </>

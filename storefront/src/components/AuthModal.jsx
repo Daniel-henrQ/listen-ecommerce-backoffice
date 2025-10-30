@@ -91,7 +91,8 @@ const handleLogin = async (e) => {
   }
 };
 
-    // --- REGISTER ---
+   // --- REGISTER ---
+    // 🔹 MODIFICADO para usar a função 'register' do AuthContext
     const handleRegister = async (e) => {
         e.preventDefault();
         setMessage({ text: '', type: '', target: null }); // Clear general message
@@ -118,23 +119,32 @@ const handleLogin = async (e) => {
         }
 
         try {
-            const response = await axios.post('/api/clientes', {
+            // 🔹 Usa a função register do AuthContext
+            const registerData = {
                 email: registerEmail,
-                nome: registerUsername, // Use 'nome' here for the backend
+                nome: registerUsername, // 'nome' é usado no backend
                 cpf: registerCpf,
                 password: registerPassword,
                 confirmpassword: registerConfirmPassword
-            });
-            setMessage({ text: 'Cadastro realizado! Faça login.', type: 'success', target: 'register' }); // Update general message
-             setTimeout(() => {
-                 setView('welcome'); // Switch back to login view
-                 // Optionally clear register fields or keep them
-                 setMessage({ text: '', type: '', target: null }); // Clear message after switching
-             }, 1500);
+            };
+
+            // 🔹 A função register (do context) já cuida do login automático
+            //    Ela chama /auth/register e armazena token e usuário
+            await register(registerData);
+
+            // 🔹 Se chegou aqui, o registro e o login funcionaram
+            setMessage({ text: 'Cadastro e login realizados!', type: 'success', target: 'register' });
+            
+            setTimeout(() => {
+                onClose(); // Fecha o modal
+                setIsLoading(false);
+            }, 1500); // Fecha após 1.5 seg
 
         } catch (error) {
-            const errorMsg = error.response?.data?.msg || 'Erro ao cadastrar. Verifique os dados.';
+            // A função register do context pode lançar um erro que pegamos aqui
+            const errorMsg = error.response?.data?.msg || error.message || 'Erro ao cadastrar. Verifique os dados.';
             setMessage({ text: errorMsg, type: 'error', target: 'register' }); // Show general error
+            
             // Highlight specific fields based on common API errors
             if (errorMsg.toLowerCase().includes('e-mail')) {
                 setFieldErrors(prev => ({ ...prev, registerEmail: 'Email já em uso.' }));
@@ -144,7 +154,6 @@ const handleLogin = async (e) => {
             }
              setIsLoading(false); // Stop loading on error
         }
-        // No finally needed if we set isLoading false inside catch and success timeout
     };
 
     if (!isOpen) return null;
