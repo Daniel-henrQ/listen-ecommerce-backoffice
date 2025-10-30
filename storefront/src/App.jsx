@@ -8,7 +8,7 @@ import HomePage from './pages/HomePage.jsx';
 import RockPage from './pages/RockPage.jsx';
 import ProductDetailPage from './pages/ProductDetailPage.jsx';
 import BossaNovaPage from './pages/BossaNovaPage.jsx';
-import BossaNovaClonePage from './pages/BossaNovaClonePage.jsx';  
+import JazzBluesPage from './pages/JazzBluesPage.jsx'; // <-- ADICIONADO
 
 // Import Components
 import LiquidGlassSidebar from './components/LiquidGlassSidebar.jsx';
@@ -32,7 +32,6 @@ function App() {
   // --- ADIÇÃO ---
   // Se o contexto ainda estiver a verificar o token, 
   // mostramos um ecrã de carregamento.
-  // Isto EVITA o erro 'Cannot read properties of null'
   if (loading) {
     return (
       <div style={{ 
@@ -51,7 +50,7 @@ function App() {
   // --- FIM DA ADIÇÃO ---
 
   return (
-    // O <AuthProvider> foi REMOVIDO daqui.
+    // O <AuthProvider> foi REMOVIDO daqui (correto, pois está no main.jsx)
     <Router>
       <LiquidGlassSidebar 
         isOpen={isSidebarOpen} 
@@ -70,17 +69,13 @@ function App() {
         <Route path="/" element={<HomePage onOpenSidebar={handleOpenSidebar} />} />
         
         <Route path="/rock" element={<RockPage />} />
+        <Route path="/bossa-nova" element={<BossaNovaPage />} />
+        <Route path="/jazz-blues" element={<JazzBluesPage />} /> {/* <-- ADICIONADO */}
+        
         <Route path="/produto/:id" element={<ProductDetailPage />} />
         
-        {/* Adicione as outras rotas aqui */}
-         <Route path="/bossa-nova" element={<BossaNovaPage />} />
-          <Route path="/bossa-nova-clone" element={<BossaNovaClonePage />} />
-        {/* <Route path="/jazz-blues" element={<JazzBluesPage />} /> */}
-        {/* <Route path="/pop" element={<PopPage />} /> */}
       </Routes>
     </Router>
-    // Esta linha (69) agora está correta, pois não há
-    // um </AuthProvider> extra.
   ); 
 }
 

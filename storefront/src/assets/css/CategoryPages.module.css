@@ -1,0 +1,277 @@
+/* storefront/src/assets/css/CategoryPages.module.css
+  Este arquivo centraliza os estilos do CONTEÚDO 
+  das páginas de categoria (Rock, Bossa, Jazz).
+*/
+
+/* --- Estilos Base (Copiados de RockPage.module.css) --- */
+.heroSection {
+  padding-top: 140px; 
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-bottom: 2rem;
+  background-color: transparent; 
+  position: relative;
+  z-index: 1;
+  color: #e0e0e0;
+  min-height: 200px; /* Garante altura mínima */
+}
+
+.mainPageContent {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 4rem; /* Espaço antes do footer */
+  min-height: 60vh;
+}
+
+.heroContent { position: relative; }
+.breadcrumbs, .breadcrumbs a { 
+  font-size: 0.9rem; 
+  color: #bbb; 
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.7); 
+  text-decoration: none; 
+}
+.breadcrumbs a:hover { color: #fff; text-decoration: underline; }
+
+/* Mensagens de Load/Erro */
+.loadingMessage, .errorMessage, .noProductsMessage {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ccc;
+  padding: 4rem 1rem;
+}
+.errorMessage { color: #e74c3c; }
+
+/* --- Carousel (Copiado de RockPage.module.css) --- */
+.carouselContainer { 
+  position: relative; 
+  width: 90%; 
+  max-width: 1200px; 
+  margin: 30px auto; 
+  overflow: hidden; 
+}
+.carouselTrack { 
+  display: flex; 
+  transition: transform 0.45s cubic-bezier(.2,.9,.2,1); 
+}
+.carouselSlide { 
+  display: flex; 
+  justify-content: center; 
+  gap: 2%; 
+  flex-shrink: 0; 
+  width: 100%; 
+}
+
+/* --- Product Cards (Copiado de RockPage.module.css) --- */
+.productLink {
+  display: contents;
+  text-decoration: none;
+}
+.productCard {
+  flex-basis: 32%;
+  max-width: 320px;
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  color: #fff;
+  text-align: left;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  position: relative;
+  overflow: visible;
+}
+.productCard:hover { 
+  transform: scale(1.04); 
+  /* --- CORREÇÃO: Sombra removida --- */
+  /* box-shadow: 0 6px 14px rgba(0,0,0,0.4); */
+  cursor: pointer; 
+  z-index: 3; 
+}
+
+.productCardPlaceholder { flex-basis: 32%; max-width: 320px; box-sizing: border-box; }
+.productImage { 
+  width: 100%; 
+  aspect-ratio: 1/1; 
+  object-fit: cover; 
+  border-radius: 8px; 
+  display: block; 
+}
+
+.productInfo {
+  padding: 0 10px 10px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.productTitle { 
+  font-size: 1.2rem; 
+  font-weight: bold; 
+  margin-bottom: 5px; 
+  color: #fff; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+.productArtist { 
+  font-size: 1rem; 
+  color: #ccc; 
+  margin-bottom: 8px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+.productDescription {
+  display: -webkit-box; 
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  font-size: 0.9rem; 
+  color: #bbb; 
+  line-height: 1.4; 
+  height: calc(0.9rem * 1.4 * 3); 
+  margin-bottom: 10px;
+}
+
+.productPriceContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  gap: 8px;
+}
+.productPrice { font-size: 1.1rem; font-weight: bold; color: #fff; flex: 1; }
+
+/* --- Botão Favorito (Copiado de RockPage.module.css) --- */
+.favoriteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: transform 0.18s ease;
+}
+
+.favoriteButton .material-symbols-outlined {
+  font-size: 1.4rem;
+  transition: 0.18s ease;
+}
+
+.iconOutline { color: #fff; }
+.iconFilled { color: #e74c3c; /* Vermelho Padrão */ }
+
+.favoriteButton .iconFilled { display: none; }
+.favoriteButton .iconOutline { display: inline-block; }
+
+.favoriteButton.isFavorite .iconFilled { display: inline-block; }
+.favoriteButton.isFavorite .iconOutline { display: none; }
+
+.favoriteButton:hover { transform: scale(1.1); }
+
+/* --- Botões Carousel (Copiado de RockPage.module.css) --- */
+.carouselButton {
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  background: transparent; 
+  border: none; 
+  width: 50px; 
+  height: 50px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  z-index: 10;
+}
+.carouselButton:hover { transform: translateY(-50%) scale(1.12); }
+.carouselButton .material-symbols-outlined { 
+  color: white; 
+  font-size: 2.2rem; 
+  font-weight: bold; 
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6); 
+}
+.prev { left: 10px; }
+.next { right: 10px; }
+
+/* =========================================================
+   CLASSES DE VARIAÇÃO (AQUI ESTÁ A MÁGICA)
+   ========================================================= */
+
+/* --- 1. Rock (Base) --- */
+.rockPage {
+  background-color: #000; /* Fundo preto padrão */
+}
+/* A cor do botão de favorito do Rock já é o padrão (vermelho) */
+
+
+/* --- 2. Bossa Nova --- */
+.bossaNovaPage {
+  background-image: url('../images/areia.png');
+  background-repeat: repeat; /* Para dar a textura */
+  background-color: #c2b280; /* Cor de fallback caso a imagem falhe */
+}
+.bossaNovaPage .productTitle,
+.bossaNovaPage .productArtist,
+.bossaNovaPage .productDescription,
+.bossaNovaPage .productPrice,
+.bossaNovaPage .iconOutline,
+.bossaNovaPage .breadcrumbs,
+.bossaNovaPage .loadingMessage, 
+.bossaNovaPage .errorMessage, 
+.bossaNovaPage .noProductsMessage {
+  color: #333; /* Textos escuros para o fundo claro */
+  text-shadow: none; /* Remove sombra do pão */
+}
+.bossaNovaPage .breadcrumbs a { color: #555; }
+.bossaNovaPage .carouselButton .material-symbols-outlined {
+  color: #333;
+  text-shadow: none;
+}
+/* Cor do botão (AZUL) */
+.bossaNovaPage .favoriteButton.isFavorite .iconFilled {
+  color: #007bff; /* Azul */
+}
+
+/* --- 3. Jazz & Blues --- */
+.jazzPage {
+  /* Gradient da sua imagem */
+  background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #3a2a4f 100%);
+}
+/* Cor do botão (ROXO) */
+.jazzPage .favoriteButton.isFavorite .iconFilled {
+  color: #6f42c1; /* Roxo */
+}
+
+
+/* =========================================================
+   AJUSTES DE RESPONSIVIDADE (Copiado de RockPage.module.css)
+   ========================================================= */
+@media (max-width: 1024px) {
+  .carouselSlide { gap: 3%; }
+  .productCard { flex-basis: 48%; max-width: 48%; }
+  .productCardPlaceholder { flex-basis: 48%; max-width: 48%; }
+}
+@media (max-width: 768px) {
+  .carouselSlide { padding: 0 30px; gap: 0; }
+  .productCard { flex-basis: 100%; max-width: 420px; margin: 0 auto; }
+  .productCardPlaceholder { display: none; }
+  
+  .favoriteButton { width:30px; height:30px; }
+  .favoriteButton .material-symbols-outlined { font-size:1.3rem; }
+}
+@media (max-width: 480px) {
+  .heroSection { padding-left: 1rem; padding-right: 1rem; min-height: 150px; padding-top: 120px;}
+  .productInfo { padding: 0 6px 6px; }
+  .productTitle { font-size: 0.95rem; }
+  .productArtist, .productDescription, .productPrice { font-size: 0.8rem; }
+  .favoriteButton { width: 26px; height: 26px; }
+  .favoriteButton .material-symbols-outlined { font-size: 1.15rem; }
+  .carouselButton { width:40px; height:40px; }
+  .carouselButton .material-symbols-outlined { font-size:1.9rem; }
+}

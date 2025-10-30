@@ -1,0 +1,245 @@
+/* storefront/src/assets/css/CategoryNavs.module.css
+  Este arquivo centraliza os estilos das 3 Navs (Rock, Bossa, Jazz).
+*/
+
+/* --- Fontes --- */
+@font-face {
+  font-family: 'Forgotten Junk';
+  src: url('../fonts/Forgotten Junk.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'South Amsterdam';
+  src: url('../fonts/AMORIA.otf') format('truetype'); 
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Southport';
+  src: url('../fonts/Southport.woff2') format('woff2'),
+       url('../fonts/Southport.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+/* --- Estilos Base da Nav (Copiado de RockPage.module.css) --- */
+.mainNav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 2.5rem 3rem;
+  min-height: 100px;
+  color: #e0e0e0;
+  
+  /* Backgrounds serão definidos pelas classes específicas */
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-color: #000000;
+  
+  transition: padding 0.28s ease-in-out, min-height 0.28s ease-in-out,
+              background-color 0.28s ease-in-out, box-shadow 0.28s ease-in-out;
+}
+
+.navIsSticky {
+  position: fixed;
+  padding: 1.5rem 3rem;
+  min-height: 80px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+  animation: slideDownNav 0.28s ease-in-out;
+}
+
+@keyframes slideDownNav {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.navLeft { display: flex; align-items: center; gap: 1.5rem; justify-self: start; }
+.navCenter { display: flex; align-items: center; justify-self: center; }
+.navRight { display: flex; align-items: center; justify-self: end; gap: 1rem; }
+
+.menuBtn {
+  display: flex; align-items: center; gap: 0.5rem; background: none; border: none; 
+  font-family: 'Lato', sans-serif; font-size: 0.9rem; font-weight: bold; 
+  color: inherit; cursor: pointer;
+}
+.menuBtn .material-symbols-outlined { font-size: 1.5rem; }
+
+.searchBar {
+  display: flex; align-items: center; width: 250px; padding: 0.4rem 0.8rem; 
+  border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; 
+  background-color: rgba(255,255,255,0.15);
+  transition: background-color 0.28s, border-color 0.28s;
+}
+.navIsSticky .searchBar { 
+  background-color: rgba(255,255,255,0.1); 
+  border-color: rgba(255,255,255,0.4); 
+}
+.searchBar .material-symbols-outlined { color:#eee; font-size:1.3rem; }
+.searchBar input { 
+  border:none; outline:none; margin-left:0.5rem; font-size:0.9rem; 
+  width:100%; background:none; color:#fff; 
+}
+.searchBar input::placeholder { color:#ccc; }
+
+.navRight a, .navRight button { color:inherit; position:relative; }
+.navRight .material-symbols-outlined { font-size:1.6rem; }
+
+/* --- Dropdown do Usuário (Copiado de RockPage.module.css) --- */
+.userAccountContainer { position: relative; display: inline-flex; }
+.iconOnlyBtn { padding:5px; gap:0; background:none; border:none; color:inherit; cursor:pointer; }
+.iconOnlyBtn .material-symbols-outlined { font-size:1.6rem; }
+.userDropdownMenu { 
+  display:block; position:absolute; top:calc(100% + 10px); right:0; 
+  background-color:#ffffff; color:#333333; border:1px solid #e0e0e0; 
+  border-radius:6px; min-width:200px; box-shadow:0 4px 12px rgba(0,0,0,0.1); 
+  z-index:1010; padding:0.5rem 0; list-style:none; margin:0; 
+  animation: fadeInDropdown 0.2s ease-out; 
+}
+@keyframes fadeInDropdown { 
+  from { opacity:0; transform: translateY(-5px); } 
+  to { opacity:1; transform: translateY(0); } 
+}
+.userDropdownMenu li a, 
+.userDropdownMenu li button.userDropdownLogoutBtn { 
+  display:block; width:100%; padding:0.75rem 0.8rem; font-family:'Lato',sans-serif; 
+  font-size:0.9rem; color:#555555; transition: background-color 0.2s ease, color 0.2s ease; 
+  text-align:left; background:none; border:none; cursor:pointer; text-decoration:none; 
+}
+.userDropdownMenu li a:hover, 
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { 
+  background-color:#f5f5f5; color:#111111; 
+}
+.userDropdownSeparator { 
+  border-top:1px solid #eeeeee; margin-top:0.5rem; padding-top:0.5rem; 
+}
+.userDropdownMenu li button.userDropdownLogoutBtn { color:#c82333; font-weight:500; }
+.userDropdownMenu li button.userDropdownLogoutBtn:hover { 
+  background-color:#fbecec; color:#a31a27; 
+}
+
+/* =========================================================
+  CLASSES DE VARIAÇÃO (AQUI ESTÁ A MÁGICA)
+=========================================================
+*/
+
+/* --- 1. Fundos --- */
+.rockNav, .rockNav.navIsSticky {
+  background-image: url('../images/fundorock.png');
+}
+.bossaNovaNav, .bossaNovaNav.navIsSticky {
+  background-image: url('../images/fundobossa.png'); /* Crie esta imagem */
+}
+.jazzNav, .jazzNav.navIsSticky {
+  background-image: url('../images/fundojazz.png'); /* Crie esta imagem */
+}
+
+
+/* --- 2. Títulos --- */
+
+/* Título Rock (Base) */
+.navRockTitle {
+  font-family: 'Forgotten Junk', Impact, sans-serif;
+  font-size: 3.5rem;
+  font-weight: normal;
+  color: inherit;
+  margin: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Título Bossa Nova (Estilo inventado, já que BossaNovaPage.module.css era cópia) */
+.navBossaNovaTitle {
+  font-family: 'Southport', 'Bodoni MT', 'Didot', serif; /* <-- FONTE ATUALIZADA */
+  font-size: 3.6rem; /* <-- Ajuste de tamanho para a nova fonte */
+  font-weight: normal; /* <-- 'normal' é melhor para fontes display */
+  color: #e0e0e0;
+  margin: 0;
+  line-height: 1;
+  text-transform: none; /* <-- 'none' fica melhor com essa fonte script */
+  letter-spacing: 0px; /* <-- Resetado */
+}
+/* Efeito de cor da BossaNovaPage.jsx */
+.navBossaNovaTitle span:nth-child(1n+1) { color: #F6B103; }
+.navBossaNovaTitle span:nth-child(2n+2) { color: #486E00; }
+
+
+/* ... (substitua pela nova) ... */
+.navJazzTitle {
+  font-family: 'Amoria', 'Brush Script MT', cursive; /* <-- Fonte trocada */
+  font-size: 3.8rem; /* Pode ajustar o tamanho se a 'Amoria' for maior ou menor */
+  font-weight: normal;
+  margin: 0;
+  line-height: 1;
+  
+  /* --- Efeito Metalizado (Dourado) --- */
+  /* 1. Criamos um gradiente de fundo (do claro para o escuro) */
+  background: linear-gradient(to bottom, 
+    #ffeeb5 0%,  /* Ouro claro (brilho) */
+    #ffd700 50%, /* Ouro principal */
+    #b08e4f 100% /* Ouro escuro (sombra) */
+  );
+  
+  /* 2. Cortamos o fundo para o formato do texto */
+  -webkit-background-clip: text;
+  background-clip: text;
+  
+  /* 3. Tornamos a cor do texto transparente para ver o fundo */
+  color: transparent;
+  
+  /* 4. A sombra de texto (que já existia) ajuda a dar profundidade */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
+  
+  /* Fallback para navegadores que não suportam background-clip */
+  @supports not (-webkit-background-clip: text) {
+    color: #FFD700; /* Volta para o Dourado sólido */
+  }
+}
+
+/* --- Responsividade (Copiada de RockPage.module.css) --- */
+@media (max-width: 1200px) {
+  .navRockTitle { font-size: 3rem; }
+  .navBossaNovaTitle { font-size: 2.8rem; }
+  .navJazzTitle { font-size: 3.4rem; }
+}
+
+@media (max-width: 1024px) {
+  .mainNav, .navIsSticky { padding: 1.5rem 2rem; }
+  .navLeft { gap: 1rem; }
+  .navRight { gap: 1.2rem; }
+  .searchBar { width: 200px; }
+}
+
+@media (max-width: 768px) {
+  .mainNav, .navIsSticky { padding: 1.2rem 1.5rem; grid-template-columns: auto 1fr auto; }
+  .searchBar { display: none; }
+  .navCenter { justify-self: center; padding: 0 1rem; }
+  .navRight a[title="Localização"] { display: none; }
+  .navRight { gap: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .mainNav, .navIsSticky { padding: 1rem; }
+  .navRockTitle { font-size: 2.6rem; }
+  .navBossaNovaTitle { font-size: 2.2rem; }
+  .navJazzTitle { font-size: 2.8rem; }
+  
+  .navRight { gap: 0.8rem; }
+  .navRight .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn .material-symbols-outlined { font-size: 1.4rem; }
+  .menuBtn { font-size: 0.8rem; }
+  .iconOnlyBtn .material-symbols-outlined { font-size: 1.4rem; }
+}
